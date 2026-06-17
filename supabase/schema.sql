@@ -38,3 +38,14 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Single-row settings table. Insert the seed row once after running this schema.
+CREATE TABLE IF NOT EXISTS farm_settings (
+  id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),   -- enforces single row
+  admin_notification_email TEXT,
+  reminder_emails_enabled BOOLEAN DEFAULT TRUE,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Seed the single row (safe to re-run)
+INSERT INTO farm_settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
