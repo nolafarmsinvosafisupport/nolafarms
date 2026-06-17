@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Mail, MapPin, Phone } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { NAV_LINKS, SITE } from '@/lib/constants';
 
@@ -8,7 +9,18 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 border-b border-white/10 pb-16 md:grid-cols-4">
           <div className="md:col-span-1">
-            <h2 className="mb-5 font-serif text-4xl text-cream-primary">Nola Farms</h2>
+            <div className="mb-5 flex items-center gap-3">
+              <Image
+                src="/images/logos/small logo.png"
+                alt="Nola Farms"
+                width={44}
+                height={44}
+                className="object-contain"
+              />
+              <span className="font-serif text-2xl tracking-wider text-cream-primary">
+                NOLA<span className="text-brand-leaf">FARMS</span>
+              </span>
+            </div>
             <p className="text-sm leading-7 text-cream-secondary/75">{SITE.description}</p>
             <div className="mt-7 flex gap-3">
               <a href={SITE.socialMedia.instagram || '#'} aria-label="Nola Farms Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-brand-primary">

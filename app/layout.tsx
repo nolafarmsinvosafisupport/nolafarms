@@ -31,6 +31,11 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
+  icons: {
+    icon: [{ url: '/images/logos/favicon.png', type: 'image/png' }],
+    apple: [{ url: '/images/logos/favicon.png' }],
+    shortcut: '/images/logos/favicon.png',
+  },
   title: {
     default: 'Nola Farms | Large-Scale Farm & Livestock in Laikipia, Kenya',
     template: '%s | Nola Farms',

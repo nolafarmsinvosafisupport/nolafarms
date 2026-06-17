@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
@@ -32,10 +33,20 @@ export function Navbar() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Link href="/" className="font-serif text-2xl tracking-wider text-cream-primary">
+          {/* Brand: logo icon + wordmark */}
+          <Link href="/" className="flex items-center gap-2.5 font-serif text-2xl tracking-wider text-cream-primary">
+            <Image
+              src="/images/logos/small logo.png"
+              alt="Nola Farms logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
+              priority
+            />
             NOLA<span className="text-brand-leaf">FARMS</span>
           </Link>
 
+          {/* Desktop nav */}
           <div className="hidden items-center gap-8 md:flex">
             {NAV_LINKS.map((link) => {
               const active = pathname === link.href;
@@ -57,14 +68,18 @@ export function Navbar() {
             <AccountButton />
           </div>
 
-          <button
-            type="button"
-            aria-label="Toggle menu"
-            className="text-cream-primary md:hidden"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-          >
-            {mobileMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-          </button>
+          {/* Mobile right: bell (signed-in only) + hamburger */}
+          <div className="flex items-center gap-1 md:hidden">
+            <NotificationBell />
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              className="flex h-10 w-10 items-center justify-center text-cream-primary"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+            >
+              {mobileMenuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+            </button>
+          </div>
         </div>
       </nav>
       <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
