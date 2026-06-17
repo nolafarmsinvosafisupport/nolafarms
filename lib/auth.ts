@@ -14,8 +14,12 @@ export async function requireCurrentUserId() {
 }
 
 export async function isCurrentUserAdmin() {
-  const userId = await getCurrentUserId();
-  return Boolean(userId && process.env.CLERK_ADMIN_USER_ID && userId === process.env.CLERK_ADMIN_USER_ID);
+  const user = await currentUser();
+  if (!user) return false;
+  const meta = user.publicMetadata as { role?: string };
+  if (meta?.role === 'admin') return true;
+  // Fallback: env var for deployments where metadata isn't set yet
+  return Boolean(process.env.CLERK_ADMIN_USER_ID && user.id === process.env.CLERK_ADMIN_USER_ID);
 }
 
 export async function currentUserSummary() {
