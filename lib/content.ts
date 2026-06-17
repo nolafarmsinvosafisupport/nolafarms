@@ -3,11 +3,11 @@ import { IMAGES } from './constants';
 
 export const crops = [
   { name: 'Wheat', season: 'Seasonal harvest', image: IMAGES.wheat, alt: 'Wheat crop grown at Nola Farms in Laikipia Kenya', description: 'Field-grown wheat from a 375-acre Laikipia agricultural estate.' },
-  { name: 'Seasonal Produce', season: 'Availability varies', image: IMAGES.produce, alt: 'Fresh farm produce from Nola Farms Laikipia Kenya', description: "Farm produce placeholders ready for the client's confirmed crop list." },
+  { name: 'Seasonal Produce', season: 'Availability varies', image: IMAGES.produce, alt: 'Fresh farm produce from Nola Farms Laikipia Kenya', description: 'Seasonal produce grown on the estate — watermelons, cabbages, and more.' },
 ];
 
 export const livestock = [
-  { name: 'Exotic Cattle', image: IMAGES.cattle, alt: 'Exotic cattle breeds for sale at Nola Farms Laikipia Kenya', description: 'Cattle raised on the estate for buyers seeking quality livestock from Laikipia.' },
+  { name: 'Exotic Cattle', image: IMAGES.cattle, alt: 'Exotic cattle breeds at Nola Farms Laikipia Kenya', description: 'Cattle raised on the estate for buyers seeking quality livestock from Laikipia.' },
   { name: 'Goats', image: IMAGES.goats, alt: 'Goats raised at Nola Farms in Laikipia Kenya', description: 'Goat breeding and sales enquiries handled directly through Nola Farms.' },
 ];
 
@@ -18,10 +18,10 @@ export const services = [
 ];
 
 export const galleryImages = [
-  { src: IMAGES.hero, alt: 'Nola Farms 375-acre estate landscape in Laikipia Kenya', caption: 'The Nola Farms estate in Laikipia.' },
-  { src: IMAGES.wheat, alt: 'Wheat fields at Nola Farms Laikipia Kenya', caption: 'Wheat fields under cultivation.' },
-  { src: IMAGES.cattle, alt: 'Exotic cattle at Nola Farms in Laikipia Kenya', caption: 'Cattle raised on the estate.' },
-  { src: IMAGES.goats, alt: 'Goats at Nola Farms livestock area in Laikipia Kenya', caption: 'Goat breeding and livestock care.' },
-  { src: IMAGES.produce, alt: 'Farm produce from Nola Farms Laikipia Kenya', caption: 'Seasonal produce placeholders.' },
-  { src: IMAGES.landscape, alt: 'Laikipia highland landscape near Nola Farms Kenya', caption: 'Laikipia highland views.' },
+  { src: '/images/farm/farm.webp', alt: 'Nola Farms estate farmland in Laikipia Kenya', caption: 'The Nola Farms estate.' },
+  { src: '/images/livestock/cow6.webp', alt: 'Cattle at Nola Farms Laikipia Kenya', caption: 'Cattle raised on the estate.' },
+  { src: '/images/source/jpeg/goats3.jpeg', alt: 'Goats grazing at Nola Farms Laikipia Kenya', caption: 'Goat breeding and care.' },
+  { src: '/images/source/jpeg/wheat.jpeg', alt: 'Wheat crops at Nola Farms in Laikipia Kenya', caption: 'Wheat fields under cultivation.' },
+  { src: '/images/livestock/sheep.jpeg', alt: 'Sheep at Nola Farms Laikipia Kenya', caption: 'Sheep on the highland pastures.' },
+  { src: '/images/farm/farm3.webp', alt: 'Nola Farms fields and landscape in Laikipia Kenya', caption: 'Open farmlands of Nola Farms.' },
 ];

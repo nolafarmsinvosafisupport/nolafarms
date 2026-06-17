@@ -27,11 +27,11 @@ export const NAV_LINKS = [
 ];
 
 export const IMAGES = {
-  hero: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2400&auto=format&fit=crop',
-  wheat: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1600&auto=format&fit=crop',
-  cattle: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?q=80&w=1600&auto=format&fit=crop',
-  goats: 'https://images.unsplash.com/photo-1524024973431-2ad916746881?q=80&w=1600&auto=format&fit=crop',
-  farmRoad: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1600&auto=format&fit=crop',
-  produce: 'https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?q=80&w=1600&auto=format&fit=crop',
-  landscape: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop',
+  hero: '/images/hero/landing%20page%20farm.jpg',
+  wheat: '/images/source/jpeg/wheat.jpeg',
+  cattle: '/images/livestock/cow.webp',
+  goats: '/images/livestock/goats5.jpeg',
+  farmRoad: '/images/farm/farm2.webp',
+  produce: '/images/products/watermelon1.jpeg',
+  landscape: '/images/farm/farm3.webp',
 };
