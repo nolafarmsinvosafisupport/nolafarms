@@ -1,13 +1,15 @@
-import { requireAdminResponse, requireSupabase } from '@/lib/api-utils';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { requireAdminResponse, requireDb } from '@/lib/api-utils';
+import { getDb } from '@/lib/db';
+import type { Booking } from '@/lib/booking-types';
 
 export async function GET(_request: Request, { params }: { params: { id: string } }) {
-  const setupResponse = requireSupabase('Booking details');
-  if (setupResponse) return setupResponse;
-  const adminResponse = await requireAdminResponse();
-  if (adminResponse) return adminResponse;
+  const setup = requireDb('Booking details');
+  if (setup) return setup;
+  const admin = await requireAdminResponse();
+  if (admin) return admin;
 
-  const { data, error } = await getSupabaseAdmin().from('bookings').select('*').eq('id', params.id).single();
-  if (error) return Response.json({ success: false, message: error.message }, { status: 404 });
-  return Response.json({ success: true, booking: data });
+  const sql = getDb();
+  const [booking] = await sql<Booking[]>`SELECT * FROM bookings WHERE id = ${params.id}`;
+  if (!booking) return Response.json({ success: false, message: 'Booking not found.' }, { status: 404 });
+  return Response.json({ success: true, booking });
 }

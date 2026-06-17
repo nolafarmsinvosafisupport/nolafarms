@@ -2,7 +2,7 @@ export const SITE = {
   name: 'Nola Farms',
   tagline: 'Rooted in Laikipia.',
   description: '375-acre agricultural farm and exotic livestock estate in Laikipia, Kenya.',
-  url: 'https://nolafarms.co.ke',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nolafarms-production.up.railway.app',
   phone: 'PLACEHOLDER_PHONE',
   whatsapp: 'PLACEHOLDER_WHATSAPP_NUMBER',
   email: 'PLACEHOLDER_EMAIL',

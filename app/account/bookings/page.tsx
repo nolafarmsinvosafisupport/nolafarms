@@ -1,6 +1,6 @@
 import { AccountBookingsList } from '@/components/bookings/AccountBookingsList';
 import { getCurrentUserId } from '@/lib/auth';
-import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
+import { getDb, isDbConfigured } from '@/lib/db';
 import type { Booking } from '@/lib/booking-types';
 
 export default async function AccountBookingsPage() {
@@ -8,15 +8,14 @@ export default async function AccountBookingsPage() {
   let bookings: Booking[] = [];
   let setupMessage: string | null = null;
 
-  if (!isSupabaseConfigured()) {
-    setupMessage = 'Supabase is not configured yet. Add the environment variables and run the SQL schema to show booking history.';
+  if (!isDbConfigured()) {
+    setupMessage = 'DATABASE_URL is not configured. Add it in Railway and redeploy.';
   } else if (userId) {
-    const { data } = await getSupabaseAdmin()
-      .from('bookings')
-      .select('*')
-      .eq('user_id', userId)
-      .order('visit_date', { ascending: false });
-    bookings = (data || []) as Booking[];
+    const sql = getDb();
+    const rows = await sql<Booking[]>`
+      SELECT * FROM bookings WHERE user_id = ${userId} ORDER BY visit_date DESC
+    `;
+    bookings = rows;
   }
 
   return (
@@ -30,7 +29,6 @@ export default async function AccountBookingsPage() {
           <p className="mt-6 border border-gold-warm bg-gold-warm/10 p-4 text-sm text-brand-deep">{setupMessage}</p>
         )}
       </div>
-
       {!setupMessage && <AccountBookingsList bookings={bookings} />}
     </div>
   );

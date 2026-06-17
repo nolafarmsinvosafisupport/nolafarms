@@ -1,5 +1,4 @@
 import type { Booking, BookingStatus, VisitTime } from './booking-types';
-import { getSupabaseAdmin } from './supabase';
 
 export const VISIT_PURPOSES = [
   'Guided Ranch Tour (General)',
@@ -46,20 +45,3 @@ export function statusBadgeClass(status: BookingStatus) {
   return classes[status];
 }
 
-export async function generateBookingReference() {
-  const year = new Date().getFullYear();
-  const prefix = `NF-${year}-`;
-  const supabase = getSupabaseAdmin();
-  const { count, error } = await supabase
-    .from('bookings')
-    .select('id', { count: 'exact', head: true })
-    .gte('created_at', `${year}-01-01T00:00:00.000Z`)
-    .lt('created_at', `${year + 1}-01-01T00:00:00.000Z`);
-
-  if (error) throw error;
-  return `${prefix}${String((count ?? 0) + 1).padStart(4, '0')}`;
-}
-
-export function bookingReferenceFromCount(count: number) {
-  return `NF-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`;
-}

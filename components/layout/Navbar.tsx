@@ -13,6 +13,8 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const isDashboard = pathname.startsWith('/account') || pathname.startsWith('/admin');
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     handleScroll();
@@ -25,7 +27,7 @@ export function Navbar() {
       <nav
         aria-label="Primary navigation"
         className={`fixed z-40 w-full transition-all duration-500 ${
-          isScrolled ? 'bg-farm-dark/90 py-4 shadow-lg backdrop-blur-md' : 'bg-transparent py-6'
+          isScrolled || isDashboard ? 'bg-farm-dark/90 py-4 shadow-lg backdrop-blur-md' : 'bg-transparent py-6'
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">

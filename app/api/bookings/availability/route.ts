@@ -1,20 +1,20 @@
-import { requireSupabase } from '@/lib/api-utils';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { requireDb } from '@/lib/api-utils';
+import { getDb } from '@/lib/db';
 
 export async function GET() {
-  const setupResponse = requireSupabase('Booking availability');
-  if (setupResponse) return setupResponse;
+  const setup = requireDb('Booking availability');
+  if (setup) return setup;
 
-  const supabase = getSupabaseAdmin();
-  const [{ data: blockedDates, error: blockedError }, { data: confirmedBookings, error: bookingsError }] = await Promise.all([
-    supabase.from('blocked_dates').select('date, reason').order('date'),
-    supabase.from('bookings').select('visit_date').eq('status', 'confirmed').order('visit_date'),
+  const sql = getDb();
+  const [blocked, confirmed] = await Promise.all([
+    sql<{ date: string }[]>`SELECT date::text FROM blocked_dates ORDER BY date`,
+    sql<{ visit_date: string }[]>`SELECT visit_date::text FROM bookings WHERE status = 'confirmed' ORDER BY visit_date`,
   ]);
 
-  if (blockedError || bookingsError) {
-    return Response.json({ success: false, message: blockedError?.message || bookingsError?.message }, { status: 500 });
-  }
+  const unavailableDates = Array.from(new Set([
+    ...blocked.map((r) => r.date),
+    ...confirmed.map((r) => r.visit_date),
+  ]));
 
-  const unavailableDates = Array.from(new Set([...(blockedDates || []).map((item) => item.date), ...(confirmedBookings || []).map((item) => item.visit_date)]));
-  return Response.json({ success: true, unavailableDates, blockedDates: blockedDates || [] });
+  return Response.json({ success: true, unavailableDates, blockedDates: blocked });
 }

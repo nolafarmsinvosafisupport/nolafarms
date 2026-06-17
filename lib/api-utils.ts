@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { isCurrentUserAdmin, getCurrentUserId } from './auth';
-import { isSupabaseConfigured, setupRequiredResponse } from './supabase';
+import { isDbConfigured, dbNotConfiguredResponse } from './db';
 
 export const bookingSchema = z.object({
   full_name: z.string().min(2),
@@ -20,14 +20,19 @@ export const profileSchema = z.object({
   notify_on_rejection: z.boolean().optional(),
 });
 
-export function requireSupabase(feature: string) {
-  if (!isSupabaseConfigured()) return setupRequiredResponse(feature);
+export function requireDb(feature: string) {
+  if (!isDbConfigured()) return dbNotConfiguredResponse(feature);
   return null;
 }
 
 export async function requireUserResponse() {
   const userId = await getCurrentUserId();
-  if (!userId) return { userId: null, response: Response.json({ success: false, message: 'Authentication required.' }, { status: 401 }) };
+  if (!userId) {
+    return {
+      userId: null,
+      response: Response.json({ success: false, message: 'Authentication required.' }, { status: 401 }),
+    };
+  }
   return { userId, response: null };
 }
 

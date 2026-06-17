@@ -1,13 +1,13 @@
-import { requireAdminResponse, requireSupabase } from '@/lib/api-utils';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { requireAdminResponse, requireDb } from '@/lib/api-utils';
+import { getDb } from '@/lib/db';
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const setupResponse = requireSupabase('Blocked dates');
-  if (setupResponse) return setupResponse;
-  const adminResponse = await requireAdminResponse();
-  if (adminResponse) return adminResponse;
+  const setup = requireDb('Blocked dates');
+  if (setup) return setup;
+  const admin = await requireAdminResponse();
+  if (admin) return admin;
 
-  const { error } = await getSupabaseAdmin().from('blocked_dates').delete().eq('id', params.id);
-  if (error) return Response.json({ success: false, message: error.message }, { status: 500 });
+  const sql = getDb();
+  await sql`DELETE FROM blocked_dates WHERE id = ${params.id}`;
   return Response.json({ success: true });
 }

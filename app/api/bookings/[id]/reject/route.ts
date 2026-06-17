@@ -1,24 +1,25 @@
-import { requireAdminResponse, requireSupabase } from '@/lib/api-utils';
-import type { Booking } from '@/lib/booking-types';
+import { requireAdminResponse, requireDb } from '@/lib/api-utils';
+import { getDb } from '@/lib/db';
 import { sendStatusEmail } from '@/lib/email';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import type { Booking } from '@/lib/booking-types';
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const setupResponse = requireSupabase('Reject booking');
-  if (setupResponse) return setupResponse;
-  const adminResponse = await requireAdminResponse();
-  if (adminResponse) return adminResponse;
+  const setup = requireDb('Reject booking');
+  if (setup) return setup;
+  const admin = await requireAdminResponse();
+  if (admin) return admin;
 
   const body = await request.json().catch(() => ({}));
-  const note = typeof body.admin_note === 'string' ? body.admin_note : null;
-  const { data, error } = await getSupabaseAdmin()
-    .from('bookings')
-    .update({ status: 'rejected', admin_note: note, rejected_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-    .eq('id', params.id)
-    .select('*')
-    .single<Booking>();
+  const note: string | null = typeof body.admin_note === 'string' ? body.admin_note || null : null;
+  const now = new Date().toISOString();
 
-  if (error) return Response.json({ success: false, message: error.message }, { status: 500 });
-  await sendStatusEmail(data, 'rejected', note);
-  return Response.json({ success: true, booking: data });
+  const sql = getDb();
+  const [booking] = await sql<Booking[]>`
+    UPDATE bookings SET status = 'rejected', admin_note = ${note}, rejected_at = ${now}, updated_at = ${now}
+    WHERE id = ${params.id}
+    RETURNING *
+  `;
+  if (!booking) return Response.json({ success: false, message: 'Booking not found.' }, { status: 404 });
+  await sendStatusEmail(booking, 'rejected', note);
+  return Response.json({ success: true, booking });
 }

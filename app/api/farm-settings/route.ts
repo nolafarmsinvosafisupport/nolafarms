@@ -1,45 +1,37 @@
-import { requireAdminResponse, requireSupabase } from '@/lib/api-utils';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { requireAdminResponse, requireDb } from '@/lib/api-utils';
+import { getDb } from '@/lib/db';
 
 export async function GET() {
-  const setup = requireSupabase('Farm settings');
+  const setup = requireDb('Farm settings');
   if (setup) return setup;
   const admin = await requireAdminResponse();
   if (admin) return admin;
 
-  const { data, error } = await getSupabaseAdmin()
-    .from('farm_settings')
-    .select('*')
-    .eq('id', 1)
-    .single();
-
-  if (error) return Response.json({ success: false, message: error.message }, { status: 500 });
-  return Response.json({ success: true, settings: data });
+  const sql = getDb();
+  const [settings] = await sql`SELECT * FROM farm_settings WHERE id = 1`;
+  return Response.json({ success: true, settings: settings ?? null });
 }
 
 export async function PATCH(request: Request) {
-  const setup = requireSupabase('Farm settings');
+  const setup = requireDb('Farm settings');
   if (setup) return setup;
   const admin = await requireAdminResponse();
   if (admin) return admin;
 
   const body = await request.json();
-  const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  const sql = getDb();
 
-  if (typeof body.admin_notification_email === 'string') {
-    updates.admin_notification_email = body.admin_notification_email.trim() || null;
-  }
-  if (typeof body.reminder_emails_enabled === 'boolean') {
-    updates.reminder_emails_enabled = body.reminder_emails_enabled;
-  }
-
-  const { data, error } = await getSupabaseAdmin()
-    .from('farm_settings')
-    .update(updates)
-    .eq('id', 1)
-    .select('*')
-    .single();
-
-  if (error) return Response.json({ success: false, message: error.message }, { status: 500 });
-  return Response.json({ success: true, settings: data });
+  const [settings] = await sql`
+    UPDATE farm_settings SET
+      admin_notification_email  = CASE WHEN ${typeof body.admin_notification_email === 'string'}
+                                    THEN ${body.admin_notification_email || null}
+                                    ELSE admin_notification_email END,
+      reminder_emails_enabled   = CASE WHEN ${typeof body.reminder_emails_enabled === 'boolean'}
+                                    THEN ${body.reminder_emails_enabled}
+                                    ELSE reminder_emails_enabled END,
+      updated_at = NOW()
+    WHERE id = 1
+    RETURNING *
+  `;
+  return Response.json({ success: true, settings });
 }
