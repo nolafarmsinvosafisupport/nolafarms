@@ -4,6 +4,8 @@ import { useUser } from '@clerk/nextjs';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
+const field = 'w-full border border-farm-border bg-cream-warm px-4 py-3 text-sm text-brand-deep outline-none focus:border-brand-leaf';
+
 export function AccountProfileForm() {
   const { user } = useUser();
   const [phone, setPhone] = useState('');
@@ -30,7 +32,6 @@ export function AccountProfileForm() {
       setStatus('Photo could not be updated.');
     } finally {
       setPhotoLoading(false);
-      // Reset so the same file can be re-selected if needed
       e.target.value = '';
     }
   }
@@ -48,7 +49,7 @@ export function AccountProfileForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone_number: phone }),
     });
-    setStatus(res.ok ? 'Profile saved.' : 'Profile could not be saved yet. Check Supabase configuration.');
+    setStatus(res.ok ? 'Profile saved.' : 'Profile could not be saved.');
   }
 
   const initials =
@@ -58,17 +59,10 @@ export function AccountProfileForm() {
 
   return (
     <div className="max-w-2xl space-y-8">
-      {/* Photo */}
       <div className="flex items-center gap-6">
         <div className="relative">
           {user?.imageUrl ? (
-            <Image
-              src={user.imageUrl}
-              alt="Profile photo"
-              width={80}
-              height={80}
-              className="rounded-full object-cover"
-            />
+            <Image src={user.imageUrl} alt="Profile photo" width={80} height={80} className="rounded-full object-cover" />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary text-xl font-semibold text-cream-primary">
               {initials}
@@ -90,29 +84,22 @@ export function AccountProfileForm() {
             {photoLoading ? 'Uploading…' : 'Change Photo'}
           </button>
           <p className="mt-2 text-xs text-brand-deep/50">JPG, PNG or GIF · Max 10 MB</p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handlePhotoChange}
-          />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
         </div>
       </div>
 
-      {/* Name + phone form */}
       <form onSubmit={saveProfile} className="space-y-5">
         <Field label="First Name">
-          <input name="firstName" defaultValue={user?.firstName || ''} className="field" />
+          <input name="firstName" defaultValue={user?.firstName || ''} className={field} />
         </Field>
         <Field label="Last Name">
-          <input name="lastName" defaultValue={user?.lastName || ''} className="field" />
+          <input name="lastName" defaultValue={user?.lastName || ''} className={field} />
         </Field>
         <Field label="Email">
-          <input value={user?.primaryEmailAddress?.emailAddress || ''} readOnly className="field opacity-60" />
+          <input value={user?.primaryEmailAddress?.emailAddress || ''} readOnly className={`${field} opacity-60`} />
         </Field>
         <Field label="Phone Number">
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} className="field" />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} className={field} />
         </Field>
         <button
           type="submit"
@@ -122,20 +109,6 @@ export function AccountProfileForm() {
         </button>
         {status && <p className="text-sm text-brand-leaf">{status}</p>}
       </form>
-
-      <style jsx>{`
-        .field {
-          width: 100%;
-          border: 1px solid #d2c8b4;
-          background: #faf5eb;
-          padding: 0.8rem 1rem;
-          color: #102818;
-          outline: none;
-        }
-        .field:focus {
-          border-color: #486018;
-        }
-      `}</style>
     </div>
   );
 }

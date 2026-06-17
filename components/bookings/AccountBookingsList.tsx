@@ -1,5 +1,6 @@
 'use client';
 
+import { Clock } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { CancelBookingButton } from './CancelBookingButton';
 import { StatusBadge } from './StatusBadge';
@@ -18,6 +19,8 @@ const TABS: { key: Tab; label: string }[] = [
 export function AccountBookingsList({ bookings }: { bookings: Booking[] }) {
   const [tab, setTab] = useState<Tab>('all');
   const today = new Date().toISOString().slice(0, 10);
+
+  const pendingBookings = bookings.filter((b) => b.status === 'pending');
 
   const filtered = useMemo(() => {
     switch (tab) {
@@ -38,6 +41,23 @@ export function AccountBookingsList({ bookings }: { bookings: Booking[] }) {
 
   return (
     <div className="space-y-6">
+      {/* Pending banner */}
+      {pendingBookings.length > 0 && (tab === 'all' || tab === 'upcoming') && (
+        <div className="flex items-start gap-3 border border-gold-warm/50 bg-gold-warm/10 px-5 py-4">
+          <Clock size={16} className="mt-0.5 flex-shrink-0 text-gold-warm" />
+          <div>
+            <p className="text-sm font-semibold text-brand-deep">
+              {pendingBookings.length === 1
+                ? '1 booking request is awaiting confirmation'
+                : `${pendingBookings.length} booking requests are awaiting confirmation`}
+            </p>
+            <p className="mt-0.5 text-xs text-brand-deep/60">
+              We review requests within 24 hours and will notify you via email and in your account.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex gap-1 border-b border-farm-border">
         {TABS.map(({ key, label }) => (

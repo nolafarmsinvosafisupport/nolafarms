@@ -20,6 +20,17 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     RETURNING *
   `;
   if (!booking) return Response.json({ success: false, message: 'Booking not found.' }, { status: 404 });
+
+  if (booking.user_id) {
+    await sql`
+      INSERT INTO notifications (user_id, booking_id, type, title, message, read)
+      VALUES (${booking.user_id}, ${booking.id}, 'rejected',
+        ${'Visit Request Update'},
+        ${`Unfortunately we are unable to accommodate your visit for ${booking.visit_date} (Ref: ${booking.reference})${note ? '. Note: ' + note : ''}. Please try another date.`},
+        FALSE)
+    `;
+  }
+
   await sendStatusEmail(booking, 'rejected', note);
   return Response.json({ success: true, booking });
 }

@@ -44,6 +44,17 @@ export async function POST(request: Request) {
     RETURNING *
   `;
 
+  // Create a pre-read notification (user sees the confirmation page immediately)
+  if (userId) {
+    await sql`
+      INSERT INTO notifications (user_id, booking_id, type, title, message, read)
+      VALUES (${userId}, ${booking.id}, 'submitted',
+        ${'Booking Request Submitted'},
+        ${`Your visit request for ${booking.visit_date} (Ref: ${reference}) has been submitted and is awaiting confirmation.`},
+        TRUE)
+    `;
+  }
+
   await sendBookingReceivedEmails(booking);
   return Response.json({ success: true, booking });
 }

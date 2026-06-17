@@ -43,6 +43,19 @@ export type UserProfile = {
   updated_at: string;
 };
 
+export type NotificationType = 'submitted' | 'confirmed' | 'rejected' | 'cancelled';
+
+export type Notification = {
+  id: string;
+  user_id: string;
+  booking_id: string | null;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+};
+
 export type BookingInput = {
   full_name: string;
   phone_number: string;

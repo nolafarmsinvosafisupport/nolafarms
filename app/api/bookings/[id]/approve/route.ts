@@ -17,6 +17,17 @@ export async function PATCH(_request: Request, { params }: { params: { id: strin
     RETURNING *
   `;
   if (!booking) return Response.json({ success: false, message: 'Booking not found.' }, { status: 404 });
+
+  if (booking.user_id) {
+    await sql`
+      INSERT INTO notifications (user_id, booking_id, type, title, message, read)
+      VALUES (${booking.user_id}, ${booking.id}, 'confirmed',
+        ${'Booking Confirmed!'},
+        ${`Great news! Your visit for ${booking.visit_date} (Ref: ${booking.reference}) has been confirmed. See you there!`},
+        FALSE)
+    `;
+  }
+
   await sendStatusEmail(booking, 'approved');
   return Response.json({ success: true, booking });
 }
