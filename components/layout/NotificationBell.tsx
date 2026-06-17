@@ -4,9 +4,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, CheckCircle2, XCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import type { Notification } from '@/lib/booking-types';
 
-const POLL_INTERVAL = 30_000;
+// Admin pages poll faster so new user bookings appear within 10s
+const ADMIN_POLL = 10_000;
+const USER_POLL = 30_000;
 
 function fmtDate(s: string) {
   const d = new Date(s);
@@ -26,6 +29,8 @@ function playGoatSound() {
 
 export function NotificationBell() {
   const { isSignedIn } = useUser();
+  const pathname = usePathname();
+  const pollInterval = pathname.startsWith('/admin') ? ADMIN_POLL : USER_POLL;
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unread, setUnread] = useState(0);
@@ -47,14 +52,14 @@ export function NotificationBell() {
     }
 
     doFetch();
-    const t = setInterval(doFetch, POLL_INTERVAL);
+    const t = setInterval(doFetch, pollInterval);
     window.addEventListener('nola:notif:refresh', doFetch);
 
     return () => {
       clearInterval(t);
       window.removeEventListener('nola:notif:refresh', doFetch);
     };
-  }, [isSignedIn]);
+  }, [isSignedIn, pollInterval]);
 
   // Play goat sound when unread count increases (new notification arrived)
   useEffect(() => {
