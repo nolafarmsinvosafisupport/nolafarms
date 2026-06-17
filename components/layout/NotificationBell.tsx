@@ -6,7 +6,7 @@ import { useUser } from '@clerk/nextjs';
 import { useEffect, useRef, useState } from 'react';
 import type { Notification } from '@/lib/booking-types';
 
-const POLL_INTERVAL = 30_000; // 30 seconds
+const POLL_INTERVAL = 30_000;
 
 function fmtDate(s: string) {
   const d = new Date(s);
@@ -20,7 +20,7 @@ function playGoatSound() {
     audio.volume = 0.55;
     audio.play().catch(() => undefined);
   } catch {
-    // Ignore — browser may block autoplay before user interaction
+    // Ignore — browser may block autoplay before first user interaction
   }
 }
 
@@ -31,11 +31,12 @@ export function NotificationBell() {
   const [unread, setUnread] = useState(0);
   const prevUnreadRef = useRef<number | null>(null);
 
-  // Fetch notifications + poll every 30s
+  // Fetch + 30s poll + listen for manual refresh events dispatched by other
+  // components (booking submission, admin actions, cancellations).
   useEffect(() => {
     if (!isSignedIn) return;
 
-    function fetchNotifs() {
+    function doFetch() {
       fetch('/api/notifications')
         .then(r => r.ok ? r.json() : null)
         .then(d => {
@@ -45,9 +46,14 @@ export function NotificationBell() {
         .catch(() => undefined);
     }
 
-    fetchNotifs();
-    const t = setInterval(fetchNotifs, POLL_INTERVAL);
-    return () => clearInterval(t);
+    doFetch();
+    const t = setInterval(doFetch, POLL_INTERVAL);
+    window.addEventListener('nola:notif:refresh', doFetch);
+
+    return () => {
+      clearInterval(t);
+      window.removeEventListener('nola:notif:refresh', doFetch);
+    };
   }, [isSignedIn]);
 
   // Play goat sound when unread count increases (new notification arrived)
@@ -58,7 +64,7 @@ export function NotificationBell() {
     prevUnreadRef.current = unread;
   }, [unread]);
 
-  // Mark as read after viewing
+  // Mark all as read after the dropdown is opened for 800ms
   useEffect(() => {
     if (!open || !isSignedIn || unread === 0) return;
     const t = setTimeout(() => {

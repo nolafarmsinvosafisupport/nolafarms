@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, CalendarDays, Check, Clock, Image as ImageIcon, MapPin, Package, Users } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Booking } from '@/lib/booking-types';
 import { VISIT_TIMES } from '@/lib/booking-utils';
 
@@ -43,6 +43,12 @@ const timelineSteps = [
 
 export function BookingConfirmedView({ booking }: { booking: Booking }) {
   const [copied, setCopied] = useState(false);
+
+  // Tell the NotificationBell to refresh immediately — the booking API
+  // creates a notification at submission time so the badge + sound fire now.
+  useEffect(() => {
+    window.dispatchEvent(new Event('nola:notif:refresh'));
+  }, []);
 
   function copyRef() {
     navigator.clipboard.writeText(booking.reference).then(() => {

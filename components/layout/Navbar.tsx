@@ -16,6 +16,8 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isDashboard = pathname.startsWith('/account') || pathname.startsWith('/admin');
+  // Dark navbar on any page that doesn't have a full-screen dark hero (i.e. everywhere except home)
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -24,12 +26,14 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const showDarkNav = isScrolled || isDashboard || !isHomePage;
+
   return (
     <>
       <nav
         aria-label="Primary navigation"
         className={`fixed z-40 w-full transition-all duration-500 ${
-          isScrolled || isDashboard ? 'bg-farm-dark/90 py-4 shadow-lg backdrop-blur-md' : 'bg-transparent py-6'
+          showDarkNav ? 'bg-farm-dark/90 py-4 shadow-lg backdrop-blur-md' : 'bg-transparent py-6'
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">

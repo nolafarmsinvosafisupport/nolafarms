@@ -18,6 +18,7 @@ export function CancelBookingButton({ bookingId, reference }: { bookingId: strin
     setLoading(false);
     setOpen(false);
     router.refresh();
+    window.dispatchEvent(new Event('nola:notif:refresh'));
   }
 
   return (

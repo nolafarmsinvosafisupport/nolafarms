@@ -25,6 +25,8 @@ export function AdminActionButtons({ bookingId, compact = false }: { bookingId: 
     setLoading(null);
     setModal(null);
     router.refresh();
+    // Trigger immediate NotificationBell refresh for both admin and user
+    window.dispatchEvent(new Event('nola:notif:refresh'));
   }
 
   function handleClick(kind: ActionKind) {
