@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NAV_LINKS } from '@/lib/constants';
 import { AccountButton } from './AccountButton';
+import { NotificationBell } from './NotificationBell';
 import { MobileMenu } from './MobileMenu';
 
 export function Navbar() {
@@ -44,7 +45,7 @@ export function Navbar() {
                   href={link.href}
                   className={`border-b py-1 text-xs font-medium uppercase tracking-widest transition-colors ${
                     active
-                      ? 'border-brand-leaf text-brand-leaf'
+                      ? 'border-gold-warm text-gold-warm'
                       : 'border-transparent text-cream-secondary hover:text-cream-primary'
                   }`}
                 >
@@ -52,6 +53,7 @@ export function Navbar() {
                 </Link>
               );
             })}
+            <NotificationBell />
             <AccountButton />
           </div>
 

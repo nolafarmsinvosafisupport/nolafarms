@@ -20,9 +20,9 @@ export default async function AccountBookingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="border border-farm-border bg-cream-secondary p-8">
-        <h1 className="font-serif text-5xl text-brand-deep">My Bookings</h1>
-        <p className="mt-4 max-w-2xl leading-7 text-brand-deep/70">
+      <div className="border border-farm-border bg-cream-secondary p-5">
+        <h1 className="font-serif text-3xl text-brand-deep">My Bookings</h1>
+        <p className="mt-2 max-w-2xl leading-7 text-brand-deep/70">
           Review upcoming and past ranch visit requests.
         </p>
         {setupMessage && (

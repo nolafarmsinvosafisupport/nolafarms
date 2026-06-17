@@ -17,14 +17,14 @@ export default async function AdminOverviewPage() {
     <div className="space-y-8">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Dashboard</p>
-        <h1 className="mt-3 font-serif text-5xl text-brand-deep">Good morning. Here&apos;s today.</h1>
+        <h1 className="mt-1 font-serif text-4xl text-brand-deep">Good morning. Here&apos;s today.</h1>
       </div>
       {setupMessage && <p className="border border-gold-warm bg-gold-warm/10 p-4 text-sm text-brand-deep">{setupMessage}</p>}
       <div className="grid gap-5 md:grid-cols-4">
         {statCards.map((card) => (
-          <article key={card.label} className="border border-farm-border bg-cream-warm p-6">
+          <article key={card.label} className="border border-farm-border bg-cream-warm p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">{card.label}</p>
-            <h2 className="mt-3 font-serif text-5xl text-brand-deep">{card.value}</h2>
+            <h2 className="mt-3 font-serif text-3xl text-brand-deep">{card.value}</h2>
             <p className="mt-2 text-sm text-brand-deep/65">{card.text}</p>
           </article>
         ))}

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { NAV_LINKS } from '@/lib/constants';
+import { AccountButton } from './AccountButton';
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
@@ -19,6 +20,9 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
               {link.label}
             </Link>
           ))}
+          <div className="mt-4 border-t border-white/10 pt-6 flex justify-center">
+            <AccountButton />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

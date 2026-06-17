@@ -31,7 +31,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
-          className="mb-6 text-sm font-light uppercase tracking-[0.3em] text-brand-leaf md:text-base"
+          className="mb-6 text-sm font-light uppercase tracking-[0.3em] text-gold-warm md:text-base"
         >
           Laikipia, Kenya
         </motion.p>

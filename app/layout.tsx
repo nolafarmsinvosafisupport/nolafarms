@@ -3,7 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Inter, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import '@/styles/globals.css';
-import { Footer } from '@/components/layout/Footer';
+import { ConditionalFooter } from '@/components/layout/ConditionalFooter';
 import { Navbar } from '@/components/layout/Navbar';
 import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { DustParticles } from '@/components/ui/DustParticles';
@@ -86,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <DustParticles />
           <Navbar />
           {children}
-          <Footer />
+          <ConditionalFooter />
           <WhatsAppButton />
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${SITE.googleAnalyticsId}`} strategy="afterInteractive" />
           <Script id="google-analytics" strategy="afterInteractive">

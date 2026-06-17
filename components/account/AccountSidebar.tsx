@@ -24,7 +24,7 @@ export function AccountSidebar({ fullName, email, imageUrl }: Props) {
   const showImg = !!imageUrl && !imgError;
 
   return (
-    <aside className="sticky top-16 flex h-[calc(100vh-4rem)] w-64 flex-shrink-0 flex-col overflow-y-auto border-r border-farm-border bg-cream-warm xl:w-72">
+    <aside className="hidden md:flex sticky top-16 h-[calc(100vh-4rem)] w-56 flex-shrink-0 flex-col overflow-y-auto border-r border-farm-border bg-cream-warm xl:w-64">
       {/* User card */}
       <div className="border-b border-farm-border p-6">
         <div className="flex items-center gap-3">
