@@ -10,8 +10,12 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   if (isAdminRoute(req)) {
-    const { userId } = await auth.protect();
-    if (!process.env.CLERK_ADMIN_USER_ID || userId !== process.env.CLERK_ADMIN_USER_ID) {
+    const { userId, sessionClaims } = await auth.protect();
+    const meta = (sessionClaims as { metadata?: { role?: string } })?.metadata;
+    const isAdmin =
+      meta?.role === 'admin' ||
+      (process.env.CLERK_ADMIN_USER_ID && userId === process.env.CLERK_ADMIN_USER_ID);
+    if (!isAdmin) {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
