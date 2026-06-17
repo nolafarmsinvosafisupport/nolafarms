@@ -12,6 +12,17 @@ export function getDb() {
       ssl: isInternal ? false : 'prefer',
       max: 10,
       idle_timeout: 20,
+      // postgres.js v3 parses all date/time OIDs as Date objects by default.
+      // Returning strings keeps Booking types accurate and avoids React
+      // "Objects are not valid as a React child" crashes when dates are rendered.
+      types: {
+        date: {
+          to: 1184,
+          from: [1082, 1083, 1114, 1184, 1266],
+          serialize: (x: unknown) => x instanceof Date ? x.toISOString() : String(x),
+          parse: (x: string) => x,
+        },
+      },
     });
   }
   return _sql;
