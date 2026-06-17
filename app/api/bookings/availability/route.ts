@@ -1,6 +1,8 @@
 import { requireDb } from '@/lib/api-utils';
 import { getDb } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const setup = requireDb('Booking availability');
   if (setup) return setup;
