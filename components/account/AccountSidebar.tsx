@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { User, CalendarDays, Settings } from 'lucide-react';
 
 const links = [
@@ -19,14 +20,16 @@ interface Props {
 
 export function AccountSidebar({ fullName, email, imageUrl }: Props) {
   const pathname = usePathname();
+  const [imgError, setImgError] = useState(false);
+  const showImg = !!imageUrl && !imgError;
 
   return (
     <aside className="sticky top-16 flex h-[calc(100vh-4rem)] w-64 flex-shrink-0 flex-col overflow-y-auto border-r border-farm-border bg-cream-warm xl:w-72">
       {/* User card */}
       <div className="border-b border-farm-border p-6">
         <div className="flex items-center gap-3">
-          {imageUrl ? (
-            <Image src={imageUrl} alt={`${fullName || 'Account'} photo`} width={44} height={44} className="rounded-full ring-2 ring-farm-border" />
+          {showImg ? (
+            <Image src={imageUrl!} alt={`${fullName || 'Account'} photo`} width={44} height={44} className="rounded-full ring-2 ring-farm-border" onError={() => setImgError(true)} />
           ) : (
             <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-primary text-sm font-medium text-cream-primary">
               {fullName ? fullName.charAt(0).toUpperCase() : 'N'}

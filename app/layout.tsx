@@ -16,6 +16,8 @@ const inter = Inter({
   subsets: ['latin'],
   weight: ['300', '400', '500'],
   variable: '--font-inter',
+  display: 'swap',
+  preload: true,
 });
 
 const playfair = Playfair_Display({
@@ -23,9 +25,9 @@ const playfair = Playfair_Display({
   weight: ['400', '500'],
   style: ['normal', 'italic'],
   variable: '--font-playfair',
+  display: 'swap',
+  preload: true,
 });
-
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),

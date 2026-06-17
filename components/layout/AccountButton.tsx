@@ -18,6 +18,7 @@ export function AccountButton() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [imgError, setImgError] = useState(false);
 
   const isPrivate = PRIVATE_PATHS.some((p) => pathname.startsWith(p));
   const signInHref = isPrivate
@@ -58,6 +59,7 @@ export function AccountButton() {
   const initials = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}` || user.primaryEmailAddress?.emailAddress?.[0]?.toUpperCase() || 'NF';
   const email = user.primaryEmailAddress?.emailAddress || '';
   const recentNotifications = notifications.slice(0, 4);
+  const showImg = !!user.imageUrl && !imgError;
 
   return (
     <div className="relative">
@@ -67,8 +69,8 @@ export function AccountButton() {
         onClick={() => setOpen((v) => !v)}
         className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-brand-leaf bg-brand-primary text-xs font-semibold uppercase text-cream-primary"
       >
-        {user.imageUrl ? (
-          <Image src={user.imageUrl} alt={`${user.fullName || 'Account'} photo`} fill sizes="36px" className="object-cover" />
+        {showImg ? (
+          <Image src={user.imageUrl!} alt={`${user.fullName || 'Account'} photo`} fill sizes="36px" className="object-cover" onError={() => setImgError(true)} />
         ) : initials}
         {unreadCount > 0 && (
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-1 ring-farm-dark">
@@ -90,8 +92,8 @@ export function AccountButton() {
               {/* User info */}
               <div className="flex items-center gap-3 border-b border-white/10 pb-4">
                 <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-brand-leaf bg-brand-primary text-xs uppercase text-cream-primary">
-                  {user.imageUrl ? (
-                    <Image src={user.imageUrl} alt="Profile" fill sizes="40px" className="object-cover" />
+                  {showImg ? (
+                    <Image src={user.imageUrl!} alt="Profile" fill sizes="40px" className="object-cover" onError={() => setImgError(true)} />
                   ) : initials}
                 </div>
                 <div className="min-w-0">
