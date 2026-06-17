@@ -7,9 +7,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const HERO_IMAGES = [
-  { src: '/images/hero/landing%20page%20farm.jpg', alt: 'Nola Farms estate — farmlands at golden hour in Laikipia Kenya' },
-  { src: '/images/hero/landing%20page%20farm%202.jpg', alt: 'Nola Farms crops and open fields in Laikipia Kenya' },
-  { src: '/images/hero/landing%20page%20farm%203.jpg', alt: 'Nola Farms highland terrain and livestock in Laikipia Kenya' },
+  { src: '/images/hero/landing page farm.jpg', alt: 'Nola Farms estate — farmlands at golden hour in Laikipia Kenya' },
+  { src: '/images/hero/landing page farm 2.jpg', alt: 'Nola Farms crops and open fields in Laikipia Kenya' },
+  { src: '/images/hero/landing page farm 3.jpg', alt: 'Nola Farms highland terrain and livestock in Laikipia Kenya' },
 ];
 
 export function HeroSection() {

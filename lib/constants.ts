@@ -27,7 +27,7 @@ export const NAV_LINKS = [
 ];
 
 export const IMAGES = {
-  hero: '/images/hero/landing%20page%20farm.jpg',
+  hero: '/images/hero/landing page farm.jpg',
   wheat: '/images/source/jpeg/wheat.jpeg',
   cattle: '/images/livestock/cow.webp',
   goats: '/images/livestock/goats5.jpeg',
