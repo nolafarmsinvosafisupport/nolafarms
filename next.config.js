@@ -9,7 +9,34 @@ const nextConfig = {
       { protocol: 'https', hostname: 'img.clerk.com' },
       { protocol: 'https', hostname: 'images.clerk.dev' },
     ],
-    formats: ['image/avif', 'image/webp'],
+    // WebP only — AVIF takes 3-5x longer to encode on first request with no
+    // meaningful quality benefit for farm photography at these file sizes.
+    formats: ['image/webp'],
+    // Cache optimised images for 1 year. Without this Next.js re-encodes every
+    // 60 seconds, burning CPU on Railway and slowing first-load per image.
+    minimumCacheTTL: 60 * 60 * 24 * 365,
+    // Only generate the breakpoints actually used by the site.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+  async headers() {
+    return [
+      {
+        // Long-term browser cache for public images (hashed by Next.js URL).
+        source: '/_next/image',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        // Cache raw public-folder images for 1 year in the browser.
+        source: '/images/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        // Static JS/CSS chunks are content-hashed — safe to cache forever.
+        source: '/_next/static/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+    ];
   },
   experimental: {
     optimizeCss: true,

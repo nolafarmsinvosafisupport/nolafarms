@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,25 +27,26 @@ export function HeroSection() {
   return (
     <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-farm-dark">
       <motion.div style={{ y, scale }} className="absolute inset-0">
-        <AnimatePresence mode="sync">
+        {/* All images rendered at once — opacity toggled, not mounted/unmounted.
+            priority on every image so the browser fetches all 3 on page load,
+            making carousel transitions instant after the first load. */}
+        {HERO_IMAGES.map((img, i) => (
           <motion.div
-            key={idx}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            key={img.src}
+            animate={{ opacity: i === idx ? 1 : 0 }}
             transition={{ duration: 1.5, ease: 'easeInOut' }}
             className="absolute inset-0"
           >
             <Image
-              src={HERO_IMAGES[idx].src}
-              alt={HERO_IMAGES[idx].alt}
+              src={img.src}
+              alt={img.alt}
               fill
-              priority={idx === 0}
+              priority
               sizes="100vw"
               className="object-cover"
             />
           </motion.div>
-        </AnimatePresence>
+        ))}
         <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-farm-dark" />
       </motion.div>
 
