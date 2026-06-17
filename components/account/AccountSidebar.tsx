@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 import { User, CalendarDays, Settings } from 'lucide-react';
 
 const links = [
-  { label: 'Profile', href: '/account/profile', icon: User },
   { label: 'My Bookings', href: '/account/bookings', icon: CalendarDays },
+  { label: 'Profile', href: '/account/profile', icon: User },
   { label: 'Settings', href: '/account/settings', icon: Settings },
 ];
 

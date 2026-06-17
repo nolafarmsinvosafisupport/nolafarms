@@ -4,19 +4,28 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarDays, LogOut, Settings, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useState } from 'react';
+
+const PRIVATE_PATHS = ['/sign-in', '/sign-up', '/account', '/admin'];
 
 export function AccountButton() {
   const { isSignedIn, user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  const isPrivate = PRIVATE_PATHS.some((p) => pathname.startsWith(p));
+  const signInHref = isPrivate
+    ? '/sign-in'
+    : `/sign-in?redirect_url=${encodeURIComponent(pathname)}`;
 
   if (!isLoaded) return <div className="h-9 w-16" />;
 
   if (!isSignedIn || !user) {
     return (
-      <Link href="/sign-in" className="text-xs font-medium uppercase tracking-widest text-cream-secondary hover:text-cream-primary">
+      <Link href={signInHref} className="text-xs font-medium uppercase tracking-widest text-cream-secondary hover:text-cream-primary">
         Sign In
       </Link>
     );
