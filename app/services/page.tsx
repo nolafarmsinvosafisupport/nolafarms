@@ -11,15 +11,15 @@ import { breadcrumbSchema, serviceSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Ranch Visits & Farm Services | Book a Tour at Nola Farms, Laikipia',
+    title: 'Ranch Visits & Farm Services | Nola Farms — Oloitoktok & Laikipia',
     description:
-      'Visit Nola Farms in Laikipia, Kenya for a guided ranch experience - walk the fields, meet the exotic livestock, and see large-scale farming up close. Enquire about wholesale services and farm tours.',
-    keywords: ['ranch visit Kenya', 'farm tour Laikipia', 'book farm visit Kenya', 'agri-tourism Kenya', 'farm experience Laikipia', 'visit a farm Kenya', 'guided farm tour Kenya', 'wholesale livestock Kenya', 'farm services Laikipia', 'things to do Laikipia', 'Laikipia farm tours', 'agricultural tourism Kenya'],
+      'Visit Nola Farms at our Oloitoktok or Laikipia ranch. Walk the fields, meet the exotic livestock, and experience working agriculture. Enquire about wholesale services and farm tours.',
+    keywords: ['ranch visit Kenya', 'farm tour Oloitoktok', 'farm tour Laikipia', 'book farm visit Kenya', 'agri-tourism Kenya', 'guided farm tour Kenya', 'wholesale livestock Kenya', 'agricultural tourism Kenya'],
     path: '/services',
     image: '/images/og/services-og.jpg',
-    imageAlt: 'Guided ranch visit at Nola Farms, Laikipia Kenya',
-    ogTitle: 'Book a Ranch Visit at Nola Farms - Laikipia, Kenya',
-    ogDescription: 'Guided farm tours, ranch visits, and wholesale enquiries at Nola Farms, Laikipia. Come experience 375 acres of working agriculture.',
+    imageAlt: 'Guided ranch visit at Nola Farms, Kenya',
+    ogTitle: 'Book a Ranch Visit at Nola Farms — Oloitoktok & Laikipia',
+    ogDescription: 'Guided farm tours at two ranches — Oloitoktok for livestock and produce, Laikipia for grains. Come experience working agriculture at Nola Farms.',
   });
 }
 
@@ -30,9 +30,9 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="Ranch Visits & Services"
         title="Come See the Farm for Yourself."
-        subtitle="Guided ranch visits, wholesale enquiries, and practical farm conversations in Laikipia."
+        subtitle="Guided visits, wholesale enquiries, and practical farm conversations across our Oloitoktok and Laikipia ranches."
         image={IMAGES.landscape}
-        alt="Guided ranch visit landscape at Nola Farms Laikipia Kenya"
+        alt="Guided ranch visit landscape at Nola Farms Kenya"
       />
       <ServicesGrid />
       <section className="bg-cream-secondary py-28">

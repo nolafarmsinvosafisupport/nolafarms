@@ -13,13 +13,12 @@ export function OurStorySection() {
     <MotionSection className="bg-cream-primary py-28">
       <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2 lg:px-8">
         <div>
-          <SectionHeader title="Built on 375 Acres of Laikipia Highland." subtitle="Our Story" />
+          <SectionHeader title="Two Ranches. One Farm." subtitle="Our Story" />
           <motion.p variants={fadeUp} className="mb-6 text-lg leading-8 text-brand-deep/80">
-            {/* TODO: Replace with client-provided farm description */}
-            Nola Farms was built with a practical vision: operate at meaningful scale, care for the land, and connect buyers and visitors to the source of their food and livestock.
+            Nola Farms operates across two ranches in Kenya — Oloitoktok and Laikipia — built with a practical vision: operate at meaningful scale, care for the land, and connect buyers and visitors directly to the source of their food and livestock.
           </motion.p>
           <motion.p variants={fadeUp} className="mb-8 text-lg leading-8 text-brand-deep/80">
-            From wheat fields to cattle and goats, the estate brings together mixed farming, disciplined breeding, and the everyday work of agriculture in Laikipia County.
+            Our Oloitoktok ranch raises Brahman and Holstein cattle, Boer goats, Dorper sheep, Yorkshire pigs, and grows fresh vegetables and fruits. In Laikipia, we farm wheat, sorghum, millet, and soya beans across expansive highland fields.
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
             <Link href="/products" className="bg-brand-deep px-7 py-3 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-brand-primary">

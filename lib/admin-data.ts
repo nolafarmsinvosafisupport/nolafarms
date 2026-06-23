@@ -1,5 +1,6 @@
 import type { BlockedDate, Booking } from './booking-types';
-import { getDb, isDbConfigured } from './db';
+import type { Order, Product } from './product-types';
+import { getDb, isDbConfigured, ensureMigrated } from './db';
 
 export async function getAdminBookings() {
   if (!isDbConfigured()) return { bookings: [] as Booking[], setupMessage: setupMsg() };
@@ -47,6 +48,35 @@ export function bookingStats(bookings: Booking[]) {
     todayVisits: bookings.filter((b) => b.visit_date === today && b.status === 'confirmed'),
     pendingBookings: bookings.filter((b) => b.status === 'pending'),
   };
+}
+
+export async function getOrderStats() {
+  if (!isDbConfigured()) return { total: 0, newOrders: 0, recent: [] as Order[] };
+  try {
+    await ensureMigrated();
+    const sql = getDb();
+    const [totals] = await sql<[{ total: string; new_count: string }]>`
+      SELECT COUNT(*) as total, COUNT(*) FILTER (WHERE status = 'new') as new_count FROM orders
+    `;
+    const recent = await sql<Order[]>`SELECT * FROM orders ORDER BY created_at DESC LIMIT 5`;
+    return { total: parseInt(totals.total), newOrders: parseInt(totals.new_count), recent };
+  } catch {
+    return { total: 0, newOrders: 0, recent: [] as Order[] };
+  }
+}
+
+export async function getProductStats() {
+  if (!isDbConfigured()) return { total: 0, available: 0 };
+  try {
+    await ensureMigrated();
+    const sql = getDb();
+    const [counts] = await sql<[{ total: string; available_count: string }]>`
+      SELECT COUNT(*) as total, COUNT(*) FILTER (WHERE available = TRUE) as available_count FROM products
+    `;
+    return { total: parseInt(counts.total), available: parseInt(counts.available_count) };
+  } catch {
+    return { total: 0, available: 0 };
+  }
 }
 
 function setupMsg() {

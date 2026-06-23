@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ClipboardList, CalendarDays, Ban, Settings, Package, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, CalendarDays, Ban, Settings, Package, ShoppingCart, Users } from 'lucide-react';
 
 const links = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
@@ -11,6 +11,7 @@ const links = [
   { label: 'Blocked Dates', href: '/admin/blocked-dates', icon: Ban, exact: false },
   { label: 'Products', href: '/admin/products', icon: Package, exact: false },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingCart, exact: false },
+  { label: 'Users', href: '/admin/users', icon: Users, exact: false },
   { label: 'Settings', href: '/admin/settings', icon: Settings, exact: false },
 ];
 

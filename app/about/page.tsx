@@ -10,15 +10,15 @@ import { aboutPageSchema, breadcrumbSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'About Nola Farms | Our Story, Mission & 375-Acre Estate',
+    title: 'About Nola Farms | Two Ranches — Oloitoktok & Laikipia, Kenya',
     description:
-      'Nola Farms was built on 375 acres of Laikipia highland soil with a vision for large-scale, responsible farming. Learn our story - from wheat fields to exotic livestock, and what drives us.',
-    keywords: ['about Nola Farms', 'Nola Farms story', 'Laikipia agricultural estate', 'responsible farming Kenya', 'large scale farming Laikipia', 'wheat farming Laikipia', 'mixed farming Kenya', 'who is Nola Farms'],
+      'Nola Farms operates two ranches in Kenya — Oloitoktok for livestock, fresh vegetables and fruits; Laikipia for grains. Learn our story of responsible, large-scale farming.',
+    keywords: ['about Nola Farms', 'Nola Farms story', 'Oloitoktok farm Kenya', 'Laikipia agricultural estate', 'responsible farming Kenya', 'mixed farming Kenya', 'livestock farm Kenya', 'grain farm Laikipia'],
     path: '/about',
     image: '/images/og/about-og.jpg',
-    imageAlt: 'Nola Farms fields and livestock - Laikipia Kenya',
-    ogTitle: 'Our Story | Nola Farms - Built on 375 Acres of Laikipia',
-    ogDescription: 'From open highland to thriving estate - discover how Nola Farms grows crops, breeds exotic livestock, and operates at scale in Laikipia, Kenya.',
+    imageAlt: 'Nola Farms two ranches — Oloitoktok and Laikipia Kenya',
+    ogTitle: 'Our Story | Nola Farms — Two Ranches Across Kenya',
+    ogDescription: 'Two ranches, one farm. Nola Farms raises exotic livestock and fresh produce in Oloitoktok, and farms wheat and grains at scale in Laikipia.',
   });
 }
 
@@ -28,30 +28,38 @@ export default function AboutPage() {
       <JsonLd data={[aboutPageSchema, breadcrumbSchema([{ name: 'Home', url: 'https://nolafarms.co.ke' }, { name: 'About', url: 'https://nolafarms.co.ke/about' }])]} />
       <PageHero
         eyebrow="About Nola Farms"
-        title="Built on 375 Acres of Laikipia Highland."
-        subtitle="A working farm with a clear sense of scale, place, and responsibility."
+        title="Two Ranches. One Vision."
+        subtitle="A working farm across Oloitoktok and Laikipia — built for scale, land care, and direct connection to buyers."
         image={IMAGES.farmRoad}
-        alt="Road through Nola Farms 375-acre estate in Laikipia Kenya"
+        alt="Road through Nola Farms estate Kenya"
       />
       <OurStorySection />
       <section className="bg-brand-dark py-20">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 text-cream-primary md:grid-cols-3 lg:px-8">
-          {['375 acres', 'Mixed farming', 'Laikipia County'].map((item) => (
-            <article key={item} className="border border-white/10 bg-white/5 p-8">
-              <h2 className="font-serif text-4xl">{item}</h2>
-              <p className="mt-4 text-cream-secondary/75">A core part of the Nola Farms operating story.</p>
+          {[
+            { value: '375 Acres', label: 'Across two ranches in Kenya' },
+            { value: 'Mixed Farming', label: 'Livestock, vegetables, grains & fruits' },
+            { value: '2 Ranches', label: 'Oloitoktok & Laikipia County' },
+          ].map((item) => (
+            <article key={item.value} className="border border-white/10 bg-white/5 p-8">
+              <h2 className="font-serif text-4xl">{item.value}</h2>
+              <p className="mt-4 text-cream-secondary/75">{item.label}</p>
             </article>
           ))}
         </div>
       </section>
       <section className="bg-cream-secondary py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader title="Values Waiting for Client Detail." subtitle="Values" />
+          <SectionHeader title="What Drives Us." subtitle="Our Values" />
           <div className="grid gap-6 md:grid-cols-3">
-            {['Responsible land use', 'Quality livestock', 'Direct relationships'].map((value) => (
-              <article key={value} className="border border-farm-border bg-cream-warm p-7">
-                <h3 className="font-serif text-2xl text-brand-deep">{value}</h3>
-                <p className="mt-4 leading-7 text-brand-deep/75">{/* TODO: Replace with client-approved values copy */}Placeholder copy for client content.</p>
+            {[
+              { title: 'Responsible Land Use', body: 'We farm with the long term in mind — rotating crops, managing grazing, and maintaining the health of both our Oloitoktok and Laikipia land.' },
+              { title: 'Quality Livestock', body: 'Every breed we raise — Brahman, Holstein, Boer, Dorper — is selected for its suitability to Kenyan conditions and the quality of its produce.' },
+              { title: 'Direct Relationships', body: 'We sell and source directly. No middlemen. Buyers know where their food and livestock come from, and we know who we\'re serving.' },
+            ].map((value) => (
+              <article key={value.title} className="border border-farm-border bg-cream-warm p-7">
+                <h3 className="font-serif text-2xl text-brand-deep">{value.title}</h3>
+                <p className="mt-4 leading-7 text-brand-deep/75">{value.body}</p>
               </article>
             ))}
           </div>

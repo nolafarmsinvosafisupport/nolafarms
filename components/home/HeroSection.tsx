@@ -57,7 +57,7 @@ export function HeroSection() {
           transition={{ duration: 0.9 }}
           className="mb-4 text-xs font-light uppercase tracking-[0.3em] text-gold-warm md:text-sm"
         >
-          Laikipia, Kenya
+          Oloitoktok &nbsp;·&nbsp; Laikipia, Kenya
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, scale: 0.94 }}
@@ -73,7 +73,7 @@ export function HeroSection() {
           transition={{ duration: 1, delay: 0.5 }}
           className="mx-auto mb-8 max-w-lg text-base font-light leading-7 text-cream-secondary md:text-lg"
         >
-          375 acres of crops, livestock, and living land.
+          Two ranches. 375 acres. Livestock, crops, and living land.
         </motion.p>
         <motion.div
           initial={{ opacity: 0 }}

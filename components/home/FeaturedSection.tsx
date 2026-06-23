@@ -9,9 +9,9 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { IMAGES } from '@/lib/constants';
 
 const cards = [
-  { title: 'Our Story', href: '/about', image: IMAGES.farmRoad, alt: 'Farm road crossing Nola Farms in Laikipia Kenya', text: 'A large-scale estate built around responsible agriculture and long-term land stewardship.' },
-  { title: 'Products & Livestock', href: '/products', image: IMAGES.cattle, alt: 'Exotic cattle grazing at Nola Farms in Laikipia Kenya', text: 'Source wheat, seasonal produce, cattle, and goats directly from the farm.' },
-  { title: 'Ranch Visits', href: '/services', image: IMAGES.landscape, alt: 'Laikipia landscape viewed during a Nola Farms ranch visit', text: 'Walk the fields, meet the herds, and experience working agriculture up close.' },
+  { title: 'Our Story', href: '/about', image: IMAGES.farmRoad, alt: 'Farm road crossing Nola Farms in Kenya', text: 'Two ranches built around responsible agriculture — from Oloitoktok highlands to the Laikipia plains.' },
+  { title: 'Shop Products', href: '/products', image: IMAGES.cattle, alt: 'Cattle at Nola Farms Oloitoktok Kenya', text: 'Order livestock, fresh vegetables, grains, and fruits directly from our two ranches.' },
+  { title: 'Ranch Visits', href: '/services', image: IMAGES.landscape, alt: 'Nola Farms landscape ranch visit Kenya', text: 'Walk the fields, meet the herds, and experience working agriculture up close.' },
 ];
 
 export function FeaturedSection() {

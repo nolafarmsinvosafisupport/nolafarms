@@ -1,13 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ClipboardList, Package, ShoppingCart, Settings } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Package, ShoppingCart, Users, Settings } from 'lucide-react';
 
 const links = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
   { label: 'Bookings', href: '/admin/bookings', icon: ClipboardList, exact: false },
   { label: 'Products', href: '/admin/products', icon: Package, exact: false },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingCart, exact: false },
+  { label: 'Users', href: '/admin/users', icon: Users, exact: false },
   { label: 'Settings', href: '/admin/settings', icon: Settings, exact: false },
 ];
 

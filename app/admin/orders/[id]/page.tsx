@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { AdminOrderActions } from '@/components/admin/AdminOrderActions';
-import { getDb, isDbConfigured } from '@/lib/db';
+import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { SITE } from '@/lib/constants';
 import type { Order, OrderItem, OrderStatus } from '@/lib/product-types';
 import { ORDER_STATUS_LABELS } from '@/lib/product-types';
@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic';
 
 async function getOrder(id: string): Promise<Order | null> {
   if (!isDbConfigured()) return null;
+  await ensureMigrated();
   const sql = getDb();
   const [order] = await sql<Order[]>`SELECT * FROM orders WHERE id = ${id} LIMIT 1`;
   return order ?? null;

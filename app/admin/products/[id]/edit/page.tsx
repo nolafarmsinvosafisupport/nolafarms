@@ -1,12 +1,13 @@
 import { notFound } from 'next/navigation';
 import { AdminProductForm } from '@/components/admin/AdminProductForm';
-import { getDb, isDbConfigured } from '@/lib/db';
+import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
 
 async function getProduct(id: string): Promise<Product | null> {
   if (!isDbConfigured()) return null;
+  await ensureMigrated();
   const sql = getDb();
   const [product] = await sql<Product[]>`SELECT * FROM products WHERE id = ${id} LIMIT 1`;
   return product ?? null;
