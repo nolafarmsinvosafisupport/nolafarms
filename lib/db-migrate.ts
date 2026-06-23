@@ -59,11 +59,8 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
       )
     `;
 
-    // Seed products if table is empty
-    const [{ count }] = await sql<[{ count: string }]>`SELECT COUNT(*) as count FROM products`;
-    if (parseInt(count) === 0) {
-      await seedProducts(sql);
-    }
+    // Always seed (ON CONFLICT (slug) DO NOTHING makes it idempotent)
+    await seedProducts(sql);
 
     _migrationDone = true;
   })();

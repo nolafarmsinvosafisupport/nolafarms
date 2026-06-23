@@ -23,6 +23,13 @@ function fmtDate(s: string) {
   return new Intl.DateTimeFormat('en-KE', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Nairobi' }).format(new Date(s));
 }
 
+// postgres.js returns JSONB as a parsed value, but defensively parse if it arrives as a string
+function parseOrderItems(raw: unknown): { product_name: string; quantity: number; unit: string }[] {
+  if (Array.isArray(raw)) return raw as { product_name: string; quantity: number; unit: string }[];
+  if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return []; } }
+  return [];
+}
+
 export default async function AdminOrdersPage() {
   const orders = await getOrders();
 
@@ -38,7 +45,7 @@ export default async function AdminOrdersPage() {
       ) : (
         <div className="space-y-3">
           {orders.map((order) => {
-            const items = order.items as { product_name: string; quantity: number; unit: string }[];
+            const items = parseOrderItems(order.items);
             return (
               <div key={order.id} className="border border-white/10 bg-white/5">
                 {/* Header */}

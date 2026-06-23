@@ -32,53 +32,67 @@ export default async function AdminUsersPage() {
       {users.length === 0 ? (
         <p className="py-12 text-center text-sm text-white/30">No registered users yet.</p>
       ) : (
-        <div className="space-y-2">
-          {users.map((user) => {
-            const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || '—';
-            const email = user.emailAddresses[0]?.emailAddress ?? '—';
-            const phone = user.phoneNumbers[0]?.phoneNumber ?? null;
+        <div className="overflow-hidden border border-white/10">
+          {/* Table header */}
+          <div className="hidden grid-cols-[2fr_2fr_1fr_1fr] gap-4 border-b border-white/10 bg-white/5 px-5 py-2.5 sm:grid">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-white/30">User</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-white/30">Email</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-white/30">Joined</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-white/30">Last Sign In</p>
+          </div>
+
+          {users.map((user, idx) => {
+            const firstName = user.firstName ?? '';
+            const lastName = user.lastName ?? '';
+            const fullName = [firstName, lastName].filter(Boolean).join(' ');
+            const displayName = fullName || user.username || 'No name';
+            const email = user.emailAddresses[0]?.emailAddress ?? 'No email';
             const isAdmin = user.id === adminId || (user.publicMetadata as { role?: string })?.role === 'admin';
 
             return (
-              <div key={user.id} className="flex items-center gap-4 border border-white/10 bg-white/5 px-4 py-3">
-                {/* Avatar */}
-                <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-white/10">
-                  {user.imageUrl ? (
-                    <Image src={user.imageUrl} alt={name} fill className="object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-white/40">
-                      {name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-medium text-cream-primary">{name}</span>
-                    {isAdmin && (
-                      <span className="rounded-full bg-gold-warm/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gold-warm">
-                        Admin
-                      </span>
+              <div
+                key={user.id}
+                className={`grid grid-cols-1 gap-3 px-5 py-4 sm:grid-cols-[2fr_2fr_1fr_1fr] sm:items-center sm:gap-4 ${idx > 0 ? 'border-t border-white/10' : ''} hover:bg-white/5`}
+              >
+                {/* Name + avatar */}
+                <div className="flex items-center gap-3">
+                  <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-white/10">
+                    {user.imageUrl ? (
+                      <Image src={user.imageUrl} alt={displayName} fill className="object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-white/60">
+                        {displayName.charAt(0).toUpperCase()}
+                      </div>
                     )}
                   </div>
-                  <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5">
-                    <span className="text-xs text-white/50">{email}</span>
-                    {phone && <span className="text-xs text-white/30">{phone}</span>}
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-sm font-semibold text-cream-primary">{displayName}</span>
+                      {isAdmin && (
+                        <span className="rounded bg-gold-warm/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-gold-warm">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                    {/* Show email inline on mobile */}
+                    <p className="mt-0.5 truncate text-xs text-white/50 sm:hidden">{email}</p>
                   </div>
                 </div>
 
-                {/* Dates */}
-                <div className="hidden flex-shrink-0 text-right sm:block">
-                  <p className="text-[9px] font-semibold uppercase tracking-widest text-white/25">Joined</p>
-                  <p className="mt-0.5 text-xs text-white/50">{fmtDate(user.createdAt)}</p>
-                  {user.lastSignInAt && (
-                    <>
-                      <p className="mt-1.5 text-[9px] font-semibold uppercase tracking-widest text-white/25">Last sign in</p>
-                      <p className="mt-0.5 text-xs text-white/40">{fmtDate(user.lastSignInAt)}</p>
-                    </>
-                  )}
-                </div>
+                {/* Email (desktop) */}
+                <p className="hidden truncate text-sm text-white/60 sm:block">{email}</p>
+
+                {/* Joined */}
+                <p className="text-xs text-white/50">
+                  <span className="mr-1 text-white/25 sm:hidden">Joined:</span>
+                  {fmtDate(user.createdAt)}
+                </p>
+
+                {/* Last sign in */}
+                <p className="text-xs text-white/40">
+                  <span className="mr-1 text-white/25 sm:hidden">Last seen:</span>
+                  {fmtDate(user.lastSignInAt)}
+                </p>
               </div>
             );
           })}

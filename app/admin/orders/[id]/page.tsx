@@ -36,7 +36,8 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
   const order = await getOrder(id);
   if (!order) notFound();
 
-  const items = order.items as OrderItem[];
+  const raw = order.items;
+  const items: OrderItem[] = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : []);
   const whatsappNumber = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : order.customer_phone;
 
   return (
