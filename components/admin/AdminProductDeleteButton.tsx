@@ -18,16 +18,16 @@ export function AdminProductDeleteButton({ productId, productName }: { productId
   if (confirm) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-red-300">Delete &ldquo;{productName}&rdquo;?</span>
+        <span className="text-xs text-red-600">Delete &ldquo;{productName}&rdquo;?</span>
         <button
           type="button"
           disabled={loading}
           onClick={handleDelete}
-          className="px-2 py-1 text-xs font-semibold text-red-400 hover:text-red-300 disabled:opacity-50"
+          className="px-2 py-1 text-xs font-semibold text-red-600 hover:text-red-800 disabled:opacity-50"
         >
           Yes
         </button>
-        <button type="button" onClick={() => setConfirm(false)} className="text-xs text-white/40 hover:text-white/70">
+        <button type="button" onClick={() => setConfirm(false)} className="text-xs text-brand-deep/40 hover:text-brand-deep">
           Cancel
         </button>
       </div>
@@ -38,9 +38,9 @@ export function AdminProductDeleteButton({ productId, productName }: { productId
     <button
       type="button"
       onClick={() => setConfirm(true)}
-      className="flex items-center gap-1.5 border border-white/10 px-3 py-1.5 text-xs text-white/40 hover:text-red-400 hover:border-red-400/30 transition-colors"
+      className="flex items-center gap-1.5 border border-farm-border px-3 py-1.5 text-xs text-brand-deep/50 hover:border-red-300 hover:text-red-600 transition-colors"
     >
-      <Trash2 size={12} /> Delete
+      <Trash2 size={11} /> Delete
     </button>
   );
 }

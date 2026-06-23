@@ -21,50 +21,80 @@ export default async function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl text-cream-primary">Products</h1>
-          <p className="mt-1 text-xs text-white/40">{products.length} products in catalogue</p>
+          <h1 className="font-serif text-2xl text-brand-deep">Products</h1>
+          <p className="mt-1 text-xs text-brand-deep/50">{products.length} product{products.length !== 1 ? 's' : ''} in catalogue</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="flex items-center gap-2 bg-brand-leaf px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-mid transition-colors"
+          className="flex items-center gap-2 bg-brand-leaf px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
         >
           <Plus size={14} /> Add Product
         </Link>
       </div>
 
       {products.length === 0 ? (
-        <p className="py-12 text-center text-sm text-white/30">No products yet. Add your first product.</p>
+        <div className="border border-farm-border bg-cream-warm p-12 text-center">
+          <p className="text-sm text-brand-deep/50">No products yet.</p>
+          <Link href="/admin/products/new" className="mt-4 inline-block text-sm font-semibold text-brand-leaf hover:underline">
+            Add your first product →
+          </Link>
+        </div>
       ) : (
-        <div className="space-y-2">
-          {products.map((product) => {
+        <div className="border border-farm-border bg-cream-warm">
+          {/* Table header */}
+          <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 border-b border-farm-border bg-cream-secondary px-5 py-2.5 sm:grid">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-brand-deep/40">Product</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-brand-deep/40">Category</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-brand-deep/40">Ranch</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-brand-deep/40">Price</p>
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-brand-deep/40">Actions</p>
+          </div>
+
+          {products.map((product, idx) => {
             const price = product.price ? parseFloat(product.price) : null;
             return (
-              <div key={product.id} className="flex items-center gap-4 border border-white/10 bg-white/5 px-4 py-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-cream-primary text-sm truncate">{product.name}</span>
-                    {!product.available && (
-                      <span className="rounded-full bg-red-400/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-red-400">
-                        Unavailable
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
-                    <span className="text-xs text-white/40">{CATEGORY_LABELS[product.category]}</span>
-                    <span className="text-xs text-white/30">·</span>
-                    <span className="text-xs text-white/40">{RANCH_LABELS[product.ranch]}</span>
-                    <span className="text-xs text-white/30">·</span>
-                    <span className="text-xs text-white/40">
-                      {price !== null ? `KES ${price.toLocaleString()} ${product.price_unit}` : 'Contact for Price'}
+              <div
+                key={product.id}
+                className={`flex flex-col gap-3 px-5 py-4 sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_auto] sm:items-center sm:gap-4 ${idx > 0 ? 'border-t border-farm-border' : ''} hover:bg-cream-secondary transition-colors`}
+              >
+                {/* Name + status */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-medium text-brand-deep text-sm truncate">{product.name}</span>
+                  {!product.available && (
+                    <span className="flex-shrink-0 rounded bg-red-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-red-600">
+                      Hidden
                     </span>
-                  </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+
+                {/* Category */}
+                <span className="text-sm text-brand-deep/60">
+                  <span className="mr-1 text-brand-deep/30 sm:hidden">Category: </span>
+                  {CATEGORY_LABELS[product.category]}
+                </span>
+
+                {/* Ranch */}
+                <span className="text-sm text-brand-deep/60">
+                  <span className="mr-1 text-brand-deep/30 sm:hidden">Ranch: </span>
+                  {RANCH_LABELS[product.ranch]}
+                </span>
+
+                {/* Price */}
+                <span className="text-sm font-medium">
+                  {price !== null ? (
+                    <span className="text-brand-deep">KES {price.toLocaleString()} <span className="text-xs text-brand-deep/50">{product.price_unit}</span></span>
+                  ) : (
+                    <span className="text-amber-700">Contact for price</span>
+                  )}
+                </span>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2">
                   <Link
                     href={`/admin/products/${product.id}/edit`}
-                    className="flex items-center gap-1.5 border border-white/10 px-3 py-1.5 text-xs text-white/60 hover:text-cream-primary hover:border-white/30 transition-colors"
+                    className="flex items-center gap-1.5 border border-farm-border px-3 py-1.5 text-xs font-semibold text-brand-deep/60 hover:border-brand-leaf hover:text-brand-leaf transition-colors"
                   >
-                    <Pencil size={12} /> Edit
+                    <Pencil size={11} /> Edit
                   </Link>
                   <AdminProductDeleteButton productId={product.id} productName={product.name} />
                 </div>

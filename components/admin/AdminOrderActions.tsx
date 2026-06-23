@@ -29,15 +29,17 @@ export function AdminOrderActions({ order }: { order: Order }) {
   }
 
   return (
-    <div className="border border-white/10 bg-white/5 p-5 space-y-4">
-      <h2 className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Admin Actions</h2>
+    <div className="border border-farm-border bg-cream-warm p-5 space-y-4">
+      <h2 className="text-[10px] font-semibold uppercase tracking-widest text-brand-deep/40">Admin Actions</h2>
 
       <div>
-        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-white/40">Status</label>
+        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50">
+          Update Status
+        </label>
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value as OrderStatus)}
-          className="border border-white/10 bg-white/5 px-3 py-2 text-sm text-cream-primary outline-none focus:border-brand-leaf"
+          className="border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf"
         >
           {ALL_STATUSES.map((s) => (
             <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
@@ -46,13 +48,15 @@ export function AdminOrderActions({ order }: { order: Order }) {
       </div>
 
       <div>
-        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-white/40">Admin Note</label>
+        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50">
+          Internal Note
+        </label>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
-          placeholder="Internal note about this order..."
-          className="w-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-cream-primary outline-none focus:border-brand-leaf resize-none placeholder:text-white/20"
+          placeholder="Internal note about this order (not visible to customer)..."
+          className="w-full border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf resize-none placeholder:text-brand-deep/30"
         />
       </div>
 
@@ -60,7 +64,7 @@ export function AdminOrderActions({ order }: { order: Order }) {
         type="button"
         disabled={loading}
         onClick={handleSave}
-        className="flex items-center gap-2 bg-brand-leaf px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-mid disabled:opacity-60 transition-colors"
+        className="flex items-center gap-2 bg-brand-leaf px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep disabled:opacity-60 transition-colors"
       >
         {loading ? <><Loader2 size={13} className="animate-spin" /> Saving...</> : saved ? 'Saved!' : 'Save Changes'}
       </button>
