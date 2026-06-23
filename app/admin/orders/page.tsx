@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getDb, isDbConfigured } from '@/lib/db';
+import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import type { Order, OrderStatus } from '@/lib/product-types';
 import { ORDER_STATUS_LABELS } from '@/lib/product-types';
 
@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 
 async function getOrders(): Promise<Order[]> {
   if (!isDbConfigured()) return [];
+  await ensureMigrated();
   const sql = getDb();
   return sql<Order[]>`SELECT * FROM orders ORDER BY created_at DESC`;
 }

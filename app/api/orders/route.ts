@@ -1,5 +1,5 @@
 import { requireDb, requireAdminResponse } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 import type { Order } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +14,7 @@ export async function GET(request: Request) {
   const status = searchParams.get('status');
   const search = searchParams.get('search');
 
+  await ensureMigrated();
   const sql = getDb();
   let orders: Order[];
 
@@ -40,6 +41,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const setup = requireDb('Orders');
   if (setup) return setup;
+  await ensureMigrated();
 
   const body = await request.json();
   const { customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes } = body;

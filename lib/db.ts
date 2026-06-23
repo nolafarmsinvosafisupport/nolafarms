@@ -1,6 +1,8 @@
 import postgres from 'postgres';
+import { runMigrations } from './db-migrate';
 
 let _sql: ReturnType<typeof postgres> | null = null;
+let _migrated = false;
 
 export function getDb() {
   if (!process.env.DATABASE_URL) {
@@ -26,6 +28,14 @@ export function getDb() {
     });
   }
   return _sql;
+}
+
+// Run migrations once per server process. Safe to call multiple times.
+export async function ensureMigrated() {
+  if (_migrated) return;
+  const sql = getDb();
+  await runMigrations(sql);
+  _migrated = true;
 }
 
 export function isDbConfigured(): boolean {

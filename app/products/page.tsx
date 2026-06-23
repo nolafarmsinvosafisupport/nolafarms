@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { ProductGrid } from '@/components/products/ProductGrid';
-import { getDb } from '@/lib/db';
-import { isDbConfigured } from '@/lib/db';
+import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
 import type { Product } from '@/lib/product-types';
 
@@ -20,6 +19,7 @@ export function generateMetadata(): Metadata {
 
 async function getProducts(): Promise<Product[]> {
   if (!isDbConfigured()) return [];
+  await ensureMigrated();
   const sql = getDb();
   return sql<Product[]>`SELECT * FROM products WHERE available = TRUE ORDER BY sort_order, name`;
 }

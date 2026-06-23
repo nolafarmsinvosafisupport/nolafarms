@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Plus, Pencil } from 'lucide-react';
 import { AdminProductDeleteButton } from '@/components/admin/AdminProductDeleteButton';
-import { getDb, isDbConfigured } from '@/lib/db';
+import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
 import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
 
@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 
 async function getProducts(): Promise<Product[]> {
   if (!isDbConfigured()) return [];
+  await ensureMigrated();
   const sql = getDb();
   return sql<Product[]>`SELECT * FROM products ORDER BY sort_order, name`;
 }

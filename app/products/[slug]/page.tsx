@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { MapPin, CheckCircle2, MessageCircle, Package } from 'lucide-react';
 import { ProductImageGallery } from '@/components/products/ProductImageGallery';
 import { ProductAddToCart } from '@/components/products/ProductAddToCart';
-import { getDb, isDbConfigured } from '@/lib/db';
+import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { SITE } from '@/lib/constants';
 import type { Product } from '@/lib/product-types';
 import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
 
 async function getProduct(slug: string): Promise<Product | null> {
   if (!isDbConfigured()) return null;
+  await ensureMigrated();
   const sql = getDb();
   const [product] = await sql<Product[]>`SELECT * FROM products WHERE slug = ${slug} LIMIT 1`;
   return product ?? null;

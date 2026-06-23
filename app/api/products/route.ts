@@ -1,5 +1,5 @@
 import { requireDb, requireAdminResponse } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +14,7 @@ export async function GET(request: Request) {
   const search = searchParams.get('search');
   const includeUnavailable = searchParams.get('all') === '1';
 
+  await ensureMigrated();
   const sql = getDb();
 
   let products: Product[];
