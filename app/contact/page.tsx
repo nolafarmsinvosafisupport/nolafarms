@@ -38,25 +38,44 @@ export default function ContactPage() {
             <h2 className="mb-8 font-serif text-5xl text-brand-deep">Send an Enquiry</h2>
             <ContactForm />
           </div>
-          <aside className="border border-farm-border bg-cream-warm p-8">
-            <h3 className="font-serif text-3xl text-brand-deep">Contact Details</h3>
-            <ul className="mt-7 space-y-5 text-brand-deep/75">
-              <li className="flex gap-3"><Phone className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />{SITE.phone}</li>
-              <li className="flex gap-3"><Mail className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />{SITE.email}</li>
-              <li className="flex gap-3"><MapPin className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />{SITE.location}</li>
-            </ul>
-            <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex bg-[#25D366] px-7 py-3 text-xs font-semibold uppercase tracking-widest text-white">
-              WhatsApp Nola Farms
-            </a>
-            <div className="mt-8 border-t border-farm-border pt-6 text-sm leading-7 text-brand-deep/70">
-              Confirmation links: <Link className="text-brand-leaf" href="/services">ranch visits</Link> and <Link className="text-brand-leaf" href="/products">products and livestock</Link>.
+          <aside className="space-y-6">
+            <div className="border border-farm-border bg-cream-warm p-8">
+              <h3 className="font-serif text-3xl text-brand-deep">Contact Details</h3>
+              <ul className="mt-7 space-y-5 text-brand-deep/75">
+                <li className="flex gap-3"><Phone className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />{SITE.phone}</li>
+                <li className="flex gap-3"><Mail className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />{SITE.email}</li>
+                <li className="flex gap-3"><MapPin className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />Oloitoktok &amp; Laikipia, Kenya</li>
+              </ul>
+              <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex bg-[#25D366] px-7 py-3 text-xs font-semibold uppercase tracking-widest text-white">
+                WhatsApp Nola Farms
+              </a>
+              <div className="mt-8 border-t border-farm-border pt-6 text-sm leading-7 text-brand-deep/70">
+                <Link className="text-brand-leaf" href="/services">Book a ranch visit</Link> &middot; <Link className="text-brand-leaf" href="/products">Browse products</Link>
+              </div>
+            </div>
+
+            {/* Ranch locations */}
+            <div className="border border-farm-border bg-cream-warm p-6">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-brand-leaf">Our Two Ranches</p>
+              <div className="space-y-4">
+                <div>
+                  <p className="font-semibold text-brand-deep">Oloitoktok Ranch</p>
+                  <p className="mt-1 text-sm text-brand-deep/65">Oloitoktok County, Kenya</p>
+                  <p className="mt-0.5 text-xs text-brand-deep/50">Cattle · Goats · Sheep · Pigs · Vegetables · Fruits</p>
+                </div>
+                <div className="border-t border-farm-border pt-4">
+                  <p className="font-semibold text-brand-deep">Laikipia Ranch</p>
+                  <p className="mt-1 text-sm text-brand-deep/65">Laikipia County, Kenya</p>
+                  <p className="mt-0.5 text-xs text-brand-deep/50">Wheat · Sorghum · Millet · Soya Beans</p>
+                </div>
+              </div>
             </div>
           </aside>
         </div>
       </section>
       <section className="bg-brand-deep py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 className="mb-8 font-serif text-5xl text-cream-primary">Find Us in Laikipia</h2>
+          <h2 className="mb-8 font-serif text-5xl text-cream-primary">Find Our Ranches</h2>
           <div className="aspect-[16/7] min-h-[360px] overflow-hidden border border-white/10 bg-white/5">
             <iframe
               title="Google Maps placeholder for Nola Farms location in Laikipia County Kenya"

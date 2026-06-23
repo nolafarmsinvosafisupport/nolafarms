@@ -5,9 +5,9 @@ import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { MotionSection } from '@/components/ui/Motion';
 
 const stats = [
-  { value: '375', label: 'Acres', icon: Wheat, text: 'A working agricultural estate in Laikipia highland country.' },
-  { value: 'Mixed', label: 'Crop & Livestock', icon: Sprout, text: 'Wheat, farm produce, exotic cattle, and goats under one operation.' },
-  { value: 'Laikipia', label: 'Kenya', icon: MapPin, text: "Rooted in one of Kenya's most distinctive agricultural landscapes." },
+  { value: '375', label: 'Acres', icon: Wheat, text: 'A working agricultural estate spanning two ranches across Kenya.' },
+  { value: 'Mixed', label: 'Crop & Livestock', icon: Sprout, text: 'Cattle, goats, sheep, pigs, vegetables, fruits, and grains.' },
+  { value: '2', label: 'Ranches · Oloitoktok & Laikipia', icon: MapPin, text: "Oloitoktok for livestock and produce. Laikipia for large-scale grain farming." },
 ];
 
 export function FarmStatsSection() {

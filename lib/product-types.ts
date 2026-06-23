@@ -1,0 +1,80 @@
+export type ProductCategory = 'cattle' | 'goats' | 'sheep' | 'pigs' | 'poultry' | 'vegetables' | 'fruits' | 'grains';
+export type Ranch = 'oloitoktok' | 'laikipia' | 'both';
+export type OrderStatus = 'new' | 'contacted' | 'fulfilled' | 'cancelled';
+
+export type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  category: ProductCategory;
+  ranch: Ranch;
+  description: string | null;
+  details: string[];
+  price: string | null;
+  compare_at_price: string | null;
+  price_unit: string;
+  bulk_info: string | null;
+  images: string[];
+  available: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type OrderItem = {
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  unit: string;
+  price_at_time: string | null;
+  note: string;
+};
+
+export type Order = {
+  id: string;
+  reference: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string | null;
+  items: OrderItem[];
+  delivery_location: string | null;
+  delivery_notes: string | null;
+  status: OrderStatus;
+  admin_note: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CartItem = {
+  product_id: string;
+  product_name: string;
+  slug: string;
+  quantity: number;
+  unit: string;
+  price_at_time: string | null;
+  image: string;
+};
+
+export const CATEGORY_LABELS: Record<ProductCategory, string> = {
+  cattle: 'Cattle',
+  goats: 'Goats',
+  sheep: 'Sheep',
+  pigs: 'Pigs',
+  poultry: 'Poultry',
+  vegetables: 'Vegetables',
+  fruits: 'Fruits',
+  grains: 'Grains',
+};
+
+export const RANCH_LABELS: Record<Ranch, string> = {
+  oloitoktok: 'Oloitoktok Ranch',
+  laikipia: 'Laikipia Ranch',
+  both: 'Both Ranches',
+};
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  new: 'New',
+  contacted: 'Contacted',
+  fulfilled: 'Fulfilled',
+  cancelled: 'Cancelled',
+};

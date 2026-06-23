@@ -9,6 +9,7 @@ import { NAV_LINKS } from '@/lib/constants';
 import { AccountButton } from './AccountButton';
 import { NotificationBell } from './NotificationBell';
 import { MobileMenu } from './MobileMenu';
+import { CartIcon } from '@/components/products/CartIcon';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -69,12 +70,14 @@ export function Navbar() {
               );
             })}
             <NotificationBell />
+            <CartIcon />
             <AccountButton />
           </div>
 
-          {/* Mobile right: bell (signed-in only) + hamburger */}
+          {/* Mobile right: bell (signed-in only) + cart + hamburger */}
           <div className="flex items-center gap-1 md:hidden">
             <NotificationBell />
+            <CartIcon />
             <button
               type="button"
               aria-label="Toggle menu"

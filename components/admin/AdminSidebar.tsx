@@ -2,13 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ClipboardList, CalendarDays, Ban, Settings } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, CalendarDays, Ban, Settings, Package, ShoppingCart } from 'lucide-react';
 
 const links = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
   { label: 'Bookings', href: '/admin/bookings', icon: ClipboardList, exact: false },
   { label: 'Calendar', href: '/admin/calendar', icon: CalendarDays, exact: false },
   { label: 'Blocked Dates', href: '/admin/blocked-dates', icon: Ban, exact: false },
+  { label: 'Products', href: '/admin/products', icon: Package, exact: false },
+  { label: 'Orders', href: '/admin/orders', icon: ShoppingCart, exact: false },
   { label: 'Settings', href: '/admin/settings', icon: Settings, exact: false },
 ];
 

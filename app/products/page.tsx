@@ -1,49 +1,54 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { CropsGrid, LivestockGrid } from '@/components/products/ProductsGrid';
-import { PageHero } from '@/components/ui/PageHero';
-import { JsonLd } from '@/components/ui/JsonLd';
-import { IMAGES, SITE } from '@/lib/constants';
-import { crops, livestock } from '@/lib/content';
+import { ProductGrid } from '@/components/products/ProductGrid';
+import { getDb } from '@/lib/db';
+import { isDbConfigured } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
-import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
+import type { Product } from '@/lib/product-types';
+
+export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Farm Products & Exotic Livestock | Nola Farms Laikipia',
+    title: 'Farm Products & Livestock | Nola Farms',
     description:
-      'Buy exotic cattle breeds and goats from Nola Farms - a large-scale livestock and crop producer in Laikipia, Kenya. We grow wheat and farm produce alongside premium livestock breeds available for purchase.',
-    keywords: ['exotic cattle breeds Kenya', 'buy goats Kenya', 'buy cattle Laikipia', 'exotic livestock for sale Kenya', 'wheat farm Kenya', 'farm produce Laikipia', 'exotic breeds Kenya', 'Boran cattle Kenya', 'livestock supplier Kenya', 'farm products Laikipia', 'buy livestock Kenya', 'wholesale farm produce Kenya'],
+      'Shop fresh farm produce, exotic livestock, and grain from Nola Farms — two ranches in Oloitoktok and Laikipia, Kenya.',
+    keywords: ['buy goats Kenya', 'buy cattle Laikipia', 'farm produce Kenya', 'exotic livestock Kenya', 'wheat Laikipia', 'spinach Oloitoktok', 'Nola Farms products'],
     path: '/products',
-    image: '/images/og/products-og.jpg',
-    imageAlt: 'Exotic cattle and goats at Nola Farms, Laikipia Kenya',
-    ogTitle: 'Exotic Livestock & Farm Products - Nola Farms, Laikipia Kenya',
-    ogDescription: 'Sourcing exotic cattle, goats, wheat, and farm produce from Laikipia? Nola Farms offers quality livestock and produce at scale.',
+    imageAlt: 'Nola Farms products — livestock and farm produce from Kenya',
   });
 }
 
-export default function ProductsPage() {
-  const items = [...crops, ...livestock].map((item) => ({ name: item.name, description: item.description, url: `${SITE.url}/products` }));
+async function getProducts(): Promise<Product[]> {
+  if (!isDbConfigured()) return [];
+  const sql = getDb();
+  return sql<Product[]>`SELECT * FROM products WHERE available = TRUE ORDER BY sort_order, name`;
+}
+
+export default async function ProductsPage() {
+  const products = await getProducts();
 
   return (
-    <main>
-      <JsonLd data={[itemListSchema(items), breadcrumbSchema([{ name: 'Home', url: SITE.url }, { name: 'Products', url: `${SITE.url}/products` }])]} />
-      <PageHero
-        eyebrow="Products & Livestock"
-        title={<>Exotic Livestock & Farm Produce &mdash; Straight from the Source.</>}
-        subtitle="Wheat, seasonal produce, cattle, and goats from a large-scale Laikipia estate."
-        image={IMAGES.cattle}
-        alt="Exotic cattle and farm produce at Nola Farms Laikipia Kenya"
-      />
-      <CropsGrid />
-      <LivestockGrid />
-      <section className="bg-cream-secondary py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <h2 className="font-serif text-5xl text-brand-deep">Interested in buying? Get in touch.</h2>
-          <p className="mt-5 max-w-2xl leading-8 text-brand-deep/75">Tell us what you are sourcing, the scale of your enquiry, and when you need it.</p>
-          <Link href="/contact" className="mt-8 inline-flex bg-brand-deep px-8 py-4 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-brand-primary">
-            Contact Sales
-          </Link>
+    <main className="pt-16">
+      {/* Hero strip */}
+      <div className="bg-farm-dark py-16 px-6">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-leaf">
+            Oloitoktok &amp; Laikipia
+          </p>
+          <h1 className="mt-3 font-serif text-4xl text-cream-primary md:text-5xl">
+            Fresh from the Ranch.
+          </h1>
+          <p className="mt-4 max-w-xl text-cream-secondary/70">
+            Livestock, vegetables, fruits, and grains from two working ranches in Kenya.
+            Order online — we&apos;ll contact you to arrange delivery or collection.
+          </p>
+        </div>
+      </div>
+
+      {/* Products */}
+      <section className="bg-cream-primary px-6 py-10 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <ProductGrid products={products} />
         </div>
       </section>
     </main>

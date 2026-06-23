@@ -5,6 +5,7 @@ import Script from 'next/script';
 import '@/styles/globals.css';
 import { ConditionalFooter } from '@/components/layout/ConditionalFooter';
 import { Navbar } from '@/components/layout/Navbar';
+import { CartProvider } from '@/lib/cart-context';
 import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { DustParticles } from '@/components/ui/DustParticles';
 import { JsonLd } from '@/components/ui/JsonLd';
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en-KE" className={`${inter.variable} ${playfair.variable}`}>
         <body className="font-sans">
+          <CartProvider>
           <JsonLd data={localBusinessSchema} />
           <ScrollProgressBar />
           <DustParticles />
@@ -102,6 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               gtag('config', '${SITE.googleAnalyticsId}');
             `}
           </Script>
+          </CartProvider>
         </body>
       </html>
     </ClerkProvider>
