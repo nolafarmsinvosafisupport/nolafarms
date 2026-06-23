@@ -29,7 +29,7 @@ export function AdminProductForm({ product }: Props) {
   const [category, setCategory] = useState<ProductCategory>(product?.category ?? 'vegetables');
   const [ranch, setRanch] = useState<Ranch>(product?.ranch ?? 'oloitoktok');
   const [description, setDescription] = useState(product?.description ?? '');
-  const [details, setDetails] = useState<string[]>(product?.details ?? ['']);
+  const [details, setDetails] = useState<string[]>(product?.details?.length ? product.details : ['']);
   const [hasPrice, setHasPrice] = useState(product ? product.price !== null : false);
   const [price, setPrice] = useState(product?.price ?? '');
   const [compareAt, setCompareAt] = useState(product?.compare_at_price ?? '');
@@ -66,8 +66,8 @@ export function AdminProductForm({ product }: Props) {
         ranch,
         description: description || null,
         details: details.filter(Boolean),
-        price: hasPrice && price ? parseFloat(price) : null,
-        compare_at_price: hasPrice && compareAt ? parseFloat(compareAt) : null,
+        price: hasPrice && price ? parseFloat(String(price)) : null,
+        compare_at_price: hasPrice && compareAt ? parseFloat(String(compareAt)) : null,
         price_unit: priceUnit,
         bulk_info: bulkInfo || null,
         images: images.filter(Boolean),
@@ -88,30 +88,45 @@ export function AdminProductForm({ product }: Props) {
     }
   }
 
+  const labelCls = 'mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50';
+  const inputCls = 'w-full border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf placeholder:text-brand-deep/30';
+
   const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div>
-      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-white/40">{label}</label>
+      <label className={labelCls}>{label}</label>
       {children}
     </div>
   );
 
-  const inputCls = 'w-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-cream-primary outline-none focus:border-brand-leaf placeholder:text-white/20';
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
       {error && (
-        <div className="border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300">{error}</div>
+        <div className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
+      {/* Name + Slug */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Product Name *">
-          <input required value={name} onChange={(e) => handleNameChange(e.target.value)} className={inputCls} placeholder="e.g. Broad Leaf Swiss Spinach" />
+          <input
+            required
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            className={inputCls}
+            placeholder="e.g. Broad Leaf Swiss Spinach"
+          />
         </Field>
         <Field label="Slug (URL) *">
-          <input required value={slug} onChange={(e) => setSlug(slugify(e.target.value))} className={inputCls} placeholder="e.g. swiss-spinach" />
+          <input
+            required
+            value={slug}
+            onChange={(e) => setSlug(slugify(e.target.value))}
+            className={`${inputCls} font-mono text-xs`}
+            placeholder="e.g. swiss-spinach"
+          />
         </Field>
       </div>
 
+      {/* Category + Ranch */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Category *">
           <select value={category} onChange={(e) => setCategory(e.target.value as ProductCategory)} className={inputCls}>
@@ -125,13 +140,20 @@ export function AdminProductForm({ product }: Props) {
         </Field>
       </div>
 
+      {/* Description */}
       <Field label="Description">
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className={`${inputCls} resize-none`} placeholder="Short description of the product..." />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={3}
+          className={`${inputCls} resize-none`}
+          placeholder="Short description of the product..."
+        />
       </Field>
 
       {/* Details / bullet points */}
       <div>
-        <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-white/40">Product Details (bullet points)</label>
+        <label className={labelCls}>Product Details (bullet points)</label>
         <div className="space-y-2">
           {details.map((d, i) => (
             <div key={i} className="flex gap-2">
@@ -142,59 +164,103 @@ export function AdminProductForm({ product }: Props) {
                 className={`${inputCls} flex-1`}
               />
               {details.length > 1 && (
-                <button type="button" onClick={() => removeDetail(i)} className="text-white/30 hover:text-red-400 transition-colors px-2">
+                <button
+                  type="button"
+                  onClick={() => removeDetail(i)}
+                  className="px-2 text-brand-deep/30 hover:text-red-600 transition-colors"
+                >
                   <Trash2 size={14} />
                 </button>
               )}
             </div>
           ))}
         </div>
-        <button type="button" onClick={addDetail} className="mt-2 flex items-center gap-1 text-xs text-brand-leaf hover:text-cream-primary">
+        <button
+          type="button"
+          onClick={addDetail}
+          className="mt-2 flex items-center gap-1 text-xs font-semibold text-brand-leaf hover:text-brand-deep transition-colors"
+        >
           <Plus size={12} /> Add Detail
         </button>
       </div>
 
       {/* Pricing */}
-      <div>
-        <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-white/40">Pricing</label>
-        <div className="flex items-center gap-3 mb-3">
+      <div className="border border-farm-border bg-cream-secondary p-4">
+        <label className={labelCls}>Pricing</label>
+        <div className="mb-4 flex items-center gap-2">
           <button
             type="button"
             onClick={() => setHasPrice(false)}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${!hasPrice ? 'bg-gold-warm text-brand-deep' : 'border border-white/10 text-white/40 hover:text-white/70'}`}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+              !hasPrice
+                ? 'bg-amber-600 text-white'
+                : 'border border-farm-border bg-cream-primary text-brand-deep/60 hover:border-brand-deep/30'
+            }`}
           >
             Contact for Price
           </button>
           <button
             type="button"
             onClick={() => setHasPrice(true)}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${hasPrice ? 'bg-brand-leaf text-white' : 'border border-white/10 text-white/40 hover:text-white/70'}`}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+              hasPrice
+                ? 'bg-brand-leaf text-white'
+                : 'border border-farm-border bg-cream-primary text-brand-deep/60 hover:border-brand-deep/30'
+            }`}
           >
-            Set Price
+            Set a Price
           </button>
         </div>
         {hasPrice && (
           <div className="grid gap-4 sm:grid-cols-3">
             <Field label="Price (KES)">
-              <input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} className={inputCls} placeholder="75.00" />
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className={inputCls}
+                placeholder="75.00"
+              />
             </Field>
             <Field label="Compare-at Price (KES)">
-              <input type="number" step="0.01" value={compareAt} onChange={(e) => setCompareAt(e.target.value)} className={inputCls} placeholder="80.00 (optional)" />
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={compareAt}
+                onChange={(e) => setCompareAt(e.target.value)}
+                className={inputCls}
+                placeholder="80.00 (for sale price)"
+              />
             </Field>
             <Field label="Price Unit">
-              <input value={priceUnit} onChange={(e) => setPriceUnit(e.target.value)} className={inputCls} placeholder="per kg" />
+              <input
+                value={priceUnit}
+                onChange={(e) => setPriceUnit(e.target.value)}
+                className={inputCls}
+                placeholder="per kg"
+              />
             </Field>
           </div>
         )}
       </div>
 
+      {/* Bulk info */}
       <Field label="Bulk Pricing Info (optional)">
-        <input value={bulkInfo} onChange={(e) => setBulkInfo(e.target.value)} className={inputCls} placeholder="e.g. 10kg+ @ KES 70/kg" />
+        <input
+          value={bulkInfo}
+          onChange={(e) => setBulkInfo(e.target.value)}
+          className={inputCls}
+          placeholder="e.g. 10kg+ @ KES 70/kg"
+        />
       </Field>
 
-      {/* Images */}
+      {/* Image paths */}
       <div>
-        <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-white/40">Image Paths</label>
+        <label className={labelCls}>Image Paths</label>
+        <p className="mb-2 text-xs text-brand-deep/40">Enter paths relative to /public, e.g. /images/products/vegetables/spinach/img.jpg</p>
         <div className="space-y-2">
           {images.map((img, i) => (
             <div key={i} className="flex gap-2">
@@ -205,21 +271,35 @@ export function AdminProductForm({ product }: Props) {
                 className={`${inputCls} flex-1 font-mono text-xs`}
               />
               {images.length > 1 && (
-                <button type="button" onClick={() => removeImage(i)} className="text-white/30 hover:text-red-400 transition-colors px-2">
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="px-2 text-brand-deep/30 hover:text-red-600 transition-colors"
+                >
                   <Trash2 size={14} />
                 </button>
               )}
             </div>
           ))}
         </div>
-        <button type="button" onClick={addImage} className="mt-2 flex items-center gap-1 text-xs text-brand-leaf hover:text-cream-primary">
+        <button
+          type="button"
+          onClick={addImage}
+          className="mt-2 flex items-center gap-1 text-xs font-semibold text-brand-leaf hover:text-brand-deep transition-colors"
+        >
           <Plus size={12} /> Add Image
         </button>
       </div>
 
+      {/* Sort order + Available toggle */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Sort Order">
-          <input type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={inputCls} />
+          <input
+            type="number"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className={inputCls}
+          />
         </Field>
         <div className="flex items-end pb-1">
           <label className="flex cursor-pointer items-center gap-3">
@@ -229,24 +309,39 @@ export function AdminProductForm({ product }: Props) {
               tabIndex={0}
               onClick={() => setAvailable((v) => !v)}
               onKeyDown={(e) => e.key === 'Enter' && setAvailable((v) => !v)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${available ? 'bg-brand-leaf' : 'bg-white/10'}`}
+              className={`relative h-6 w-11 rounded-full transition-colors ${available ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
             >
-              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${available ? 'translate-x-5' : 'translate-x-0.5'}`} />
+              <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                  available ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
             </div>
-            <span className="text-sm text-cream-secondary">Available for sale</span>
+            <span className="text-sm font-medium text-brand-deep">
+              {available ? 'Visible to customers' : 'Hidden from customers'}
+            </span>
           </label>
         </div>
       </div>
 
-      <div className="flex gap-3 pt-2 border-t border-white/10">
+      {/* Submit */}
+      <div className="flex gap-3 border-t border-farm-border pt-5">
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2 bg-brand-leaf px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-mid disabled:opacity-60 transition-colors"
+          className="flex items-center gap-2 bg-brand-leaf px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep disabled:opacity-60 transition-colors"
         >
-          {loading ? <><Loader2 size={13} className="animate-spin" /> Saving...</> : (isEdit ? 'Save Changes' : 'Create Product')}
+          {loading ? (
+            <><Loader2 size={13} className="animate-spin" /> Saving...</>
+          ) : (
+            isEdit ? 'Save Changes' : 'Create Product'
+          )}
         </button>
-        <button type="button" onClick={() => router.back()} className="px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white/40 hover:text-cream-primary transition-colors">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-brand-deep/50 hover:text-brand-deep transition-colors"
+        >
           Cancel
         </button>
       </div>
