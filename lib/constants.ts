@@ -12,8 +12,10 @@ export const SITE = {
     laikipia: { name: 'Laikipia Ranch', location: 'Laikipia County, Kenya', products: 'Wheat, Sorghum, Millet, Soya Beans' },
   },
   coordinates: { lat: 'PLACEHOLDER_LAT', lng: 'PLACEHOLDER_LNG' },
-  googleAnalyticsId: 'PLACEHOLDER_GA4_ID',
-  googleVerification: 'PLACEHOLDER_GSC_TOKEN',
+  // Set NEXT_PUBLIC_GA4_ID / NEXT_PUBLIC_GSC_TOKEN in Railway once real accounts exist —
+  // app/layout.tsx skips loading the analytics script and verification tag until then.
+  googleAnalyticsId: process.env.NEXT_PUBLIC_GA4_ID || 'PLACEHOLDER_GA4_ID',
+  googleVerification: process.env.NEXT_PUBLIC_GSC_TOKEN || 'PLACEHOLDER_GSC_TOKEN',
   socialMedia: {
     instagram: '',
     facebook: '',

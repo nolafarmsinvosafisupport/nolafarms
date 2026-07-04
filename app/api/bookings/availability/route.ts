@@ -1,11 +1,12 @@
 import { requireDb } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const setup = requireDb('Booking availability');
   if (setup) return setup;
+  await ensureMigrated();
 
   const sql = getDb();
   const [blocked, confirmed] = await Promise.all([

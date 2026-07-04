@@ -5,6 +5,7 @@ import { getDb, isDbConfigured, ensureMigrated } from './db';
 export async function getAdminBookings() {
   if (!isDbConfigured()) return { bookings: [] as Booking[], setupMessage: setupMsg() };
   try {
+    await ensureMigrated();
     const sql = getDb();
     const bookings = await sql<Booking[]>`SELECT * FROM bookings ORDER BY created_at DESC`;
     return { bookings, setupMessage: null };
@@ -16,6 +17,7 @@ export async function getAdminBookings() {
 export async function getAdminBooking(id: string) {
   if (!isDbConfigured()) return { booking: null as Booking | null, setupMessage: setupMsg() };
   try {
+    await ensureMigrated();
     const sql = getDb();
     const [booking] = await sql<Booking[]>`SELECT * FROM bookings WHERE id = ${id}`;
     return { booking: booking ?? null, setupMessage: null };
@@ -27,6 +29,7 @@ export async function getAdminBooking(id: string) {
 export async function getBlockedDates() {
   if (!isDbConfigured()) return { blockedDates: [] as BlockedDate[], setupMessage: setupMsg() };
   try {
+    await ensureMigrated();
     const sql = getDb();
     const blockedDates = await sql<BlockedDate[]>`SELECT * FROM blocked_dates ORDER BY date`;
     return { blockedDates, setupMessage: null };

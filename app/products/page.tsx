@@ -4,7 +4,10 @@ import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
 import type { Product } from '@/lib/product-types';
 
-export const dynamic = 'force-dynamic';
+// Cached for 5 minutes and revalidated on demand by product writes
+// (see revalidatePath() calls in app/api/products routes) — the catalogue
+// changes rarely, so there's no need to hit Postgres on every single view.
+export const revalidate = 300;
 
 export function generateMetadata(): Metadata {
   return pageMetadata({

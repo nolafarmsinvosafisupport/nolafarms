@@ -51,13 +51,29 @@ export function NotificationBell() {
         .catch(() => undefined);
     }
 
-    doFetch();
-    const t = setInterval(doFetch, pollInterval);
+    let t: ReturnType<typeof setInterval> | null = null;
+
+    function startPolling() {
+      if (t) return;
+      doFetch();
+      t = setInterval(doFetch, pollInterval);
+    }
+    function stopPolling() {
+      if (t) { clearInterval(t); t = null; }
+    }
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') stopPolling();
+      else startPolling();
+    }
+
+    startPolling();
     window.addEventListener('nola:notif:refresh', doFetch);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      clearInterval(t);
+      stopPolling();
       window.removeEventListener('nola:notif:refresh', doFetch);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isSignedIn, pollInterval]);
 

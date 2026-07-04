@@ -1,4 +1,5 @@
-import { requireDb, requireAdminResponse } from '@/lib/api-utils';
+import { revalidatePath } from 'next/cache';
+import { requireDb, requireAdminResponse, productCreateSchema, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
 
@@ -49,19 +50,25 @@ export async function POST(request: Request) {
   if (setup) return setup;
   const deny = await requireAdminResponse();
   if (deny) return deny;
+  await ensureMigrated();
 
-  const body = await request.json();
-  const { name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order } = body;
+  const { data: body, error: parseError } = await parseJsonBody(request);
+  if (parseError) return parseError;
 
-  if (!name || !slug || !category || !ranch) {
-    return Response.json({ success: false, message: 'name, slug, category, and ranch are required.' }, { status: 400 });
-  }
+  const parsed = productCreateSchema.safeParse(body);
+  if (!parsed.success) return Response.json({ success: false, errors: parsed.error.flatten() }, { status: 400 });
+  const { name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order } = parsed.data;
 
   const sql = getDb();
-  const [product] = await sql<Product[]>`
-    INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order)
-    VALUES (${name}, ${slug}, ${category}, ${ranch}, ${description ?? null}, ${details ?? []}, ${price ?? null}, ${compare_at_price ?? null}, ${price_unit ?? 'per kg'}, ${bulk_info ?? null}, ${images ?? []}, ${available ?? true}, ${sort_order ?? 0})
-    RETURNING *
-  `;
-  return Response.json({ success: true, product }, { status: 201 });
+  try {
+    const [product] = await sql<Product[]>`
+      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order)
+      VALUES (${name}, ${slug}, ${category}, ${ranch}, ${description ?? null}, ${details ?? []}, ${price ?? null}, ${compare_at_price ?? null}, ${price_unit ?? 'per kg'}, ${bulk_info ?? null}, ${images ?? []}, ${available ?? true}, ${sort_order ?? 0})
+      RETURNING *
+    `;
+    revalidatePath('/products');
+    return Response.json({ success: true, product }, { status: 201 });
+  } catch (e) {
+    return dbErrorResponse(e, 'Could not create product. Please check the details and try again.');
+  }
 }

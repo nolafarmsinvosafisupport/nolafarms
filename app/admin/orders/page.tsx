@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import type { Order, OrderStatus } from '@/lib/product-types';
-import { ORDER_STATUS_LABELS } from '@/lib/product-types';
+import { ORDER_STATUS_LABELS, parseOrderItems } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,12 +26,6 @@ function fmtDate(s: string) {
   }).format(new Date(s));
 }
 
-function parseItems(raw: unknown): { product_name: string; quantity: number; unit: string }[] {
-  if (Array.isArray(raw)) return raw as { product_name: string; quantity: number; unit: string }[];
-  if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return []; } }
-  return [];
-}
-
 export default async function AdminOrdersPage() {
   const orders = await getOrders();
 
@@ -49,7 +43,7 @@ export default async function AdminOrdersPage() {
       ) : (
         <div className="space-y-3">
           {orders.map((order) => {
-            const items = parseItems(order.items);
+            const items = parseOrderItems(order.items);
             return (
               <div key={order.id} className="border border-farm-border bg-cream-warm">
                 {/* Header row */}

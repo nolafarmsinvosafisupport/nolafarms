@@ -78,3 +78,14 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   fulfilled: 'Fulfilled',
   cancelled: 'Cancelled',
 };
+
+// order.items is a JSONB column that postgres.js normally returns already parsed
+// as an array. This defends against the rare case where it comes back as a raw
+// string, without ever throwing on malformed data.
+export function parseOrderItems(raw: unknown): OrderItem[] {
+  if (Array.isArray(raw)) return raw as OrderItem[];
+  if (typeof raw === 'string') {
+    try { return JSON.parse(raw); } catch { return []; }
+  }
+  return [];
+}

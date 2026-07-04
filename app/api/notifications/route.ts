@@ -1,5 +1,5 @@
 import { requireDb, requireUserResponse } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 import type { Notification } from '@/lib/booking-types';
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const setup = requireDb('Notifications');
   if (setup) return setup;
+  await ensureMigrated();
   const { userId, response } = await requireUserResponse();
   if (response) return response;
 
@@ -24,6 +25,7 @@ export async function GET() {
 export async function PATCH() {
   const setup = requireDb('Notifications');
   if (setup) return setup;
+  await ensureMigrated();
   const { userId, response } = await requireUserResponse();
   if (response) return response;
 

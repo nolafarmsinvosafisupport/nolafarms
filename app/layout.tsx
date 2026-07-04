@@ -77,12 +77,13 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
-  verification: {
-    google: SITE.googleVerification,
-  },
+  verification: SITE.googleVerification.startsWith('PLACEHOLDER')
+    ? undefined
+    : { google: SITE.googleVerification },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const gaEnabled = !SITE.googleAnalyticsId.startsWith('PLACEHOLDER');
   return (
     <ClerkProvider>
       <html lang="en-KE" className={`${inter.variable} ${playfair.variable}`}>
@@ -95,15 +96,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <ConditionalFooter />
           <WhatsAppButton />
-          <Script src={`https://www.googletagmanager.com/gtag/js?id=${SITE.googleAnalyticsId}`} strategy="afterInteractive" />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${SITE.googleAnalyticsId}');
-            `}
-          </Script>
+          {gaEnabled && (
+            <>
+              <Script src={`https://www.googletagmanager.com/gtag/js?id=${SITE.googleAnalyticsId}`} strategy="afterInteractive" />
+              <Script id="google-analytics" strategy="afterInteractive">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${SITE.googleAnalyticsId}');
+                `}
+              </Script>
+            </>
+          )}
           </CartProvider>
         </body>
       </html>

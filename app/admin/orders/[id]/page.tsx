@@ -4,8 +4,8 @@ import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 import { AdminOrderActions } from '@/components/admin/AdminOrderActions';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { SITE } from '@/lib/constants';
-import type { Order, OrderItem, OrderStatus } from '@/lib/product-types';
-import { ORDER_STATUS_LABELS } from '@/lib/product-types';
+import type { Order, OrderStatus } from '@/lib/product-types';
+import { ORDER_STATUS_LABELS, parseOrderItems } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,8 +36,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
   const order = await getOrder(id);
   if (!order) notFound();
 
-  const raw = order.items;
-  const items: OrderItem[] = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : []);
+  const items = parseOrderItems(order.items);
   const whatsappNumber = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : order.customer_phone;
 
   const hasTotal = items.every((i) => i.price_at_time !== null);

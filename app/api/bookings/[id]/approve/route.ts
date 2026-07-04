@@ -1,11 +1,12 @@
 import { requireAdminResponse, requireDb } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 import { sendStatusEmail } from '@/lib/email';
 import type { Booking } from '@/lib/booking-types';
 
 export async function PATCH(_request: Request, { params }: { params: { id: string } }) {
   const setup = requireDb('Approve booking');
   if (setup) return setup;
+  await ensureMigrated();
   const admin = await requireAdminResponse();
   if (admin) return admin;
 

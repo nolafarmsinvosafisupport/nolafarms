@@ -1,3 +1,8 @@
+// SUPERSEDED — the project runs on Railway Postgres now, not Supabase, so this
+// function no longer has a database to query and is not deployed anywhere.
+// Replacement: app/api/cron/send-reminders/route.ts, triggered daily by
+// .github/workflows/send-reminders.yml. Kept here only for reference.
+//
 // Supabase Edge Function: send-reminders
 // Schedule: daily at 08:00 EAT (05:00 UTC)
 // Cron expression (set in Supabase dashboard): 0 5 * * *

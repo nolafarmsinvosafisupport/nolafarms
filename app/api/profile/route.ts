@@ -1,10 +1,11 @@
 import { profileSchema, requireDb, requireUserResponse } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 import type { UserProfile } from '@/lib/booking-types';
 
 export async function GET() {
   const setup = requireDb('User profile');
   if (setup) return setup;
+  await ensureMigrated();
   const { userId, response } = await requireUserResponse();
   if (response) return response;
 
@@ -16,6 +17,7 @@ export async function GET() {
 export async function POST() {
   const setup = requireDb('User profile');
   if (setup) return setup;
+  await ensureMigrated();
   const { userId, response } = await requireUserResponse();
   if (response) return response;
 
@@ -31,6 +33,7 @@ export async function POST() {
 export async function PATCH(request: Request) {
   const setup = requireDb('User profile');
   if (setup) return setup;
+  await ensureMigrated();
   const { userId, response } = await requireUserResponse();
   if (response) return response;
 

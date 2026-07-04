@@ -1,5 +1,6 @@
-import { requireDb, requireAdminResponse } from '@/lib/api-utils';
-import { getDb, ensureMigrated } from '@/lib/db';
+import { requireDb, requireAdminResponse, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
+import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
+import { isRateLimited } from '@/lib/rate-limit';
 import type { Order } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -43,39 +44,53 @@ export async function POST(request: Request) {
   if (setup) return setup;
   await ensureMigrated();
 
-  const body = await request.json();
-  const { customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes } = body;
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  if (isRateLimited(`order:${ip}`, 5, 10 * 60 * 1000)) {
+    return Response.json({ success: false, message: 'Too many requests. Please try again in a few minutes.' }, { status: 429 });
+  }
 
-  if (!customer_name || !customer_phone || !items?.length) {
+  const { data: body, error: parseError } = await parseJsonBody(request);
+  if (parseError) return parseError;
+
+  const { customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes } = body as {
+    customer_name?: string;
+    customer_phone?: string;
+    customer_email?: string | null;
+    items?: unknown[];
+    delivery_location?: string | null;
+    delivery_notes?: string | null;
+  };
+
+  if (!customer_name || !customer_phone || !Array.isArray(items) || !items.length) {
     return Response.json({ success: false, message: 'Name, phone, and at least one item are required.' }, { status: 400 });
   }
 
   const sql = getDb();
 
-  // Generate reference: ORD-YYYY-NNNN
-  const year = new Date().getFullYear();
-  const [{ count }] = await sql<[{ count: string }]>`
-    SELECT COUNT(*) as count FROM orders WHERE reference LIKE ${`ORD-${year}-%`}
-  `;
-  const seq = String(parseInt(count) + 1).padStart(4, '0');
-  const reference = `ORD-${year}-${seq}`;
+  try {
+    // Generate reference: ORD-YYYY-NNNN (atomic counter — safe under concurrent checkouts)
+    const year = new Date().getFullYear();
+    const seqNum = await nextReferenceNumber(sql, `orders-${year}`);
+    const reference = `ORD-${year}-${String(seqNum).padStart(4, '0')}`;
 
-  const [order] = await sql<Order[]>`
-    INSERT INTO orders (reference, customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes)
-    VALUES (${reference}, ${customer_name}, ${customer_phone}, ${customer_email ?? null}, ${JSON.stringify(items)}, ${delivery_location ?? null}, ${delivery_notes ?? null})
-    RETURNING *
-  `;
+    const [order] = await sql<Order[]>`
+      INSERT INTO orders (reference, customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes)
+      VALUES (${reference}, ${customer_name}, ${customer_phone}, ${customer_email ?? null}, ${JSON.stringify(items)}, ${delivery_location ?? null}, ${delivery_notes ?? null})
+      RETURNING *
+    `;
 
-  // Notify admin
-  const adminUserId = process.env.CLERK_ADMIN_USER_ID;
-  if (adminUserId) {
-    const itemCount = items.length;
-    await sql`
-      INSERT INTO notifications (user_id, type, title, message)
-      VALUES (${adminUserId}, 'submitted', ${`New Order ${reference}`}, ${`Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`})
-    `.catch(() => undefined);
+    // Notify admin
+    const adminUserId = process.env.CLERK_ADMIN_USER_ID;
+    if (adminUserId) {
+      const itemCount = items.length;
+      await sql`
+        INSERT INTO notifications (user_id, type, title, message)
+        VALUES (${adminUserId}, 'submitted', ${`New Order ${reference}`}, ${`Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`})
+      `.catch(() => undefined);
+    }
+
+    return Response.json({ success: true, order, reference }, { status: 201 });
+  } catch (e) {
+    return dbErrorResponse(e, 'Could not place order. Please try again.');
   }
-
-  // Dispatch refresh event (server-side — not possible; client handles via redirect + event)
-  return Response.json({ success: true, order, reference }, { status: 201 });
 }

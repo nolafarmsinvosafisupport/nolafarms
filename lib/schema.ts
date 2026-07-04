@@ -96,6 +96,36 @@ export const imageGallerySchema = (images: { name: string; contentUrl: string; c
   })),
 });
 
+export const productJsonLd = (product: {
+  name: string;
+  slug: string;
+  description: string | null;
+  images: string[];
+  price: string | null;
+  available: boolean;
+}) => {
+  const data: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description ?? `${product.name} from Nola Farms, Kenya.`,
+    image: product.images.map((img) => `${SITE.url}${img}`),
+    url: `${SITE.url}/products/${product.slug}`,
+  };
+  // Only attach Offer/price rich-snippet data when a price actually exists —
+  // omitting it for "Contact for Price" products avoids showing a misleading KES 0.
+  if (product.price) {
+    data.offers = {
+      '@type': 'Offer',
+      priceCurrency: 'KES',
+      price: product.price,
+      availability: product.available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: `${SITE.url}/products/${product.slug}`,
+    };
+  }
+  return data;
+};
+
 export const contactPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',

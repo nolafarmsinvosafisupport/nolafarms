@@ -20,6 +20,53 @@ export const profileSchema = z.object({
   notify_on_rejection: z.boolean().optional(),
 });
 
+const PRODUCT_CATEGORIES = ['cattle', 'goats', 'sheep', 'pigs', 'poultry', 'vegetables', 'fruits', 'grains'] as const;
+const RANCHES = ['oloitoktok', 'laikipia', 'both'] as const;
+const ORDER_STATUSES = ['new', 'contacted', 'fulfilled', 'cancelled'] as const;
+
+export const productCreateSchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and hyphens only.'),
+  category: z.enum(PRODUCT_CATEGORIES),
+  ranch: z.enum(RANCHES),
+  description: z.string().optional().nullable(),
+  details: z.array(z.string()).optional(),
+  price: z.coerce.number().nonnegative().optional().nullable(),
+  compare_at_price: z.coerce.number().nonnegative().optional().nullable(),
+  price_unit: z.string().optional(),
+  bulk_info: z.string().optional().nullable(),
+  images: z.array(z.string()).optional(),
+  available: z.boolean().optional(),
+  sort_order: z.coerce.number().int().optional(),
+});
+
+export const productUpdateSchema = productCreateSchema.partial();
+
+export const orderUpdateSchema = z.object({
+  status: z.enum(ORDER_STATUSES).optional(),
+  admin_note: z.string().optional().nullable(),
+});
+
+// Parses the request body as JSON, returning a clean 400 instead of an unhandled
+// exception if the body is missing or malformed.
+export async function parseJsonBody(request: Request): Promise<{ data: unknown; error: Response | null }> {
+  try {
+    return { data: await request.json(), error: null };
+  } catch {
+    return { data: null, error: Response.json({ success: false, message: 'Invalid JSON in request body.' }, { status: 400 }) };
+  }
+}
+
+// Maps a thrown DB error to a clean JSON response instead of letting it surface as a raw 500.
+export function dbErrorResponse(e: unknown, fallback = 'Something went wrong. Please try again.') {
+  const err = e as { code?: string };
+  if (err?.code === '23505') {
+    return Response.json({ success: false, message: 'That value is already in use — please choose a different one.' }, { status: 409 });
+  }
+  console.error(err);
+  return Response.json({ success: false, message: fallback }, { status: 500 });
+}
+
 export function requireDb(feature: string) {
   if (!isDbConfigured()) return dbNotConfiguredResponse(feature);
   return null;

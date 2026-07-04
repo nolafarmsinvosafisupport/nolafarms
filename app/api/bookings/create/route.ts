@@ -1,25 +1,31 @@
-import { bookingSchema, requireDb } from '@/lib/api-utils';
+import { bookingSchema, requireDb, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getCurrentUserId } from '@/lib/auth';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
 import { minimumVisitDate } from '@/lib/booking-utils';
 import { sendBookingReceivedEmails } from '@/lib/email';
+import { isRateLimited } from '@/lib/rate-limit';
 import type { Booking } from '@/lib/booking-types';
 
 async function generateBookingReference(sql: ReturnType<typeof getDb>): Promise<string> {
   const year = new Date().getFullYear();
-  const [{ count }] = await sql<[{ count: number }]>`
-    SELECT COUNT(*)::int AS count FROM bookings
-    WHERE created_at >= ${`${year}-01-01T00:00:00.000Z`}
-      AND created_at <  ${`${year + 1}-01-01T00:00:00.000Z`}
-  `;
-  return `NF-${year}-${String((count ?? 0) + 1).padStart(4, '0')}`;
+  const seqNum = await nextReferenceNumber(sql, `bookings-${year}`);
+  return `NF-${year}-${String(seqNum).padStart(4, '0')}`;
 }
 
 export async function POST(request: Request) {
   const setup = requireDb('Booking submissions');
   if (setup) return setup;
+  await ensureMigrated();
 
-  const parsed = bookingSchema.safeParse(await request.json());
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  if (isRateLimited(`booking:${ip}`, 5, 10 * 60 * 1000)) {
+    return Response.json({ success: false, message: 'Too many requests. Please try again in a few minutes.' }, { status: 429 });
+  }
+
+  const { data: rawBody, error: parseError } = await parseJsonBody(request);
+  if (parseError) return parseError;
+
+  const parsed = bookingSchema.safeParse(rawBody);
   if (!parsed.success) return Response.json({ success: false, errors: parsed.error.flatten() }, { status: 400 });
 
   if (parsed.data.visit_date < minimumVisitDate()) {
@@ -34,27 +40,32 @@ export async function POST(request: Request) {
   const [confirmed] = await sql`SELECT id FROM bookings WHERE visit_date = ${parsed.data.visit_date} AND status = 'confirmed'`;
   if (confirmed) return Response.json({ success: false, message: 'That date already has a confirmed visit.' }, { status: 409 });
 
-  const reference = await generateBookingReference(sql);
   const userId = await getCurrentUserId();
   const d = parsed.data;
 
-  const [booking] = await sql<Booking[]>`
-    INSERT INTO bookings (reference, user_id, full_name, phone_number, email, visit_date, visit_time, group_size, purpose, special_requests, status)
-    VALUES (${reference}, ${userId ?? null}, ${d.full_name}, ${d.phone_number}, ${d.email}, ${d.visit_date}, ${d.visit_time}, ${d.group_size}, ${d.purpose}, ${d.special_requests ?? null}, 'pending')
-    RETURNING *
-  `;
+  try {
+    const reference = await generateBookingReference(sql);
 
-  // Create a pre-read notification (user sees the confirmation page immediately)
-  if (userId) {
-    await sql`
-      INSERT INTO notifications (user_id, booking_id, type, title, message, read)
-      VALUES (${userId}, ${booking.id}, 'submitted',
-        ${'Booking Request Submitted'},
-        ${`Your visit request for ${booking.visit_date} (Ref: ${reference}) has been submitted and is awaiting confirmation.`},
-        TRUE)
+    const [booking] = await sql<Booking[]>`
+      INSERT INTO bookings (reference, user_id, full_name, phone_number, email, visit_date, visit_time, group_size, purpose, special_requests, status)
+      VALUES (${reference}, ${userId ?? null}, ${d.full_name}, ${d.phone_number}, ${d.email}, ${d.visit_date}, ${d.visit_time}, ${d.group_size}, ${d.purpose}, ${d.special_requests ?? null}, 'pending')
+      RETURNING *
     `;
-  }
 
-  await sendBookingReceivedEmails(booking);
-  return Response.json({ success: true, booking });
+    // Create a pre-read notification (user sees the confirmation page immediately)
+    if (userId) {
+      await sql`
+        INSERT INTO notifications (user_id, booking_id, type, title, message, read)
+        VALUES (${userId}, ${booking.id}, 'submitted',
+          ${'Booking Request Submitted'},
+          ${`Your visit request for ${booking.visit_date} (Ref: ${reference}) has been submitted and is awaiting confirmation.`},
+          TRUE)
+      `;
+    }
+
+    await sendBookingReceivedEmails(booking);
+    return Response.json({ success: true, booking });
+  } catch (e) {
+    return dbErrorResponse(e, 'Could not submit your booking. Please try again.');
+  }
 }

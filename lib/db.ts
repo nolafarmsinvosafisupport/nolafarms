@@ -48,3 +48,15 @@ export function dbNotConfiguredResponse(feature: string) {
     { status: 503 },
   );
 }
+
+// Atomically returns the next sequential number for a scope (e.g. "orders-2026").
+// Uses an upsert so concurrent callers are serialized by Postgres's row lock on the
+// conflicting key, instead of racing on a separate COUNT(*) read.
+export async function nextReferenceNumber(sql: ReturnType<typeof getDb>, scope: string): Promise<number> {
+  const [{ value }] = await sql<[{ value: number }]>`
+    INSERT INTO reference_counters (scope, value) VALUES (${scope}, 1)
+    ON CONFLICT (scope) DO UPDATE SET value = reference_counters.value + 1
+    RETURNING value
+  `;
+  return value;
+}

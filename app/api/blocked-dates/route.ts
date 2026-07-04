@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { requireAdminResponse, requireDb } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 import type { BlockedDate } from '@/lib/booking-types';
 
 const blockedDateSchema = z.object({
@@ -11,6 +11,7 @@ const blockedDateSchema = z.object({
 export async function GET() {
   const setup = requireDb('Blocked dates');
   if (setup) return setup;
+  await ensureMigrated();
   const admin = await requireAdminResponse();
   if (admin) return admin;
 
@@ -22,6 +23,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const setup = requireDb('Blocked dates');
   if (setup) return setup;
+  await ensureMigrated();
   const admin = await requireAdminResponse();
   if (admin) return admin;
 

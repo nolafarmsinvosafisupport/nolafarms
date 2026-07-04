@@ -4,12 +4,17 @@ import { notFound } from 'next/navigation';
 import { MapPin, CheckCircle2, MessageCircle, Package } from 'lucide-react';
 import { ProductImageGallery } from '@/components/products/ProductImageGallery';
 import { ProductAddToCart } from '@/components/products/ProductAddToCart';
+import { JsonLd } from '@/components/ui/JsonLd';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { SITE } from '@/lib/constants';
+import { pageMetadata } from '@/lib/seo';
+import { productJsonLd } from '@/lib/schema';
 import type { Product } from '@/lib/product-types';
 import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
 
-export const dynamic = 'force-dynamic';
+// Cached for 5 minutes and revalidated on demand by product writes
+// (see revalidatePath() calls in app/api/products routes).
+export const revalidate = 300;
 
 async function getProduct(slug: string): Promise<Product | null> {
   if (!isDbConfigured()) return null;
@@ -23,10 +28,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) return {};
-  return {
+  return pageMetadata({
     title: `${product.name} | Nola Farms`,
     description: product.description ?? `Buy ${product.name} from Nola Farms, Kenya.`,
-  };
+    keywords: [product.name, CATEGORY_LABELS[product.category], RANCH_LABELS[product.ranch], 'Nola Farms', 'farm produce Kenya'],
+    path: `/products/${product.slug}`,
+    image: product.images[0],
+    imageAlt: `${product.name} — Nola Farms`,
+  });
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -42,6 +51,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <main className="pt-16 bg-cream-primary min-h-screen">
+      <JsonLd data={productJsonLd(product)} />
       {/* Breadcrumb */}
       <div className="border-b border-farm-border bg-cream-secondary px-6 py-3 lg:px-8">
         <div className="mx-auto max-w-7xl">

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { BookingForm } from '@/components/services/BookingForm';
 import { ServicesGrid } from '@/components/services/ServicesGrid';
 import { PageHero } from '@/components/ui/PageHero';
@@ -49,15 +48,19 @@ export default function ServicesPage() {
       </section>
       <section className="bg-brand-dark py-24 text-cream-primary">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Booking Note</p>
-          <h2 className="font-serif text-5xl">Ready to book? Send us a message.</h2>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Something Else?</p>
+          <h2 className="font-serif text-5xl">Have a Different Question?</h2>
           <p className="mt-5 max-w-2xl leading-8 text-cream-secondary/75">
-            To book a ranch visit, contact us directly via the form or WhatsApp below.
+            For wholesale orders, partnerships, or anything not covered above, send us a message and we&rsquo;ll get back to you quickly.
           </p>
-          {/* TODO: Booking system to be integrated - pending payment gateway confirmation */}
-          <Link href="/contact" className="mt-8 inline-flex bg-brand-primary px-8 py-4 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-brand-mid">
-            Send an Enquiry
-          </Link>
+          <a
+            href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a question about Nola Farms services.')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex bg-brand-primary px-8 py-4 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-brand-mid"
+          >
+            Send a Message
+          </a>
         </div>
       </section>
     </main>

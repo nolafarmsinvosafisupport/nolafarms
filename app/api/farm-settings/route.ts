@@ -1,9 +1,10 @@
 import { requireAdminResponse, requireDb } from '@/lib/api-utils';
-import { getDb } from '@/lib/db';
+import { getDb, ensureMigrated } from '@/lib/db';
 
 export async function GET() {
   const setup = requireDb('Farm settings');
   if (setup) return setup;
+  await ensureMigrated();
   const admin = await requireAdminResponse();
   if (admin) return admin;
 
@@ -15,6 +16,7 @@ export async function GET() {
 export async function PATCH(request: Request) {
   const setup = requireDb('Farm settings');
   if (setup) return setup;
+  await ensureMigrated();
   const admin = await requireAdminResponse();
   if (admin) return admin;
 

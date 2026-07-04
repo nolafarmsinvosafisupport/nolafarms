@@ -1,0 +1,15 @@
+name: Daily Booking Reminders
+
+on:
+  schedule:
+    - cron: '0 5 * * *' # 05:00 UTC = 08:00 EAT
+  workflow_dispatch: {}
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger reminder endpoint
+        run: |
+          curl -sf -X POST "${{ secrets.SITE_URL }}/api/cron/send-reminders" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
