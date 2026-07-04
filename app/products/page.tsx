@@ -4,10 +4,12 @@ import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
 import type { Product } from '@/lib/product-types';
 
-// Cached for 5 minutes and revalidated on demand by product writes
-// (see revalidatePath() calls in app/api/products routes) — the catalogue
-// changes rarely, so there's no need to hit Postgres on every single view.
-export const revalidate = 300;
+// Not ISR: this route has no dynamic segments, so Next.js would try to
+// prerender it during `next build` — which fails on Railway because the
+// build step can't reach postgres.railway.internal (that hostname only
+// resolves at runtime, inside Railway's private network). force-dynamic
+// renders on every request instead, avoiding any build-time DB access.
+export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
