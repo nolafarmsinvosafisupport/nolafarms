@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireDb, requireAdminResponse, productUpdateSchema, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
@@ -60,6 +60,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!product) return Response.json({ success: false, message: 'Product not found.' }, { status: 404 });
     revalidatePath('/products');
     revalidatePath(`/products/${product.slug}`);
+    revalidateTag('products');
     return Response.json({ success: true, product });
   } catch (e) {
     return dbErrorResponse(e, 'Could not update product. Please check the details and try again.');
@@ -78,5 +79,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const [deleted] = await sql<Product[]>`DELETE FROM products WHERE id = ${id} RETURNING slug`;
   revalidatePath('/products');
   if (deleted?.slug) revalidatePath(`/products/${deleted.slug}`);
+  revalidateTag('products');
   return Response.json({ success: true });
 }

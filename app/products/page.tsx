@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
@@ -22,12 +23,22 @@ export function generateMetadata(): Metadata {
   });
 }
 
-async function getProducts(): Promise<Product[]> {
-  if (!isDbConfigured()) return [];
-  await ensureMigrated();
-  const sql = getDb();
-  return sql<Product[]>`SELECT * FROM products WHERE available = TRUE ORDER BY sort_order, name`;
-}
+// Cache the available-products query for 5 minutes so repeat views and crawler
+// hits don't re-query Postgres on every request (keeps Railway CPU/DB load low).
+// force-dynamic (above) still prevents any build-time DB access; unstable_cache
+// serves cached data across requests at runtime, and is busted immediately when
+// an admin creates/edits/deletes a product via revalidateTag('products') in the
+// app/api/products routes.
+const getProducts = unstable_cache(
+  async (): Promise<Product[]> => {
+    if (!isDbConfigured()) return [];
+    await ensureMigrated();
+    const sql = getDb();
+    return sql<Product[]>`SELECT * FROM products WHERE available = TRUE ORDER BY sort_order, name`;
+  },
+  ['products-available'],
+  { revalidate: 300, tags: ['products'] },
+);
 
 export default async function ProductsPage() {
   const products = await getProducts();

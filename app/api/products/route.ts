@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireDb, requireAdminResponse, productCreateSchema, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
@@ -67,6 +67,7 @@ export async function POST(request: Request) {
       RETURNING *
     `;
     revalidatePath('/products');
+    revalidateTag('products');
     return Response.json({ success: true, product }, { status: 201 });
   } catch (e) {
     return dbErrorResponse(e, 'Could not create product. Please check the details and try again.');
