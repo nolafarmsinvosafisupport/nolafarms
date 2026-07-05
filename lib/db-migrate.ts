@@ -128,6 +128,27 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
       )
     `;
 
+    // Backfill/self-heal each scope's counter from actual orders/bookings history, so it
+    // always covers at least every reference already used under the old COUNT(*)-based
+    // numbering (fixes the live bug where a fresh counter started at 0 and collided with
+    // pre-existing "ORD-2026-0001"). GREATEST(...) only ever moves a counter UP to match
+    // real history — it never lowers a value that's already correctly advanced past this
+    // point by real order/booking submissions, so this is safe to run on every boot.
+    await sql`
+      INSERT INTO reference_counters (scope, value)
+      SELECT 'orders-' || year_part, COUNT(*)
+      FROM (SELECT EXTRACT(YEAR FROM created_at)::text AS year_part FROM orders) sub
+      GROUP BY year_part
+      ON CONFLICT (scope) DO UPDATE SET value = GREATEST(reference_counters.value, EXCLUDED.value)
+    `;
+    await sql`
+      INSERT INTO reference_counters (scope, value)
+      SELECT 'bookings-' || year_part, COUNT(*)
+      FROM (SELECT EXTRACT(YEAR FROM created_at)::text AS year_part FROM bookings) sub
+      GROUP BY year_part
+      ON CONFLICT (scope) DO UPDATE SET value = GREATEST(reference_counters.value, EXCLUDED.value)
+    `;
+
     // Always seed (ON CONFLICT (slug) DO NOTHING makes it idempotent)
     await seedProducts(sql);
 

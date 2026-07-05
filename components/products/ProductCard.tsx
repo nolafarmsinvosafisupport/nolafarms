@@ -98,7 +98,7 @@ export function ProductCard({ product }: { product: Product }) {
                   <Plus size={12} />
                 </button>
               </div>
-              <AddToCartButton product={product} qty={qty} className="h-8 flex-1 px-3" />
+              <AddToCartButton product={product} qty={qty} compact className="h-8 flex-1 px-2" />
             </div>
           ) : (
             <button
