@@ -90,3 +90,10 @@ export function parseOrderItems(raw: unknown): OrderItem[] {
   }
   return [];
 }
+
+// A customer can cancel their own order online only while it's still 'new' or
+// 'contacted' — once fulfilled (or already cancelled) there's nothing left to
+// cancel. Mirrors canVisitorCancel() in lib/booking-utils.ts for bookings.
+export function canCustomerCancelOrder(order: Pick<Order, 'status'>) {
+  return order.status === 'new' || order.status === 'contacted';
+}

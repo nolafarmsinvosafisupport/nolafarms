@@ -6,6 +6,7 @@ import { ProductImageGallery } from '@/components/products/ProductImageGallery';
 import { ProductAddToCart } from '@/components/products/ProductAddToCart';
 import { JsonLd } from '@/components/ui/JsonLd';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
+import { isCurrentUserAdmin } from '@/lib/auth';
 import { SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
 import { productJsonLd } from '@/lib/schema';
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const [product, isAdmin] = await Promise.all([getProduct(slug), isCurrentUserAdmin()]);
   if (!product) notFound();
 
   const price = product.price ? parseFloat(product.price) : null;
@@ -130,18 +131,20 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <ProductAddToCart product={product} />
             </div>
 
-            {/* WhatsApp enquiry */}
-            <div className="mt-4">
-              <a
-                href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-farm-border px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:bg-cream-secondary"
-              >
-                <MessageCircle size={14} />
-                Enquire on WhatsApp
-              </a>
-            </div>
+            {/* WhatsApp enquiry — hidden for admin; they manage enquiries from the admin panel, not as a customer */}
+            {!isAdmin && (
+              <div className="mt-4">
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 border border-farm-border px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:bg-cream-secondary"
+                >
+                  <MessageCircle size={14} />
+                  Enquire on WhatsApp
+                </a>
+              </div>
+            )}
 
             {/* Ranch info */}
             <div className="mt-6 border border-farm-border bg-cream-warm p-4">

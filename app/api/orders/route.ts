@@ -84,13 +84,13 @@ export async function POST(request: Request) {
       RETURNING *
     `;
 
-    // Notify admin
+    // Notify admin — order_id lets the notification deep-link straight to this order
     const adminUserId = process.env.CLERK_ADMIN_USER_ID;
     if (adminUserId) {
       const itemCount = items.length;
       await sql`
-        INSERT INTO notifications (user_id, type, title, message)
-        VALUES (${adminUserId}, 'submitted', ${`New Order ${reference}`}, ${`Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`})
+        INSERT INTO notifications (user_id, order_id, type, title, message)
+        VALUES (${adminUserId}, ${order.id}, 'submitted', ${`New Order ${reference}`}, ${`Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`})
       `.catch(() => undefined);
     }
 

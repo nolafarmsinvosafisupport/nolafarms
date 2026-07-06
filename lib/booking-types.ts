@@ -49,6 +49,7 @@ export type Notification = {
   id: string;
   user_id: string;
   booking_id: string | null;
+  order_id: string | null;
   type: NotificationType;
   title: string;
   message: string;

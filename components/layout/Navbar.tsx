@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NAV_LINKS } from '@/lib/constants';
 import { useNotifications } from '@/lib/notification-context';
@@ -72,33 +72,14 @@ export function Navbar() {
               );
             })}
             <NotificationBell />
-            {isAdmin ? (
-              <Link
-                href="/admin"
-                className="flex items-center gap-1.5 border border-gold-warm px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gold-warm transition-colors hover:bg-gold-warm hover:text-farm-dark"
-              >
-                <LayoutDashboard size={13} /> Dashboard
-              </Link>
-            ) : (
-              <CartIcon />
-            )}
+            {!isAdmin && <CartIcon />}
             <AccountButton />
           </div>
 
           {/* Mobile right: bell (signed-in only) + cart/dashboard + hamburger */}
           <div className="flex items-center gap-1 md:hidden">
             <NotificationBell />
-            {isAdmin ? (
-              <Link
-                href="/admin"
-                aria-label="Admin dashboard"
-                className="flex h-10 w-10 items-center justify-center text-gold-warm"
-              >
-                <LayoutDashboard size={20} />
-              </Link>
-            ) : (
-              <CartIcon />
-            )}
+            {!isAdmin && <CartIcon />}
             <button
               type="button"
               aria-label="Toggle menu"

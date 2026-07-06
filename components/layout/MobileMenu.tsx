@@ -96,12 +96,13 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                 <p className="mb-1.5 px-2 text-[9px] font-semibold uppercase tracking-widest text-cream-secondary/35">
                   My Account
                 </p>
-                {isAdmin && (
+                {isAdmin ? (
                   <MobileAccountLink href="/admin" icon={LayoutDashboard} label="Admin Dashboard" onClick={onClose} />
-                )}
-                <MobileAccountLink href="/account/bookings" icon={CalendarDays} label="My Bookings" onClick={onClose} />
-                {!isAdmin && (
-                  <MobileAccountLink href="/account/orders" icon={Package} label="My Orders" onClick={onClose} />
+                ) : (
+                  <>
+                    <MobileAccountLink href="/account/bookings" icon={CalendarDays} label="My Bookings" onClick={onClose} />
+                    <MobileAccountLink href="/account/orders" icon={Package} label="My Orders" onClick={onClose} />
+                  </>
                 )}
                 <MobileAccountLink href="/account/profile" icon={User} label="My Profile" onClick={onClose} />
                 <MobileAccountLink href="/account/settings" icon={Settings} label="Settings" onClick={onClose} />

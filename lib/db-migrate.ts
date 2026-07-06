@@ -20,9 +20,10 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
     `;
-    // Added after initial launch — booking routes insert this column.
-    // ADD COLUMN IF NOT EXISTS so it backfills on databases that already have the table.
+    // Added after initial launch — booking/order routes insert these columns.
+    // ADD COLUMN IF NOT EXISTS so they backfill on databases that already have the table.
     await sql`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS booking_id UUID`;
+    await sql`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS order_id UUID`;
 
     await sql`
       CREATE TABLE IF NOT EXISTS bookings (

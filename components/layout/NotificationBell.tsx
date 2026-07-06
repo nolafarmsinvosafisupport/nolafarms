@@ -3,8 +3,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, CheckCircle2, XCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useNotifications } from '@/lib/notification-context';
+import type { Notification } from '@/lib/booking-types';
 
 function fmtDate(s: string) {
   const d = new Date(s);
@@ -12,9 +14,18 @@ function fmtDate(s: string) {
   return new Intl.DateTimeFormat('en-KE', { day: 'numeric', month: 'short', timeZone: 'Africa/Nairobi' }).format(d);
 }
 
+// Orders only ever notify the admin (customers don't currently get order
+// notifications), so an order_id always means "go to the admin order view."
+// Booking notifications go to either side depending on who's looking at them.
+function hrefFor(n: Notification, isAdmin: boolean): string | null {
+  if (n.order_id) return `/admin/orders/${n.order_id}`;
+  if (n.booking_id) return isAdmin ? `/admin/bookings/${n.booking_id}` : '/account/bookings';
+  return null;
+}
+
 export function NotificationBell() {
   const { isSignedIn } = useUser();
-  const { notifications, unreadCount, markAllRead } = useNotifications();
+  const { notifications, unreadCount, isAdmin, markAllRead } = useNotifications();
   const [open, setOpen] = useState(false);
 
   // Mark all as read after the dropdown is opened for 800ms
@@ -67,31 +78,41 @@ export function NotificationBell() {
                   <p className="py-6 text-center text-xs text-cream-secondary/40">No notifications yet.</p>
                 ) : (
                   <div className="space-y-0.5">
-                    {notifications.slice(0, 6).map((n) => (
-                      <div
-                        key={n.id}
-                        className={`flex items-start gap-2.5 rounded px-2 py-2.5 ${!n.read ? 'bg-white/5' : ''}`}
-                      >
-                        {n.type === 'confirmed' ? (
-                          <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0 text-brand-leaf" />
-                        ) : n.type === 'rejected' ? (
-                          <XCircle size={13} className="mt-0.5 flex-shrink-0 text-red-400" />
-                        ) : (
-                          <Bell size={13} className="mt-0.5 flex-shrink-0 text-gold-warm" />
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <p className="text-xs font-medium text-cream-primary">{n.title}</p>
-                            <span className="flex-shrink-0 text-[10px] text-cream-secondary/40">
-                              {fmtDate(n.created_at)}
-                            </span>
+                    {notifications.slice(0, 6).map((n) => {
+                      const href = hrefFor(n, isAdmin);
+                      const rowClass = `flex items-start gap-2.5 rounded px-2 py-2.5 transition-colors ${!n.read ? 'bg-white/5' : ''} ${href ? 'cursor-pointer hover:bg-white/10' : ''}`;
+                      const content = (
+                        <>
+                          {n.type === 'confirmed' ? (
+                            <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0 text-brand-leaf" />
+                          ) : n.type === 'rejected' ? (
+                            <XCircle size={13} className="mt-0.5 flex-shrink-0 text-red-400" />
+                          ) : (
+                            <Bell size={13} className="mt-0.5 flex-shrink-0 text-gold-warm" />
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="text-xs font-medium text-cream-primary">{n.title}</p>
+                              <span className="flex-shrink-0 text-[10px] text-cream-secondary/40">
+                                {fmtDate(n.created_at)}
+                              </span>
+                            </div>
+                            <p className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-cream-secondary/55">
+                              {n.message}
+                            </p>
                           </div>
-                          <p className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-cream-secondary/55">
-                            {n.message}
-                          </p>
+                        </>
+                      );
+                      return href ? (
+                        <Link key={n.id} href={href} onClick={() => setOpen(false)} className={rowClass}>
+                          {content}
+                        </Link>
+                      ) : (
+                        <div key={n.id} className={rowClass}>
+                          {content}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

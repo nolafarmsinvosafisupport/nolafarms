@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { Package } from 'lucide-react';
+import { CancelOrderButton } from './CancelOrderButton';
 import type { Order, OrderStatus } from '@/lib/product-types';
-import { ORDER_STATUS_LABELS, parseOrderItems } from '@/lib/product-types';
+import { ORDER_STATUS_LABELS, parseOrderItems, canCustomerCancelOrder } from '@/lib/product-types';
 
 // Same status colours used on the admin order views, so the badge reads the
 // same way for the customer as it does for the admin who set it.
@@ -55,11 +56,23 @@ export function AccountOrdersList({ orders }: { orders: Order[] }) {
                 <p className="mt-1 text-xs text-brand-deep/50">{fmtDate(order.created_at)}</p>
 
                 <ul className="mt-4 space-y-1.5">
-                  {items.map((item, i) => (
-                    <li key={i} className="text-sm text-brand-deep/75">
-                      {item.product_name} <span className="text-brand-deep/40">— Qty: {item.quantity} {item.unit}</span>
-                    </li>
-                  ))}
+                  {items.map((item, i) => {
+                    const itemPrice = item.price_at_time ? parseFloat(item.price_at_time) : null;
+                    return (
+                      <li key={i} className="flex items-baseline justify-between gap-3 text-sm text-brand-deep/75">
+                        <span>
+                          {item.product_name} <span className="text-brand-deep/40">— Qty: {item.quantity} {item.unit}</span>
+                        </span>
+                        {itemPrice !== null ? (
+                          <span className="flex-shrink-0 font-medium text-brand-deep">
+                            KES {(itemPrice * item.quantity).toLocaleString()}
+                          </span>
+                        ) : (
+                          <span className="flex-shrink-0 text-xs font-semibold text-gold-warm">Contact for Price</span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
 
                 {order.admin_note && (
@@ -77,6 +90,9 @@ export function AccountOrdersList({ orders }: { orders: Order[] }) {
                   <p className="font-serif text-lg font-semibold text-brand-deep">KES {total.toLocaleString()}</p>
                 ) : (
                   <p className="text-xs font-semibold text-gold-warm">Contact for final pricing</p>
+                )}
+                {canCustomerCancelOrder(order) && (
+                  <CancelOrderButton orderId={order.id} reference={order.reference} />
                 )}
               </div>
             </div>

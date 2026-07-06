@@ -1,18 +1,20 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { CalendarDays, LogOut, Settings, UserRound } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, LogOut, Package, Settings, UserRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useState } from 'react';
+import { useNotifications } from '@/lib/notification-context';
 
 const PRIVATE_PATHS = ['/sign-in', '/sign-up', '/account', '/admin'];
 
 export function AccountButton() {
   const { isSignedIn, user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const { isAdmin } = useNotifications();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -72,9 +74,17 @@ export function AccountButton() {
                 </div>
               </div>
 
-              {/* Menu links */}
+              {/* Menu links — admin gets a Dashboard shortcut instead of the customer
+                  booking/order links, since the admin account doesn't act as a customer */}
               <div className="space-y-0.5 border-b border-white/10 py-3 text-sm">
-                <MenuLink href="/account/bookings" icon={CalendarDays} label="My Bookings" onClick={() => setOpen(false)} />
+                {isAdmin ? (
+                  <MenuLink href="/admin" icon={LayoutDashboard} label="Admin Dashboard" onClick={() => setOpen(false)} />
+                ) : (
+                  <>
+                    <MenuLink href="/account/bookings" icon={CalendarDays} label="My Bookings" onClick={() => setOpen(false)} />
+                    <MenuLink href="/account/orders" icon={Package} label="My Orders" onClick={() => setOpen(false)} />
+                  </>
+                )}
                 <MenuLink href="/account/profile" icon={UserRound} label="My Profile" onClick={() => setOpen(false)} />
                 <MenuLink href="/account/settings" icon={Settings} label="Settings" onClick={() => setOpen(false)} />
               </div>
