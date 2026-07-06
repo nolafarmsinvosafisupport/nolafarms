@@ -1,4 +1,4 @@
-import { requireDb, requireAdminResponse, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
+import { requireDb, requireAdminResponse, requireUserResponse, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
 import { isRateLimited } from '@/lib/rate-limit';
 import type { Order } from '@/lib/product-types';
@@ -44,6 +44,11 @@ export async function POST(request: Request) {
   if (setup) return setup;
   await ensureMigrated();
 
+  // Checkout is account-gated: the /checkout page is already protected by
+  // middleware, but the API re-verifies so a direct call can't bypass it.
+  const { userId, response: authResponse } = await requireUserResponse();
+  if (authResponse) return authResponse;
+
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   if (isRateLimited(`order:${ip}`, 5, 10 * 60 * 1000)) {
     return Response.json({ success: false, message: 'Too many requests. Please try again in a few minutes.' }, { status: 429 });
@@ -74,8 +79,8 @@ export async function POST(request: Request) {
     const reference = `ORD-${year}-${String(seqNum).padStart(4, '0')}`;
 
     const [order] = await sql<Order[]>`
-      INSERT INTO orders (reference, customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes)
-      VALUES (${reference}, ${customer_name}, ${customer_phone}, ${customer_email ?? null}, ${JSON.stringify(items)}, ${delivery_location ?? null}, ${delivery_notes ?? null})
+      INSERT INTO orders (reference, user_id, customer_name, customer_phone, customer_email, items, delivery_location, delivery_notes)
+      VALUES (${reference}, ${userId}, ${customer_name}, ${customer_phone}, ${customer_email ?? null}, ${JSON.stringify(items)}, ${delivery_location ?? null}, ${delivery_notes ?? null})
       RETURNING *
     `;
 

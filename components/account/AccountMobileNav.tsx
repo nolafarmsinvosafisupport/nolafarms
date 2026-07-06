@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, User, Settings } from 'lucide-react';
+import { CalendarDays, User, Package, Settings } from 'lucide-react';
 
 const links = [
   { label: 'Bookings', href: '/account/bookings', icon: CalendarDays },
+  { label: 'Orders', href: '/account/orders', icon: Package },
   { label: 'Profile', href: '/account/profile', icon: User },
   { label: 'Settings', href: '/account/settings', icon: Settings },
 ];

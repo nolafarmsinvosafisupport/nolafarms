@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { MapPin, Minus, Plus } from 'lucide-react';
 import { AddToCartButton } from './AddToCartButton';
+import { useNotifications } from '@/lib/notification-context';
 import type { Product } from '@/lib/product-types';
 import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
 
@@ -20,6 +21,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function ProductCard({ product }: { product: Product }) {
+  const { isAdmin } = useNotifications();
   const [qty, setQty] = useState(1);
   const [showQty, setShowQty] = useState(false);
 
@@ -85,7 +87,8 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* Add to cart */}
+        {/* Add to cart — hidden for admin accounts, who browse but don't purchase */}
+        {!isAdmin && (
         <div className="mt-3 border-t border-farm-border pt-3">
           {showQty ? (
             <div className="flex items-center gap-2">
@@ -110,6 +113,7 @@ export function ProductCard({ product }: { product: Product }) {
             </button>
           )}
         </div>
+        )}
       </div>
     </article>
   );

@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
+import { useNotifications } from '@/lib/notification-context';
 import type { Product } from '@/lib/product-types';
 
 export function ProductAddToCart({ product }: { product: Product }) {
   const { addItem, totalItems } = useCart();
+  const { isAdmin } = useNotifications();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
@@ -16,6 +18,10 @@ export function ProductAddToCart({ product }: { product: Product }) {
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }
+
+  // Admin accounts browse the storefront but don't place orders themselves —
+  // they view what visitors have purchased/booked instead.
+  if (isAdmin) return null;
 
   return (
     <div className="space-y-3">

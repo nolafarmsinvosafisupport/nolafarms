@@ -6,6 +6,7 @@ import '@/styles/globals.css';
 import { ConditionalFooter } from '@/components/layout/ConditionalFooter';
 import { Navbar } from '@/components/layout/Navbar';
 import { CartProvider } from '@/lib/cart-context';
+import { NotificationProvider } from '@/lib/notification-context';
 import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { DustParticles } from '@/components/ui/DustParticles';
 import { JsonLd } from '@/components/ui/JsonLd';
@@ -88,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en-KE" className={`${inter.variable} ${playfair.variable}`}>
         <body className="font-sans">
+          <NotificationProvider>
           <CartProvider>
           <JsonLd data={localBusinessSchema} />
           <ScrollProgressBar />
@@ -110,6 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </>
           )}
           </CartProvider>
+          </NotificationProvider>
         </body>
       </html>
     </ClerkProvider>

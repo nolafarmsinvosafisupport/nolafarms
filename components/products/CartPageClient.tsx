@@ -2,10 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, LogIn } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 import { useCart } from '@/lib/cart-context';
 
 export function CartPageClient() {
+  const { isSignedIn } = useUser();
   const { items, removeItem, updateQty, totalItems, totalPrice } = useCart();
 
   if (items.length === 0) {
@@ -124,6 +126,11 @@ export function CartPageClient() {
             >
               Proceed to Order <ArrowRight size={14} />
             </Link>
+            {isSignedIn === false && (
+              <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-brand-deep/50">
+                <LogIn size={11} /> Sign in to complete your order — your cart is saved.
+              </p>
+            )}
             <Link
               href="/products"
               className="mt-3 block text-center text-xs text-brand-deep/50 hover:text-brand-deep underline"

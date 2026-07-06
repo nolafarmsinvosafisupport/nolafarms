@@ -3,15 +3,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CalendarDays, ChevronRight, LogOut, Settings, User } from 'lucide-react';
+import { CalendarDays, ChevronRight, LayoutDashboard, LogOut, Package, Settings, User } from 'lucide-react';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/lib/constants';
+import { useNotifications } from '@/lib/notification-context';
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { isSignedIn, user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const { isAdmin } = useNotifications();
   const pathname = usePathname();
   const [imgError, setImgError] = useState(false);
 
@@ -94,7 +96,13 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                 <p className="mb-1.5 px-2 text-[9px] font-semibold uppercase tracking-widest text-cream-secondary/35">
                   My Account
                 </p>
+                {isAdmin && (
+                  <MobileAccountLink href="/admin" icon={LayoutDashboard} label="Admin Dashboard" onClick={onClose} />
+                )}
                 <MobileAccountLink href="/account/bookings" icon={CalendarDays} label="My Bookings" onClick={onClose} />
+                {!isAdmin && (
+                  <MobileAccountLink href="/account/orders" icon={Package} label="My Orders" onClick={onClose} />
+                )}
                 <MobileAccountLink href="/account/profile" icon={User} label="My Profile" onClick={onClose} />
                 <MobileAccountLink href="/account/settings" icon={Settings} label="Settings" onClick={onClose} />
 

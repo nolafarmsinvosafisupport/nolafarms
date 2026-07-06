@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
+import { markAdminNotificationsRead } from '@/lib/admin-data';
+import { AdminNotifRefresh } from '@/components/admin/AdminNotifRefresh';
 import type { Order, OrderStatus } from '@/lib/product-types';
 import { ORDER_STATUS_LABELS, parseOrderItems } from '@/lib/product-types';
 
@@ -28,9 +30,11 @@ function fmtDate(s: string) {
 
 export default async function AdminOrdersPage() {
   const orders = await getOrders();
+  await markAdminNotificationsRead('orders');
 
   return (
     <div className="space-y-6">
+      <AdminNotifRefresh />
       <div>
         <h1 className="font-serif text-2xl text-brand-deep">Orders</h1>
         <p className="mt-1 text-xs text-brand-deep/50">{orders.length} order{orders.length !== 1 ? 's' : ''} total</p>

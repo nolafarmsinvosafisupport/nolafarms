@@ -33,6 +33,7 @@ export type OrderItem = {
 export type Order = {
   id: string;
   reference: string;
+  user_id: string | null;
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;

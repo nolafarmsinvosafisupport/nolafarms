@@ -118,6 +118,9 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `;
+    // Added when checkout became account-gated — links an order back to the Clerk
+    // account that placed it. Nullable so the 2 pre-existing guest orders are unaffected.
+    await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS user_id TEXT`;
 
     // Atomic per-scope counters for collision-proof reference numbers (e.g. "orders-2026", "bookings-2026").
     // Replaces the old COUNT(*)+1 pattern, which could assign the same reference to two concurrent submissions.

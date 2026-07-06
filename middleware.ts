@@ -3,9 +3,13 @@ import { NextResponse } from 'next/server';
 
 const isAccountRoute = createRouteMatcher(['/account(.*)']);
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
+// Checkout requires a signed-in account — auth.protect() redirects to
+// /sign-in?redirect_url=/checkout and Clerk returns the visitor there after
+// signing in, with their cart untouched (it lives in localStorage).
+const isCheckoutRoute = createRouteMatcher(['/checkout(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isAccountRoute(req)) {
+  if (isAccountRoute(req) || isCheckoutRoute(req)) {
     await auth.protect();
   }
 

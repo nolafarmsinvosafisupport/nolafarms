@@ -4,10 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { User, CalendarDays, Settings } from 'lucide-react';
+import { User, CalendarDays, Package, Settings } from 'lucide-react';
 
 const links = [
   { label: 'My Bookings', href: '/account/bookings', icon: CalendarDays },
+  { label: 'My Orders', href: '/account/orders', icon: Package },
   { label: 'Profile', href: '/account/profile', icon: User },
   { label: 'Settings', href: '/account/settings', icon: Settings },
 ];

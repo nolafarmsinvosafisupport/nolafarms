@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { useUser } from '@clerk/nextjs';
 import { z } from 'zod';
 import { minimumVisitDate, VISIT_PURPOSES } from '@/lib/booking-utils';
+import { useNotifications } from '@/lib/notification-context';
 
 const field = 'w-full border border-farm-border bg-cream-primary px-4 py-3 text-sm text-brand-deep outline-none focus:border-brand-leaf';
 
@@ -27,6 +28,7 @@ type FormData = z.infer<typeof schema>;
 
 export function BookingForm() {
   const { user, isSignedIn, isLoaded } = useUser();
+  const { isAdmin } = useNotifications();
   const pathname = usePathname();
   const router = useRouter();
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
@@ -80,6 +82,10 @@ export function BookingForm() {
   if (!isLoaded) {
     return <div className="border border-farm-border bg-cream-warm p-10 animate-pulse h-40" />;
   }
+
+  // Admin accounts browse the storefront but don't submit bookings themselves —
+  // they view what visitors have booked instead (see /admin/bookings).
+  if (isAdmin) return null;
 
   if (!isSignedIn) {
     return (

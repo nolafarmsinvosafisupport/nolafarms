@@ -1,6 +1,7 @@
 import type { BlockedDate, Booking } from './booking-types';
 import type { Order, Product } from './product-types';
 import { getDb, isDbConfigured, ensureMigrated } from './db';
+import { getCurrentUserId } from './auth';
 
 export async function getAdminBookings() {
   if (!isDbConfigured()) return { bookings: [] as Booking[], setupMessage: setupMsg() };
@@ -84,4 +85,25 @@ export async function getProductStats() {
 
 function setupMsg() {
   return 'DATABASE_URL is not configured. Add it in Railway and redeploy.';
+}
+
+// Clears the admin's unread badge for whichever section they just opened.
+// booking_id is set on every booking-related notification and never set on an
+// order-related one, so it's the signal used to scope the update to just one
+// section without touching the other's unread state.
+export async function markAdminNotificationsRead(section: 'orders' | 'bookings') {
+  if (!isDbConfigured()) return;
+  const userId = await getCurrentUserId();
+  if (!userId) return;
+  try {
+    await ensureMigrated();
+    const sql = getDb();
+    if (section === 'orders') {
+      await sql`UPDATE notifications SET read = TRUE WHERE user_id = ${userId} AND read = FALSE AND booking_id IS NULL`;
+    } else {
+      await sql`UPDATE notifications SET read = TRUE WHERE user_id = ${userId} AND read = FALSE AND booking_id IS NOT NULL`;
+    }
+  } catch {
+    // Non-critical — the bell/badge will just stay showing until the next successful mark-read.
+  }
 }

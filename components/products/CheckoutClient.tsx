@@ -3,12 +3,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 import { useCart } from '@/lib/cart-context';
 
 export function CheckoutClient() {
   const router = useRouter();
+  const { user, isSignedIn } = useUser();
   const { items, totalPrice, clearCart } = useCart();
 
   const [form, setForm] = useState({
@@ -20,6 +22,17 @@ export function CheckoutClient() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Checkout is account-gated, so a signed-in user's own details are already
+  // known — pre-fill name/email so they don't have to retype what Clerk has.
+  useEffect(() => {
+    if (!isSignedIn || !user) return;
+    setForm((f) => ({
+      ...f,
+      customer_name: f.customer_name || user.fullName || '',
+      customer_email: f.customer_email || user.primaryEmailAddress?.emailAddress || '',
+    }));
+  }, [isSignedIn, user]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
