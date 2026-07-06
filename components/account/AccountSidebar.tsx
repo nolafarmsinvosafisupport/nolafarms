@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { User, CalendarDays, Package, Settings } from 'lucide-react';
+import { useNotifications } from '@/lib/notification-context';
 
-const links = [
+const ALL_LINKS = [
   { label: 'My Bookings', href: '/account/bookings', icon: CalendarDays },
   { label: 'My Orders', href: '/account/orders', icon: Package },
   { label: 'Profile', href: '/account/profile', icon: User },
@@ -21,8 +22,12 @@ interface Props {
 
 export function AccountSidebar({ fullName, email, imageUrl }: Props) {
   const pathname = usePathname();
+  const { isAdmin } = useNotifications();
   const [imgError, setImgError] = useState(false);
   const showImg = !!imageUrl && !imgError;
+  // Admin accounts browse but don't place orders themselves — same rule
+  // already applied to the cart, product pages, and MobileMenu.
+  const links = isAdmin ? ALL_LINKS.filter((l) => l.href !== '/account/orders') : ALL_LINKS;
 
   return (
     <aside className="hidden md:flex sticky top-16 h-[calc(100vh-4rem)] w-56 flex-shrink-0 flex-col overflow-y-auto border-r border-farm-border bg-cream-warm xl:w-64">
