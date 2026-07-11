@@ -1,3 +1,17 @@
+// R2_PUBLIC_URL isn't known until the bucket + (optionally) its custom domain
+// exist, so this reads it from the environment instead of hardcoding a host —
+// once the env var is set in Railway and redeployed, uploaded product images
+// are automatically allowed through next/image with no further code change.
+function r2RemotePattern() {
+  if (!process.env.R2_PUBLIC_URL) return null;
+  try {
+    const url = new URL(process.env.R2_PUBLIC_URL);
+    return { protocol: url.protocol.replace(':', ''), hostname: url.hostname };
+  } catch {
+    return null;
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
@@ -8,6 +22,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'img.clerk.com' },
       { protocol: 'https', hostname: 'images.clerk.dev' },
+      ...(r2RemotePattern() ? [r2RemotePattern()] : []),
     ],
     // WebP only — AVIF takes 3-5x longer to encode on first request with no
     // meaningful quality benefit for farm photography at these file sizes.

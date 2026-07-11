@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { AdminImageUploader } from './AdminImageUploader';
 import type { Product, ProductCategory, Ranch } from '@/lib/product-types';
 import { CATEGORY_LABELS } from '@/lib/product-types';
 
@@ -35,7 +36,7 @@ export function AdminProductForm({ product }: Props) {
   const [compareAt, setCompareAt] = useState(product?.compare_at_price ?? '');
   const [priceUnit, setPriceUnit] = useState(product?.price_unit ?? 'per kg');
   const [bulkInfo, setBulkInfo] = useState(product?.bulk_info ?? '');
-  const [images, setImages] = useState<string[]>(product?.images?.length ? product.images : ['']);
+  const [images, setImages] = useState<string[]>(product?.images ?? []);
   const [available, setAvailable] = useState(product?.available ?? true);
   const [sortOrder, setSortOrder] = useState(String(product?.sort_order ?? '0'));
   const [loading, setLoading] = useState(false);
@@ -49,10 +50,6 @@ export function AdminProductForm({ product }: Props) {
   function addDetail() { setDetails((d) => [...d, '']); }
   function removeDetail(i: number) { setDetails((d) => d.filter((_, idx) => idx !== i)); }
   function updateDetail(i: number, v: string) { setDetails((d) => d.map((x, idx) => idx === i ? v : x)); }
-
-  function addImage() { setImages((imgs) => [...imgs, '']); }
-  function removeImage(i: number) { setImages((imgs) => imgs.filter((_, idx) => idx !== i)); }
-  function updateImage(i: number, v: string) { setImages((imgs) => imgs.map((x, idx) => idx === i ? v : x)); }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -257,39 +254,8 @@ export function AdminProductForm({ product }: Props) {
         />
       </Field>
 
-      {/* Image paths */}
-      <div>
-        <label className={labelCls}>Image Paths</label>
-        <p className="mb-2 text-xs text-brand-deep/40">Enter paths relative to /public, e.g. /images/products/vegetables/spinach/img.jpg</p>
-        <div className="space-y-2">
-          {images.map((img, i) => (
-            <div key={i} className="flex gap-2">
-              <input
-                value={img}
-                onChange={(e) => updateImage(i, e.target.value)}
-                placeholder="/images/products/..."
-                className={`${inputCls} flex-1 font-mono text-xs`}
-              />
-              {images.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="px-2 text-brand-deep/30 hover:text-red-600 transition-colors"
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={addImage}
-          className="mt-2 flex items-center gap-1 text-xs font-semibold text-brand-leaf hover:text-brand-deep transition-colors"
-        >
-          <Plus size={12} /> Add Image
-        </button>
-      </div>
+      {/* Images */}
+      <AdminImageUploader images={images.filter(Boolean)} onChange={setImages} />
 
       {/* Sort order + Available toggle */}
       <div className="grid gap-4 sm:grid-cols-2">
