@@ -25,3 +25,8 @@ yarn-error.log*
 # Cache
 /.npm-cache/
 /.cache/
+
+# Local working files — internal guides and account credentials. Never commit.
+# Anchored to the repo root so genuine assets under public/ are unaffected.
+/nola accounts/
+/Nola-*.pdf

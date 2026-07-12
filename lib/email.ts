@@ -69,13 +69,13 @@ function baseLayout(content: string) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${brand.cream}">
     <tr><td align="center" style="padding:40px 16px">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-        <tr><td style="background:${brand.green};padding:32px 40px">
-          <p style="margin:0;font-family:Georgia,serif;font-size:28px;color:${brand.cream};letter-spacing:0.04em">Nola Ranches</p>
-          <p style="margin:8px 0 0;font-size:12px;color:${brand.gold};letter-spacing:0.15em;text-transform:uppercase">Oloitoktok &amp; Laikipia, Kenya</p>
+        <tr><td style="background:${brand.cream};padding:28px 40px;text-align:center">
+          <img src="${SITE.url}/images/logos/email-logo.png" width="200" height="121" alt="Nola Ranches" style="display:inline-block;border:0;outline:none;text-decoration:none" />
+          <p style="margin:10px 0 0;font-size:11px;color:${brand.muted};letter-spacing:0.15em;text-transform:uppercase">Oloitoktok &amp; Laikipia, Kenya</p>
         </td></tr>
         <tr><td style="background:#ffffff;padding:40px">${content}</td></tr>
         <tr><td style="background:${brand.green};padding:24px 40px;text-align:center">
-          <p style="margin:0 0 8px;font-size:12px;color:${brand.muted}">WhatsApp ${SITE.whatsapp} &bull; ${SITE.url.replace(/^https?:\/\//, '')}</p>
+          <p style="margin:0 0 8px;font-size:12px;color:${brand.muted}">WhatsApp <a href="https://wa.me/${SITE.whatsapp}" style="color:${brand.gold};text-decoration:underline">${SITE.whatsapp}</a> &bull; <a href="${SITE.url}" style="color:${brand.gold};text-decoration:underline">${SITE.url.replace(/^https?:\/\//, '')}</a></p>
           <p style="margin:0;font-size:11px;color:${brand.muted};line-height:1.6">This is an automated, no-reply message — please don't reply to this email. For help, WhatsApp us or use the contact form on our website.</p>
         </td></tr>
       </table>

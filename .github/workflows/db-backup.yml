@@ -1,0 +1,105 @@
+name: Database Backup
+
+# Nightly logical backup of the Railway Postgres database to a private Cloudflare R2
+# bucket. Railway's own backups are a paid feature, so this is the free equivalent.
+#
+# Restore instructions: docs/BACKUPS.md
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # 01:00 UTC = 04:00 EAT — after the day's traffic, before the morning
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      # The runner ships pg_dump 16, which refuses to dump a newer server ("server version
+      # mismatch"). Railway runs Postgres 18, so the matching client has to come from PGDG.
+      - name: Install PostgreSQL 18 client
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+            https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-18
+          pg_dump --version
+
+      - name: Dump database
+        env:
+          PGSSLMODE: require
+          # Must be the *public* Railway URL — GitHub's runners cannot reach railway.internal.
+          DATABASE_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
+        run: |
+          set -euo pipefail
+          STAMP="$(date -u +%Y-%m-%d)"
+          FILE="nolaranches-${STAMP}.dump"
+          echo "FILE=$FILE" >> "$GITHUB_ENV"
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+
+          pg_dump --format=custom --no-owner --no-privileges --compress=9 \
+            --file="$FILE" "$DATABASE_URL"
+
+          SIZE=$(stat -c%s "$FILE")
+          echo "Dump size: ${SIZE} bytes"
+          # A valid dump of this schema is never this small. Fail loudly rather than quietly
+          # shipping a truncated file and letting it age out the last known-good backup.
+          if [ "$SIZE" -lt 2048 ]; then
+            echo "::error::Dump is suspiciously small (${SIZE} bytes) — aborting without upload"
+            exit 1
+          fi
+
+      # A dump that cannot be listed cannot be restored. Catch that here, not during an outage.
+      - name: Verify the dump is readable
+        run: |
+          set -euo pipefail
+          pg_restore --list "$FILE" > /dev/null
+          echo "pg_restore --list OK — $(pg_restore --list "$FILE" | grep -cE '^[0-9]+;') objects"
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          # R2 rejects the newer AWS default integrity headers; keep checksums opt-in.
+          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+          AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+          ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          BUCKET: ${{ secrets.R2_BACKUP_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 cp "$FILE" "s3://${BUCKET}/daily/${FILE}" --endpoint-url "$ENDPOINT"
+          echo "Uploaded daily/${FILE}"
+
+          # On the 1st, also keep a monthly copy that pruning never touches. Guards against the
+          # case where corruption goes unnoticed for longer than the 30-day daily window.
+          if [ "$(date -u +%d)" = "01" ]; then
+            aws s3 cp "$FILE" "s3://${BUCKET}/monthly/${FILE}" --endpoint-url "$ENDPOINT"
+            echo "Uploaded monthly/${FILE}"
+          fi
+
+      - name: Prune daily backups older than 30 days
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+          AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+          ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          BUCKET: ${{ secrets.R2_BACKUP_BUCKET }}
+        run: |
+          set -euo pipefail
+          CUTOFF=$(date -u -d '30 days ago' +%s)
+          aws s3api list-objects-v2 --bucket "$BUCKET" --prefix "daily/" \
+            --endpoint-url "$ENDPOINT" --query 'Contents[].[Key,LastModified]' --output text \
+            | grep -v '^None' \
+            | while read -r KEY TS; do
+                [ -z "${KEY:-}" ] && continue
+                if [ "$(date -u -d "$TS" +%s)" -lt "$CUTOFF" ]; then
+                  aws s3 rm "s3://${BUCKET}/${KEY}" --endpoint-url "$ENDPOINT"
+                  echo "pruned ${KEY}"
+                fi
+              done
+          echo "Prune complete."
