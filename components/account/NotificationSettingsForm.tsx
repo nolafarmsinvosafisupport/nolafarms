@@ -33,7 +33,7 @@ export function NotificationSettingsForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings),
     });
-    setStatus(response.ok ? 'Notification settings saved.' : 'Settings could not be saved yet. Check Supabase configuration.');
+    setStatus(response.ok ? 'Notification settings saved.' : 'Settings could not be saved. Please try again.');
   }
 
   return (

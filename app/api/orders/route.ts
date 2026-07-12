@@ -1,6 +1,7 @@
 import { requireDb, requireAdminResponse, requireUserResponse, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
 import { isRateLimited } from '@/lib/rate-limit';
+import { sendOrderReceivedEmail } from '@/lib/email';
 import type { Order } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -93,6 +94,10 @@ export async function POST(request: Request) {
         VALUES (${adminUserId}, ${order.id}, 'submitted', ${`New Order ${reference}`}, ${`Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`})
       `.catch(() => undefined);
     }
+
+    // Emailed order confirmation (receipt) to the customer. Fire-and-forget so a
+    // mail hiccup never fails the order itself.
+    sendOrderReceivedEmail(order).catch(() => undefined);
 
     return Response.json({ success: true, order, reference }, { status: 201 });
   } catch (e) {

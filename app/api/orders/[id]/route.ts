@@ -1,5 +1,6 @@
 import { requireDb, requireAdminResponse, orderUpdateSchema, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
+import { sendOrderStatusEmail } from '@/lib/email';
 import type { Order } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -35,6 +36,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const sql = getDb();
   try {
+    // Capture the prior status so we only email the customer on an actual change.
+    const [prev] = await sql<{ status: string }[]>`SELECT status FROM orders WHERE id = ${id}`;
+
     const [order] = await sql<Order[]>`
       UPDATE orders SET
         status = COALESCE(${body.status ?? null}, status),
@@ -44,6 +48,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       RETURNING *
     `;
     if (!order) return Response.json({ success: false, message: 'Order not found.' }, { status: 404 });
+
+    // Email the customer when the status genuinely changed. Fire-and-forget so a
+    // mail hiccup never fails the admin's save. 'new' is skipped inside the helper.
+    if (body.status && prev && body.status !== prev.status) {
+      sendOrderStatusEmail(order, order.status).catch(() => undefined);
+    }
+
     return Response.json({ success: true, order });
   } catch (e) {
     return dbErrorResponse(e, 'Could not update order. Please try again.');

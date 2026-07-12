@@ -2,7 +2,7 @@ export const SITE = {
   name: 'Nola Farms',
   tagline: 'Two Ranches. One Farm.',
   description: '375-acre agricultural operation across two ranches in Oloitoktok and Laikipia, Kenya.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nolafarms-production.up.railway.app',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nolaranches.co.ke',
   phone: '0750 958 780',
   whatsapp: '254750958780',
   email: 'nolalivestockspoultryfarm@gmail.com',
