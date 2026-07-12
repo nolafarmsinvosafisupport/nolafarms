@@ -14,12 +14,12 @@ export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Farm Products & Livestock | Nola Farms',
+    title: 'Farm Products & Livestock | Nola Ranches',
     description:
-      'Shop fresh farm produce, exotic livestock, and grain from Nola Farms — two ranches in Oloitoktok and Laikipia, Kenya.',
-    keywords: ['buy goats Kenya', 'buy cattle Laikipia', 'farm produce Kenya', 'exotic livestock Kenya', 'wheat Laikipia', 'spinach Oloitoktok', 'Nola Farms products'],
+      'Shop fresh farm produce, exotic livestock, and grain from Nola Ranches — two ranches in Oloitoktok and Laikipia, Kenya.',
+    keywords: ['buy goats Kenya', 'buy cattle Laikipia', 'farm produce Kenya', 'exotic livestock Kenya', 'wheat Laikipia', 'spinach Oloitoktok', 'Nola Ranches products'],
     path: '/products',
-    imageAlt: 'Nola Farms products — livestock and farm produce from Kenya',
+    imageAlt: 'Nola Ranches products — livestock and farm produce from Kenya',
   });
 }
 

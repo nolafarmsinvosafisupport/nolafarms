@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache';
 import { requireDb, requireUserResponse } from '@/lib/api-utils';
 import { isCurrentUserAdmin } from '@/lib/auth';
 import { getDb } from '@/lib/db';
@@ -34,6 +35,13 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     WHERE id = ${params.id}
     RETURNING *
   `;
-  await sendStatusEmail(updated, 'cancelled', note);
+  // Fire-and-forget — the cancellation is already persisted; an email failure must not
+  // 500 the caller for an action that succeeded.
+  sendStatusEmail(updated, 'cancelled', note).catch((err) => {
+    console.error('Cancellation email failed (booking was still cancelled):', updated.reference, err);
+  });
+  // Cancelling frees the date back up — bust the cached availability.
+  revalidateTag('availability');
+
   return Response.json({ success: true, booking: updated });
 }

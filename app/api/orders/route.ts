@@ -1,5 +1,6 @@
 import { requireDb, requireAdminResponse, requireUserResponse, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
+import { ADMIN_LIST_LIMIT } from '@/lib/admin-data';
 import { isRateLimited } from '@/lib/rate-limit';
 import { sendOrderReceivedEmail } from '@/lib/email';
 import type { Order } from '@/lib/product-types';
@@ -18,24 +19,25 @@ export async function GET(request: Request) {
 
   await ensureMigrated();
   const sql = getDb();
-  let orders: Order[];
 
-  if (status && status !== 'all') {
-    orders = await sql<Order[]>`SELECT * FROM orders WHERE status = ${status} ORDER BY created_at DESC`;
-  } else {
-    orders = await sql<Order[]>`SELECT * FROM orders ORDER BY created_at DESC`;
-  }
+  // Search is done in SQL rather than by loading every order into memory and filtering
+  // in JS (which is what this used to do), and the result set is hard-bounded.
+  const statusFilter = status && status !== 'all' ? status : null;
+  const q = search ? `%${search}%` : null;
 
-  if (search) {
-    const q = search.toLowerCase();
-    orders = orders.filter(
-      (o) =>
-        o.customer_name.toLowerCase().includes(q) ||
-        o.customer_phone.includes(q) ||
-        o.reference.toLowerCase().includes(q) ||
-        (o.customer_email ?? '').toLowerCase().includes(q),
-    );
-  }
+  const orders = await sql<Order[]>`
+    SELECT * FROM orders
+    WHERE (${statusFilter}::text IS NULL OR status = ${statusFilter})
+      AND (
+        ${q}::text IS NULL
+        OR customer_name ILIKE ${q}
+        OR customer_phone ILIKE ${q}
+        OR reference ILIKE ${q}
+        OR COALESCE(customer_email, '') ILIKE ${q}
+      )
+    ORDER BY created_at DESC
+    LIMIT ${ADMIN_LIST_LIMIT}
+  `;
 
   return Response.json({ success: true, orders });
 }

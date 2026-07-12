@@ -9,7 +9,7 @@ export function CTASection() {
           <h2 className="font-serif text-5xl text-brand-deep">Come See the Farm.</h2>
         </div>
         <Link href="/contact" className="bg-brand-deep px-8 py-4 text-xs font-semibold uppercase tracking-widest text-cream-primary transition-colors hover:bg-brand-primary">
-          Contact Nola Farms
+          Contact Nola Ranches
         </Link>
       </div>
     </section>

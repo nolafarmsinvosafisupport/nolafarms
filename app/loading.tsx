@@ -13,7 +13,7 @@ export default function Loading() {
         <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-2xl">
           <Image
             src="/images/logos/small logo.png"
-            alt="Nola Farms"
+            alt="Nola Ranches"
             width={68}
             height={68}
             priority
@@ -25,7 +25,7 @@ export default function Loading() {
       {/* Wordmark */}
       <div className="flex flex-col items-center gap-2">
         <p className="font-serif text-xl tracking-[0.25em] text-cream-primary">
-          NOLA<span className="text-brand-leaf">FARMS</span>
+          NOLA<span className="text-brand-leaf">RANCHES</span>
         </p>
         {/* Bouncing dots */}
         <div className="flex gap-1.5">

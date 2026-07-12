@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 import { requireAdminResponse, requireDb } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
@@ -36,5 +37,6 @@ export async function POST(request: Request) {
     ON CONFLICT (date) DO NOTHING
     RETURNING *
   `;
+  revalidateTag('availability');
   return Response.json({ success: true, blockedDate });
 }

@@ -7,11 +7,16 @@ import { ORDER_STATUS_LABELS, parseOrderItems } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
 
+// Bounded: this used to be an unbounded SELECT * that loaded every order ever placed
+// into memory on each page render. 500 is far above the expected volume, so nothing is
+// hidden in practice, but the query can never grow without limit.
+const ADMIN_LIST_LIMIT = 500;
+
 async function getOrders(): Promise<Order[]> {
   if (!isDbConfigured()) return [];
   await ensureMigrated();
   const sql = getDb();
-  return sql<Order[]>`SELECT * FROM orders ORDER BY created_at DESC`;
+  return sql<Order[]>`SELECT * FROM orders ORDER BY created_at DESC LIMIT ${ADMIN_LIST_LIMIT}`;
 }
 
 const STATUS_COLORS: Record<OrderStatus, string> = {

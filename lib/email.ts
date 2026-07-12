@@ -18,20 +18,22 @@ function getResend() {
 // (nolaranches.co.ke). Wrapped in a friendly display name for deliverability.
 function fromEmail() {
   const address = process.env.RESEND_FROM_EMAIL || 'notifications@nolaranches.co.ke';
-  return `Nola Farms <${address}>`;
+  return `Nola Ranches <${address}>`;
 }
 
 function adminEmail() {
   return process.env.ADMIN_NOTIFICATION_EMAIL || SITE.email;
 }
 
-async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+async function sendEmail({ to, subject, html, replyTo }: { to: string; subject: string; html: string; replyTo?: string }) {
   const client = getResend();
   if (!client || !to || to.includes('PLACEHOLDER')) {
     console.log('Email skipped (Resend not configured):', { to, subject });
     return;
   }
-  await client.emails.send({ from: fromEmail(), to, subject, html });
+  // The sender is a no-reply mailbox, but for contact enquiries we set reply-to to the
+  // customer so the admin can just hit Reply and reach them directly.
+  await client.emails.send({ from: fromEmail(), to, subject, html, ...(replyTo ? { replyTo } : {}) });
 }
 
 async function getNotifyPrefs(userId: string | null) {
@@ -68,7 +70,7 @@ function baseLayout(content: string) {
     <tr><td align="center" style="padding:40px 16px">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
         <tr><td style="background:${brand.green};padding:32px 40px">
-          <p style="margin:0;font-family:Georgia,serif;font-size:28px;color:${brand.cream};letter-spacing:0.04em">Nola Farms</p>
+          <p style="margin:0;font-family:Georgia,serif;font-size:28px;color:${brand.cream};letter-spacing:0.04em">Nola Ranches</p>
           <p style="margin:8px 0 0;font-size:12px;color:${brand.gold};letter-spacing:0.15em;text-transform:uppercase">Oloitoktok &amp; Laikipia, Kenya</p>
         </td></tr>
         <tr><td style="background:#ffffff;padding:40px">${content}</td></tr>
@@ -100,7 +102,7 @@ function detailsTable(booking: Booking) {
 function noteBlock(note?: string | null) {
   if (!note) return '';
   return `<div style="margin-top:24px;border-left:3px solid ${brand.gold};padding:12px 16px;background:#FBF6ED">
-    <p style="margin:0;font-size:13px;color:${brand.green}"><strong>Note from Nola Farms:</strong> ${note}</p>
+    <p style="margin:0;font-size:13px;color:${brand.green}"><strong>Note from Nola Ranches:</strong> ${note}</p>
   </div>`;
 }
 
@@ -108,7 +110,7 @@ function buildReceivedVisitorHtml(booking: Booking) {
   return baseLayout(`
     <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">We've received your booking request</h1>
     <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">Reference: ${booking.reference}</p>
-    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for your interest in visiting Nola Farms. We will confirm within <strong>24 hours</strong>.</p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for your interest in visiting Nola Ranches. We will confirm within <strong>24 hours</strong>.</p>
     ${detailsTable(booking)}
     <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
   `);
@@ -160,7 +162,7 @@ function buildCancelledHtml(booking: Booking, note?: string | null) {
 
 function buildReminderHtml(booking: Booking) {
   return baseLayout(`
-    <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">Your Nola Farms visit is tomorrow</h1>
+    <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">Your Nola Ranches visit is tomorrow</h1>
     <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Reminder</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Your visit is scheduled for <strong>tomorrow, ${booking.visit_date}</strong>.</p>
     ${detailsTable(booking)}
@@ -188,7 +190,7 @@ export async function sendStatusEmail(booking: Booking, action: 'approved' | 're
 
   switch (action) {
     case 'approved':
-      visitorSubject = `Your Nola Farms visit is confirmed — ${booking.visit_date}`;
+      visitorSubject = `Your Nola Ranches visit is confirmed — ${booking.visit_date}`;
       visitorHtml = buildApprovedHtml(booking);
       sendToVisitor = prefs.confirm;
       break;
@@ -216,7 +218,7 @@ export async function sendStatusEmail(booking: Booking, action: 'approved' | 're
 export async function sendReminderEmail(booking: Booking) {
   const prefs = await getNotifyPrefs(booking.user_id);
   if (!prefs.reminder) return;
-  await sendEmail({ to: booking.email, subject: `Your Nola Farms visit is tomorrow — ${booking.visit_date}`, html: buildReminderHtml(booking) });
+  await sendEmail({ to: booking.email, subject: `Your Nola Ranches visit is tomorrow — ${booking.visit_date}`, html: buildReminderHtml(booking) });
 }
 
 // ---------------------------------------------------------------------------
@@ -224,11 +226,11 @@ export async function sendReminderEmail(booking: Booking) {
 // ---------------------------------------------------------------------------
 
 function buildWelcomeHtml(firstName?: string) {
-  const greeting = firstName ? `Welcome, ${firstName}!` : 'Welcome to Nola Farms!';
+  const greeting = firstName ? `Welcome, ${firstName}!` : 'Welcome to Nola Ranches!';
   return baseLayout(`
     <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">${greeting}</h1>
     <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Account created</p>
-    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for creating an account with Nola Farms — a working agricultural estate across two ranches in Oloitoktok and Laikipia, Kenya. Your account lets you:</p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for creating an account with Nola Ranches — a working agricultural estate across two ranches in Oloitoktok and Laikipia, Kenya. Your account lets you:</p>
     <ul style="margin:16px 0 0;padding-left:20px;font-size:14px;line-height:1.9;color:${brand.green}">
       <li>Order fresh produce, grain, and livestock from our farm shop</li>
       <li>Request and track guided ranch visits</li>
@@ -243,7 +245,77 @@ function buildWelcomeHtml(firstName?: string) {
 
 export async function sendWelcomeEmail({ email, firstName }: { email: string; firstName?: string }) {
   if (!email) return;
-  await sendEmail({ to: email, subject: 'Welcome to Nola Farms', html: buildWelcomeHtml(firstName) });
+  await sendEmail({ to: email, subject: 'Welcome to Nola Ranches', html: buildWelcomeHtml(firstName) });
+}
+
+// ---------------------------------------------------------------------------
+// Contact form
+// ---------------------------------------------------------------------------
+
+export type ContactMessage = {
+  fullName: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+};
+
+function escapeHtml(s: string) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function buildContactAdminHtml(m: ContactMessage) {
+  const rows: [string, string][] = [
+    ['Name', m.fullName],
+    ['Email', m.email],
+    ['Phone', m.phone],
+    ['Subject', m.subject],
+  ];
+  return baseLayout(`
+    <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">New Contact Enquiry</h1>
+    <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">${escapeHtml(m.subject)}</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;border-collapse:collapse">
+      ${rows.map(([l, v]) => `<tr>
+        <td style="padding:10px 14px;border:1px solid #E8E0D4;background:#FAF5F0;width:30%;font-size:13px;font-weight:600;color:${brand.green}">${l}</td>
+        <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green}">${escapeHtml(v)}</td>
+      </tr>`).join('')}
+    </table>
+    <div style="margin-top:24px;border-left:3px solid ${brand.gold};padding:12px 16px;background:#FBF6ED">
+      <p style="margin:0;font-size:13px;line-height:1.7;color:${brand.green};white-space:pre-wrap">${escapeHtml(m.message)}</p>
+    </div>
+    <p style="margin:24px 0 0;font-size:13px;color:${brand.muted}">Just hit Reply to respond directly to ${escapeHtml(m.fullName)}.</p>
+  `);
+}
+
+function buildContactAckHtml(m: ContactMessage) {
+  return baseLayout(`
+    <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">Thanks for getting in touch</h1>
+    <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Message received</p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Hi ${escapeHtml(m.fullName)}, we've received your message and will get back to you within <strong>24 hours</strong> by phone, email, or WhatsApp.</p>
+    <div style="margin-top:24px;border-left:3px solid ${brand.gold};padding:12px 16px;background:#FBF6ED">
+      <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:${brand.green}">Your message (${escapeHtml(m.subject)})</p>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:${brand.green};white-space:pre-wrap">${escapeHtml(m.message)}</p>
+    </div>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Need us sooner? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+  `);
+}
+
+export async function sendContactEmails(m: ContactMessage) {
+  await Promise.all([
+    // To the farm — reply-to is the customer so admin can reply straight back.
+    sendEmail({
+      to: adminEmail(),
+      subject: `New enquiry: ${m.subject} — ${m.fullName}`,
+      html: buildContactAdminHtml(m),
+      replyTo: m.email,
+    }),
+    // Acknowledgement to the customer.
+    sendEmail({
+      to: m.email,
+      subject: 'We received your message — Nola Ranches',
+      html: buildContactAckHtml(m),
+    }),
+  ]);
 }
 
 // ---------------------------------------------------------------------------
@@ -303,7 +375,7 @@ function buildOrderStatusHtml(order: Order, status: OrderStatus) {
     },
     fulfilled: {
       heading: 'Your order is complete',
-      body: `Your order <strong>${order.reference}</strong> has been fulfilled. Thank you for choosing Nola Farms — we hope to serve you again.`,
+      body: `Your order <strong>${order.reference}</strong> has been fulfilled. Thank you for choosing Nola Ranches — we hope to serve you again.`,
     },
     cancelled: {
       heading: 'Your order was cancelled',

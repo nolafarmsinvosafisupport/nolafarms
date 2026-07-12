@@ -84,7 +84,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-cream-primary">
-                      {user.fullName || 'Nola Farms visitor'}
+                      {user.fullName || 'Nola Ranches visitor'}
                     </p>
                     <p className="truncate text-xs text-cream-secondary/55">
                       {user.primaryEmailAddress?.emailAddress}
@@ -131,12 +131,12 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="flex items-center justify-center gap-2 border-t border-white/5 py-4">
             <Image
               src="/images/logos/small logo.png"
-              alt="Nola Farms"
+              alt="Nola Ranches"
               width={20}
               height={20}
               className="object-contain opacity-40"
             />
-            <span className="text-[10px] font-serif tracking-widest text-cream-secondary/30">NOLA FARMS</span>
+            <span className="text-[10px] font-serif tracking-widest text-cream-secondary/30">NOLA RANCHES</span>
           </div>
         </motion.div>
       )}

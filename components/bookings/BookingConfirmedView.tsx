@@ -25,7 +25,7 @@ const exploreLinks = [
     href: '/gallery',
     icon: ImageIcon,
     title: 'Farm Gallery',
-    desc: 'A visual journey through life at Nola Farms — the land, the animals, and the people behind it.',
+    desc: 'A visual journey through life at Nola Ranches — the land, the animals, and the people behind it.',
   },
   {
     href: '/about',
@@ -214,8 +214,8 @@ export function BookingConfirmedView({ booking }: { booking: Booking }) {
         <div className="mx-auto max-w-5xl px-6 py-16 lg:px-8">
           <div className="text-center">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-leaf">While You Wait</p>
-            <h2 className="mt-2 font-serif text-3xl text-brand-deep">Discover More About Nola Farms</h2>
-            <p className="mt-3 text-sm text-brand-deep/60">Your visit is just the beginning. Explore what makes Nola Farms special.</p>
+            <h2 className="mt-2 font-serif text-3xl text-brand-deep">Discover More About Nola Ranches</h2>
+            <p className="mt-3 text-sm text-brand-deep/60">Your visit is just the beginning. Explore what makes Nola Ranches special.</p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">

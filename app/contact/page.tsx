@@ -10,14 +10,14 @@ import { breadcrumbSchema, contactPageSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Contact Nola Farms | Enquiries, Ranch Visits & Directions - Laikipia',
+    title: 'Contact Nola Ranches | Enquiries, Ranch Visits & Directions - Laikipia',
     description:
-      'Contact Nola Farms in Laikipia, Kenya. Send an enquiry, book a ranch visit, ask about livestock or wholesale, or get directions to the farm. We respond promptly via phone, email, or WhatsApp.',
-    keywords: ['contact Nola Farms', 'Nola Farms phone number', 'Nola Farms WhatsApp', 'Nola Farms location', 'how to get to Nola Farms', 'Nola Farms directions', 'farm enquiry Laikipia', 'book ranch visit Laikipia', 'Nola Farms email', 'Laikipia farm contact', 'farm contact Kenya', 'livestock enquiry Kenya'],
+      'Contact Nola Ranches in Laikipia, Kenya. Send an enquiry, book a ranch visit, ask about livestock or wholesale, or get directions to the farm. We respond promptly via phone, email, or WhatsApp.',
+    keywords: ['contact Nola Ranches', 'Nola Ranches phone number', 'Nola Ranches WhatsApp', 'Nola Ranches location', 'how to get to Nola Ranches', 'Nola Ranches directions', 'farm enquiry Laikipia', 'book ranch visit Laikipia', 'Nola Ranches email', 'Laikipia farm contact', 'farm contact Kenya', 'livestock enquiry Kenya'],
     path: '/contact',
-    imageAlt: 'Nola Farms contact - Laikipia Kenya',
-    ogTitle: 'Contact Nola Farms - Laikipia, Kenya',
-    ogDescription: 'Reach Nola Farms by phone, WhatsApp, or email. Book ranch visits, make livestock enquiries, or get directions to our estate in Laikipia.',
+    imageAlt: 'Nola Ranches contact - Laikipia Kenya',
+    ogTitle: 'Contact Nola Ranches - Laikipia, Kenya',
+    ogDescription: 'Reach Nola Ranches by phone, WhatsApp, or email. Book ranch visits, make livestock enquiries, or get directions to our estate in Laikipia.',
   });
 }
 
@@ -26,11 +26,11 @@ export default function ContactPage() {
     <main>
       <JsonLd data={[contactPageSchema, breadcrumbSchema([{ name: 'Home', url: SITE.url }, { name: 'Contact', url: `${SITE.url}/contact` }])]} />
       <PageHero
-        eyebrow="Contact Nola Farms"
+        eyebrow="Contact Nola Ranches"
         title="Let's Talk. We're Right Here in Laikipia."
         subtitle="Send an enquiry, book a ranch visit, ask about livestock, or get directions to the farm."
         image={IMAGES.farmRoad}
-        alt="Directions road to Nola Farms in Laikipia County Kenya"
+        alt="Directions road to Nola Ranches in Laikipia County Kenya"
       />
       <section className="bg-cream-primary py-28">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
@@ -47,7 +47,7 @@ export default function ContactPage() {
                 <li className="flex gap-3"><MapPin className="mt-1 text-brand-leaf" size={18} aria-hidden="true" />Oloitoktok &amp; Laikipia, Kenya</li>
               </ul>
               <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex bg-[#25D366] px-7 py-3 text-xs font-semibold uppercase tracking-widest text-white">
-                WhatsApp Nola Farms
+                WhatsApp Nola Ranches
               </a>
               <div className="mt-8 border-t border-farm-border pt-6 text-sm leading-7 text-brand-deep/70">
                 <Link className="text-brand-leaf" href="/services">Book a ranch visit</Link> &middot; <Link className="text-brand-leaf" href="/products">Browse products</Link>
@@ -78,7 +78,7 @@ export default function ContactPage() {
           <h2 className="mb-8 font-serif text-5xl text-cream-primary">Find Our Ranches</h2>
           <div className="aspect-[16/7] min-h-[360px] overflow-hidden border border-white/10 bg-white/5">
             <iframe
-              title="Google Maps placeholder for Nola Farms location in Laikipia County Kenya"
+              title="Google Maps placeholder for Nola Ranches location in Laikipia County Kenya"
               src="https://www.google.com/maps?q=Laikipia%20County%20Kenya&output=embed"
               className="h-full w-full"
               loading="lazy"

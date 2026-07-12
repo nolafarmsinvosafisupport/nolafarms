@@ -3,12 +3,19 @@ import type { Order, Product } from './product-types';
 import { getDb, isDbConfigured, ensureMigrated } from './db';
 import { getCurrentUserId } from './auth';
 
+// Bounded: previously an unbounded SELECT * that loaded every booking ever made into
+// memory on each admin page render. 500 is far above expected volume at this scale, so
+// nothing is hidden in practice, but the query can never grow without limit.
+export const ADMIN_LIST_LIMIT = 500;
+
 export async function getAdminBookings() {
   if (!isDbConfigured()) return { bookings: [] as Booking[], setupMessage: setupMsg() };
   try {
     await ensureMigrated();
     const sql = getDb();
-    const bookings = await sql<Booking[]>`SELECT * FROM bookings ORDER BY created_at DESC`;
+    const bookings = await sql<Booking[]>`
+      SELECT * FROM bookings ORDER BY created_at DESC LIMIT ${ADMIN_LIST_LIMIT}
+    `;
     return { bookings, setupMessage: null };
   } catch (e) {
     return { bookings: [] as Booking[], setupMessage: String(e) };

@@ -30,12 +30,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = await getProduct(slug);
   if (!product) return {};
   return pageMetadata({
-    title: `${product.name} | Nola Farms`,
-    description: product.description ?? `Buy ${product.name} from Nola Farms, Kenya.`,
-    keywords: [product.name, CATEGORY_LABELS[product.category], RANCH_LABELS[product.ranch], 'Nola Farms', 'farm produce Kenya'],
+    title: `${product.name} | Nola Ranches`,
+    description: product.description ?? `Buy ${product.name} from Nola Ranches, Kenya.`,
+    keywords: [product.name, CATEGORY_LABELS[product.category], RANCH_LABELS[product.ranch], 'Nola Ranches', 'farm produce Kenya'],
     path: `/products/${product.slug}`,
     image: product.images[0],
-    imageAlt: `${product.name} — Nola Farms`,
+    imageAlt: `${product.name} — Nola Ranches`,
   });
 }
 
@@ -47,7 +47,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const price = product.price ? parseFloat(product.price) : null;
   const compareAt = product.compare_at_price ? parseFloat(product.compare_at_price) : null;
   const isOnSale = price !== null && compareAt !== null && compareAt > price;
-  const whatsappText = encodeURIComponent(`Hello, I'm interested in ordering ${product.name} from Nola Farms. Please provide more details.`);
+  const whatsappText = encodeURIComponent(`Hello, I'm interested in ordering ${product.name} from Nola Ranches. Please provide more details.`);
   const whatsappNumber = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : '254750958780';
 
   return (

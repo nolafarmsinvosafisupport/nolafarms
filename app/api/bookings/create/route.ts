@@ -75,7 +75,13 @@ export async function POST(request: Request) {
       `.catch(() => undefined);
     }
 
-    await sendBookingReceivedEmails(booking);
+    // Fire-and-forget: the booking is already committed above. If Resend is down or
+    // rate-limited, the visitor must NOT be told their booking failed — otherwise they
+    // re-submit and we get duplicates. Mirrors the pattern in app/api/orders/route.ts.
+    sendBookingReceivedEmails(booking).catch((err) => {
+      console.error('Booking email failed (booking was still saved):', booking.reference, err);
+    });
+
     return Response.json({ success: true, booking });
   } catch (e) {
     return dbErrorResponse(e, 'Could not submit your booking. Please try again.');

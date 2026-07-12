@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache';
 import { requireAdminResponse, requireDb } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
 import { sendStatusEmail } from '@/lib/email';
@@ -32,6 +33,13 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     `;
   }
 
-  await sendStatusEmail(booking, 'rejected', note);
+  // Fire-and-forget — the rejection is already persisted; an email failure must not
+  // 500 the admin for an action that succeeded.
+  sendStatusEmail(booking, 'rejected', note).catch((err) => {
+    console.error('Rejection email failed (booking was still rejected):', booking.reference, err);
+  });
+  // Rejecting frees the date back up — bust the cached availability.
+  revalidateTag('availability');
+
   return Response.json({ success: true, booking });
 }

@@ -18,25 +18,35 @@ type FormData = z.infer<typeof schema>;
 
 export function ContactForm() {
   const [status, setStatus] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { subject: '' },
   });
 
   async function onSubmit(data: FormData) {
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    setStatus(null);
+    setFailed(false);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json().catch(() => null);
 
-    if (response.ok) {
-      setStatus('Message received. We will respond via phone, email, or WhatsApp.');
-      reset();
-      return;
+      if (response.ok && result?.success) {
+        setStatus('Message received. We will respond via phone, email, or WhatsApp within 24 hours.');
+        reset();
+        return;
+      }
+      // Tell the truth rather than silently dropping the message.
+      setFailed(true);
+      setStatus(result?.message ?? 'Your message could not be sent. Please WhatsApp us instead.');
+    } catch {
+      setFailed(true);
+      setStatus('Your message could not be sent. Please check your connection, or WhatsApp us instead.');
     }
-
-    window.location.href = `mailto:PLACEHOLDER_EMAIL?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(data.message)}`;
   }
 
   return (
@@ -62,9 +72,11 @@ export function ContactForm() {
         <textarea {...register('message')} rows={6} className="w-full border border-farm-border bg-cream-warm px-4 py-3 outline-none focus:border-brand-leaf" />
       </Field>
       <button type="submit" disabled={isSubmitting} className="inline-flex items-center gap-2 bg-brand-deep px-8 py-4 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-brand-primary disabled:opacity-60">
-        Send Message <Send size={14} aria-hidden="true" />
+        {isSubmitting ? 'Sending…' : 'Send Message'} <Send size={14} aria-hidden="true" />
       </button>
-      {status && <p className="text-sm font-medium text-brand-leaf">{status}</p>}
+      {status && (
+        <p className={`text-sm font-medium ${failed ? 'text-red-700' : 'text-brand-leaf'}`}>{status}</p>
+      )}
     </form>
   );
 }

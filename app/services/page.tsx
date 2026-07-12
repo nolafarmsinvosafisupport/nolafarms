@@ -10,15 +10,15 @@ import { breadcrumbSchema, serviceSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Ranch Visits & Farm Services | Nola Farms — Oloitoktok & Laikipia',
+    title: 'Ranch Visits & Farm Services | Nola Ranches — Oloitoktok & Laikipia',
     description:
-      'Visit Nola Farms at our Oloitoktok or Laikipia ranch. Walk the fields, meet the exotic livestock, and experience working agriculture. Enquire about wholesale services and farm tours.',
+      'Visit Nola Ranches at our Oloitoktok or Laikipia ranch. Walk the fields, meet the exotic livestock, and experience working agriculture. Enquire about wholesale services and farm tours.',
     keywords: ['ranch visit Kenya', 'farm tour Oloitoktok', 'farm tour Laikipia', 'book farm visit Kenya', 'agri-tourism Kenya', 'guided farm tour Kenya', 'wholesale livestock Kenya', 'agricultural tourism Kenya'],
     path: '/services',
     image: '/images/og/services-og.jpg',
-    imageAlt: 'Guided ranch visit at Nola Farms, Kenya',
-    ogTitle: 'Book a Ranch Visit at Nola Farms — Oloitoktok & Laikipia',
-    ogDescription: 'Guided farm tours at two ranches — Oloitoktok for livestock and produce, Laikipia for grains. Come experience working agriculture at Nola Farms.',
+    imageAlt: 'Guided ranch visit at Nola Ranches, Kenya',
+    ogTitle: 'Book a Ranch Visit at Nola Ranches — Oloitoktok & Laikipia',
+    ogDescription: 'Guided farm tours at two ranches — Oloitoktok for livestock and produce, Laikipia for grains. Come experience working agriculture at Nola Ranches.',
   });
 }
 
@@ -31,7 +31,7 @@ export default function ServicesPage() {
         title="Come See the Farm for Yourself."
         subtitle="Guided visits, wholesale enquiries, and practical farm conversations across our Oloitoktok and Laikipia ranches."
         image={IMAGES.landscape}
-        alt="Guided ranch visit landscape at Nola Farms Kenya"
+        alt="Guided ranch visit landscape at Nola Ranches Kenya"
       />
       <ServicesGrid />
       <section className="bg-cream-secondary py-28">
@@ -54,7 +54,7 @@ export default function ServicesPage() {
             For wholesale orders, partnerships, or anything not covered above, send us a message and we&rsquo;ll get back to you quickly.
           </p>
           <a
-            href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a question about Nola Farms services.')}`}
+            href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a question about Nola Ranches services.')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-8 inline-flex bg-brand-primary px-8 py-4 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-brand-mid"

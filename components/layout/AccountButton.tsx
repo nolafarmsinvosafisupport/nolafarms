@@ -69,7 +69,7 @@ export function AccountButton() {
                   ) : initials}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-cream-primary">{user.fullName || 'Nola Farms visitor'}</p>
+                  <p className="truncate text-sm font-medium text-cream-primary">{user.fullName || 'Nola Ranches visitor'}</p>
                   <p className="truncate text-xs text-cream-secondary/60">{email}</p>
                 </div>
               </div>

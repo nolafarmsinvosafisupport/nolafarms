@@ -39,12 +39,21 @@ export async function POST(request: Request) {
     WHERE visit_date = ${visitDate} AND status = 'confirmed' AND reminder_sent = FALSE
   `;
 
+  // Each booking is isolated: one failing email must not abort the whole batch and
+  // rob everyone else of their reminder. reminder_sent is only stamped on success, so
+  // a failed send is naturally retried on the next run.
   let sent = 0;
+  let failed = 0;
   for (const booking of bookings) {
-    await sendReminderEmail(booking);
-    await sql`UPDATE bookings SET reminder_sent = TRUE, updated_at = NOW() WHERE id = ${booking.id}`;
-    sent += 1;
+    try {
+      await sendReminderEmail(booking);
+      await sql`UPDATE bookings SET reminder_sent = TRUE, updated_at = NOW() WHERE id = ${booking.id}`;
+      sent += 1;
+    } catch (err) {
+      failed += 1;
+      console.error('Reminder email failed (will retry next run):', booking.reference, err);
+    }
   }
 
-  return Response.json({ success: true, sent, date: visitDate });
+  return Response.json({ success: true, sent, failed, date: visitDate });
 }

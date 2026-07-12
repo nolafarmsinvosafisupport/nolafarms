@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache';
 import { requireAdminResponse, requireDb } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
 
@@ -10,5 +11,6 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
 
   const sql = getDb();
   await sql`DELETE FROM blocked_dates WHERE id = ${params.id}`;
+  revalidateTag('availability');
   return Response.json({ success: true });
 }

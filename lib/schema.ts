@@ -3,7 +3,7 @@ import { SITE } from './constants';
 export const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  name: 'Nola Farms',
+  name: 'Nola Ranches',
   description: '375-acre large-scale agricultural farm and exotic livestock estate in Laikipia, Kenya.',
   url: SITE.url,
   telephone: SITE.phone,
@@ -50,9 +50,9 @@ export const breadcrumbSchema = (items: { name: string; url: string }[]) => ({
 export const aboutPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
-  name: 'About Nola Farms',
+  name: 'About Nola Ranches',
   url: `${SITE.url}/about`,
-  description: 'The story, mission, and scale of Nola Farms in Laikipia, Kenya.',
+  description: 'The story, mission, and scale of Nola Ranches in Laikipia, Kenya.',
 };
 
 export const itemListSchema = (items: { name: string; description: string; url: string }[]) => ({
@@ -86,7 +86,7 @@ export const serviceSchema = (service: { name: string; description: string }) =>
 export const imageGallerySchema = (images: { name: string; contentUrl: string; caption: string }[]) => ({
   '@context': 'https://schema.org',
   '@type': 'ImageGallery',
-  name: 'Nola Farms Gallery',
+  name: 'Nola Ranches Gallery',
   url: `${SITE.url}/gallery`,
   image: images.map((image) => ({
     '@type': 'ImageObject',
@@ -108,7 +108,7 @@ export const productJsonLd = (product: {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.description ?? `${product.name} from Nola Farms, Kenya.`,
+    description: product.description ?? `${product.name} from Nola Ranches, Kenya.`,
     image: product.images.map((img) => `${SITE.url}${img}`),
     url: `${SITE.url}/products/${product.slug}`,
   };
@@ -129,7 +129,7 @@ export const productJsonLd = (product: {
 export const contactPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',
-  name: 'Contact Nola Farms',
+  name: 'Contact Nola Ranches',
   url: `${SITE.url}/contact`,
-  description: 'Contact details, ranch visit enquiries, and directions for Nola Farms in Laikipia, Kenya.',
+  description: 'Contact details, ranch visit enquiries, and directions for Nola Ranches in Laikipia, Kenya.',
 };

@@ -15,7 +15,7 @@ export function OurStorySection() {
         <div>
           <SectionHeader title="Two Ranches. One Farm." subtitle="Our Story" />
           <motion.p variants={fadeUp} className="mb-6 text-lg leading-8 text-brand-deep/80">
-            Nola Farms operates across two ranches in Kenya — Oloitoktok and Laikipia — built with a practical vision: operate at meaningful scale, care for the land, and connect buyers and visitors directly to the source of their food and livestock.
+            Nola Ranches operates across two ranches in Kenya — Oloitoktok and Laikipia — built with a practical vision: operate at meaningful scale, care for the land, and connect buyers and visitors directly to the source of their food and livestock.
           </motion.p>
           <motion.p variants={fadeUp} className="mb-8 text-lg leading-8 text-brand-deep/80">
             Our Oloitoktok ranch raises Brahman and Holstein cattle, Boer goats, Dorper sheep, Yorkshire pigs, and grows fresh vegetables and fruits. In Laikipia, we farm wheat, sorghum, millet, and soya beans across expansive highland fields.
@@ -31,7 +31,7 @@ export function OurStorySection() {
         </div>
         <motion.div variants={fadeUp} className="relative min-h-[560px]">
           <div className="image-skeleton absolute inset-0 overflow-hidden">
-            <Image src={IMAGES.wheat} alt="Wheat fields growing at Nola Farms in Laikipia Kenya" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+            <Image src={IMAGES.wheat} alt="Wheat fields growing at Nola Ranches in Laikipia Kenya" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           </div>
           <div className="absolute -bottom-8 left-5 max-w-xs border border-farm-border bg-cream-warm p-7 shadow-2xl md:-left-8">
             <Leaf className="mb-4 text-brand-leaf" size={30} aria-hidden="true" />

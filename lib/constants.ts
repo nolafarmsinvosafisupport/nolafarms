@@ -1,5 +1,5 @@
 export const SITE = {
-  name: 'Nola Farms',
+  name: 'Nola Ranches',
   tagline: 'Two Ranches. One Farm.',
   description: '375-acre agricultural operation across two ranches in Oloitoktok and Laikipia, Kenya.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nolaranches.co.ke',

@@ -1,14 +1,14 @@
 import { SITE } from '@/lib/constants';
 
 export function WhatsAppButton() {
-  const message = encodeURIComponent("Hello Nola Farms, I'd like to enquire about...");
+  const message = encodeURIComponent("Hello Nola Ranches, I'd like to enquire about...");
 
   return (
     <a
       href={`https://wa.me/${SITE.whatsapp}?text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with Nola Farms on WhatsApp"
+      aria-label="Chat with Nola Ranches on WhatsApp"
       className="group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center focus:outline-none"
     >
       {/* Radial pulse rings — expanding "radar ping" that radiates outward */}

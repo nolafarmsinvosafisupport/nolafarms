@@ -29,7 +29,7 @@ export function AdminSidebar() {
     <aside className="hidden md:flex sticky top-16 h-[calc(100vh-4rem)] w-52 flex-shrink-0 flex-col overflow-y-auto bg-farm-dark xl:w-60">
       {/* Branding */}
       <div className="border-b border-white/10 px-6 py-5">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Nola Farms</p>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Nola Ranches</p>
         <h1 className="mt-0.5 font-serif text-xl text-cream-primary">Admin Panel</h1>
       </div>
 

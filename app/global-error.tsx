@@ -25,7 +25,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           <div style={{ maxWidth: 480 }}>
             <p style={{ marginBottom: 24, fontSize: 56, color: '#5a9a4a' }}>Oops.</p>
             <h1 style={{ fontSize: 28, lineHeight: 1.3, color: '#f5f1e8', margin: 0 }}>
-              Something went wrong loading Nola Farms.
+              Something went wrong loading Nola Ranches.
             </h1>
             <p style={{ marginTop: 20, fontSize: 15, lineHeight: 1.6, color: 'rgba(245,241,232,0.8)' }}>
               Please try again in a moment.

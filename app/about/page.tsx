@@ -4,34 +4,34 @@ import { OurStorySection } from '@/components/about/OurStorySection';
 import { PageHero } from '@/components/ui/PageHero';
 import { JsonLd } from '@/components/ui/JsonLd';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { IMAGES } from '@/lib/constants';
+import { IMAGES, SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
 import { aboutPageSchema, breadcrumbSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'About Nola Farms | Two Ranches — Oloitoktok & Laikipia, Kenya',
+    title: 'About Nola Ranches | Two Ranches — Oloitoktok & Laikipia, Kenya',
     description:
-      'Nola Farms operates two ranches in Kenya — Oloitoktok for livestock, fresh vegetables and fruits; Laikipia for grains. Learn our story of responsible, large-scale farming.',
-    keywords: ['about Nola Farms', 'Nola Farms story', 'Oloitoktok farm Kenya', 'Laikipia agricultural estate', 'responsible farming Kenya', 'mixed farming Kenya', 'livestock farm Kenya', 'grain farm Laikipia'],
+      'Nola Ranches operates two ranches in Kenya — Oloitoktok for livestock, fresh vegetables and fruits; Laikipia for grains. Learn our story of responsible, large-scale farming.',
+    keywords: ['about Nola Ranches', 'Nola Ranches story', 'Oloitoktok farm Kenya', 'Laikipia agricultural estate', 'responsible farming Kenya', 'mixed farming Kenya', 'livestock farm Kenya', 'grain farm Laikipia'],
     path: '/about',
     image: '/images/og/about-og.jpg',
-    imageAlt: 'Nola Farms two ranches — Oloitoktok and Laikipia Kenya',
-    ogTitle: 'Our Story | Nola Farms — Two Ranches Across Kenya',
-    ogDescription: 'Two ranches, one farm. Nola Farms raises exotic livestock and fresh produce in Oloitoktok, and farms wheat and grains at scale in Laikipia.',
+    imageAlt: 'Nola Ranches two ranches — Oloitoktok and Laikipia Kenya',
+    ogTitle: 'Our Story | Nola Ranches — Two Ranches Across Kenya',
+    ogDescription: 'Two ranches, one farm. Nola Ranches raises exotic livestock and fresh produce in Oloitoktok, and farms wheat and grains at scale in Laikipia.',
   });
 }
 
 export default function AboutPage() {
   return (
     <main>
-      <JsonLd data={[aboutPageSchema, breadcrumbSchema([{ name: 'Home', url: 'https://nolafarms.co.ke' }, { name: 'About', url: 'https://nolafarms.co.ke/about' }])]} />
+      <JsonLd data={[aboutPageSchema, breadcrumbSchema([{ name: 'Home', url: SITE.url }, { name: 'About', url: `${SITE.url}/about` }])]} />
       <PageHero
-        eyebrow="About Nola Farms"
+        eyebrow="About Nola Ranches"
         title="Two Ranches. One Vision."
         subtitle="A working farm across Oloitoktok and Laikipia — built for scale, land care, and direct connection to buyers."
         image={IMAGES.farmRoad}
-        alt="Road through Nola Farms estate Kenya"
+        alt="Road through Nola Ranches estate Kenya"
       />
       <OurStorySection />
       <section className="bg-brand-dark py-20">

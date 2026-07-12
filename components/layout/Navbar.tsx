@@ -44,13 +44,13 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2.5 font-serif text-2xl tracking-wider text-cream-primary">
             <Image
               src="/images/logos/small logo.png"
-              alt="Nola Farms logo"
+              alt="Nola Ranches logo"
               width={32}
               height={32}
               className="h-8 w-8 object-contain"
               priority
             />
-            NOLA<span className="text-brand-leaf">FARMS</span>
+            NOLA<span className="text-brand-leaf">RANCHES</span>
           </Link>
 
           {/* Desktop nav */}

@@ -4,13 +4,13 @@ import { CheckCircle2, MessageCircle, ShoppingBag } from 'lucide-react';
 import { SITE } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: 'Order Confirmed | Nola Farms',
+  title: 'Order Confirmed | Nola Ranches',
 };
 
 export default async function OrderConfirmedPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams;
   const whatsappNumber = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : '254750958780';
-  const whatsappText = encodeURIComponent(`Hello Nola Farms, I just placed order ${ref ?? ''} on your website. Looking forward to hearing from you!`);
+  const whatsappText = encodeURIComponent(`Hello Nola Ranches, I just placed order ${ref ?? ''} on your website. Looking forward to hearing from you!`);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-cream-primary px-6 pt-16 text-center">

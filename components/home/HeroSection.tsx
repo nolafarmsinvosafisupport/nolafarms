@@ -7,9 +7,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const HERO_IMAGES = [
-  { src: '/images/hero/landing page farm.jpg', alt: 'Nola Farms estate — farmlands at golden hour in Laikipia Kenya' },
-  { src: '/images/hero/landing page farm 2.jpg', alt: 'Nola Farms crops and open fields in Laikipia Kenya' },
-  { src: '/images/hero/landing page farm 3.jpg', alt: 'Nola Farms highland terrain and livestock in Laikipia Kenya' },
+  { src: '/images/hero/landing page farm.jpg', alt: 'Nola Ranches estate — farmlands at golden hour in Laikipia Kenya' },
+  { src: '/images/hero/landing page farm 2.jpg', alt: 'Nola Ranches crops and open fields in Laikipia Kenya' },
+  { src: '/images/hero/landing page farm 3.jpg', alt: 'Nola Ranches highland terrain and livestock in Laikipia Kenya' },
 ];
 
 export function HeroSection() {
@@ -65,7 +65,7 @@ export function HeroSection() {
           transition={{ duration: 1.2, ease: 'easeOut' }}
           className="mb-6 font-serif text-5xl leading-tight tracking-widest text-cream-primary md:text-7xl lg:text-8xl"
         >
-          NOLA FARMS
+          NOLA RANCHES
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}

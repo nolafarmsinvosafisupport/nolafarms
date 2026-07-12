@@ -77,7 +77,7 @@ export function AccountOrdersList({ orders }: { orders: Order[] }) {
 
                 {order.admin_note && (
                   <p className="mt-3 border-l-2 border-gold-warm pl-3 text-sm text-brand-deep/70">
-                    Note from Nola Farms: {order.admin_note}
+                    Note from Nola Ranches: {order.admin_note}
                   </p>
                 )}
               </div>

@@ -132,6 +132,31 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
       )
     `;
 
+    // ---- Indexes -----------------------------------------------------------
+    // Before this, the only indexes were the implicit unique constraints, so every
+    // lookup by date/user/status was a sequential scan. Harmless while the tables are
+    // near-empty, but these are the hot paths and they degrade quickly with real data.
+    // IF NOT EXISTS keeps this idempotent on every boot.
+
+    // Availability lookup + double-booking guard + reminder cron all filter on
+    // (status, visit_date); the plain visit_date index covers the admin calendar.
+    await sql`CREATE INDEX IF NOT EXISTS idx_bookings_status_visit_date ON bookings (status, visit_date)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_bookings_visit_date ON bookings (visit_date)`;
+    // "My bookings" (/api/bookings/mine) filters by the Clerk user id.
+    await sql`CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON bookings (user_id)`;
+
+    // The notification bell polls this every 10-30s per signed-in user:
+    //   WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10
+    await sql`CREATE INDEX IF NOT EXISTS idx_notifications_user_created ON notifications (user_id, created_at DESC)`;
+
+    // Account order history + admin status filter + admin list ordering.
+    await sql`CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders (user_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders (created_at DESC)`;
+
+    // Public catalogue: WHERE available = TRUE ORDER BY sort_order, name
+    await sql`CREATE INDEX IF NOT EXISTS idx_products_available_sort ON products (available, sort_order)`;
+
     // Backfill/self-heal each scope's counter from actual orders/bookings history, so it
     // always covers at least every reference already used under the old COUNT(*)-based
     // numbering (fixes the live bug where a fresh counter started at 0 and collided with

@@ -39,13 +39,13 @@ export const metadata: Metadata = {
     shortcut: '/images/logos/favicon.png',
   },
   title: {
-    default: 'Nola Farms | Large-Scale Farm & Livestock in Laikipia, Kenya',
-    template: '%s | Nola Farms',
+    default: 'Nola Ranches | Large-Scale Farm & Livestock in Laikipia, Kenya',
+    template: '%s | Nola Ranches',
   },
   description:
-    'Nola Farms is a 375-acre agricultural estate in Laikipia, Kenya, specialising in crop farming and exotic livestock breeding including cattle and goats. Book ranch visits and explore our farm.',
+    'Nola Ranches is a 375-acre agricultural estate in Laikipia, Kenya, specialising in crop farming and exotic livestock breeding including cattle and goats. Book ranch visits and explore our farm.',
   keywords: [
-    'Nola Farms',
+    'Nola Ranches',
     'farm Kenya',
     'Laikipia farm',
     'exotic livestock Kenya',
@@ -61,15 +61,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_KE',
-    siteName: 'Nola Farms',
-    title: 'Nola Farms | Large-Scale Farm & Livestock in Laikipia, Kenya',
+    siteName: 'Nola Ranches',
+    title: 'Nola Ranches | Large-Scale Farm & Livestock in Laikipia, Kenya',
     description:
       'A 375-acre agricultural estate in Laikipia, Kenya. Crop farming, exotic cattle and goat breeds, and farm experiences.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Nola Farms - Laikipia, Kenya' }],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Nola Ranches - Laikipia, Kenya' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nola Farms | Laikipia, Kenya',
+    title: 'Nola Ranches | Laikipia, Kenya',
     description: 'Large-scale farm and exotic livestock in Laikipia, Kenya.',
     images: ['/og-image.jpg'],
   },

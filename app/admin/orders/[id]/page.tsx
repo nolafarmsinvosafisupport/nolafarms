@@ -82,7 +82,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
           )}
         </div>
         <a
-          href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${order.customer_name}, this is Nola Farms regarding your order ${order.reference}.`)}`}
+          href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${order.customer_name}, this is Nola Ranches regarding your order ${order.reference}.`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 inline-flex items-center gap-2 bg-green-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-green-700 transition-colors"

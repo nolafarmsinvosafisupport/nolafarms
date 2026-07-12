@@ -42,7 +42,7 @@ export function AccountSidebar({ fullName, email, imageUrl }: Props) {
             </div>
           )}
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-brand-deep">{fullName || 'Nola Farms visitor'}</p>
+            <p className="truncate text-sm font-medium text-brand-deep">{fullName || 'Nola Ranches visitor'}</p>
             <p className="truncate text-xs text-brand-deep/50">{email}</p>
           </div>
         </div>

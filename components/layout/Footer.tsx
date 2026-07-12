@@ -12,21 +12,21 @@ export function Footer() {
             <div className="mb-5 flex items-center gap-3">
               <Image
                 src="/images/logos/small logo.png"
-                alt="Nola Farms"
+                alt="Nola Ranches"
                 width={44}
                 height={44}
                 className="object-contain"
               />
               <span className="font-serif text-2xl tracking-wider text-cream-primary">
-                NOLA<span className="text-brand-leaf">FARMS</span>
+                NOLA<span className="text-brand-leaf">RANCHES</span>
               </span>
             </div>
             <p className="text-sm leading-7 text-cream-secondary/75">{SITE.description}</p>
             <div className="mt-7 flex gap-3">
-              <a href={SITE.socialMedia.instagram || '#'} aria-label="Nola Farms Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-brand-primary">
+              <a href={SITE.socialMedia.instagram || '#'} aria-label="Nola Ranches Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-brand-primary">
                 <Instagram size={16} aria-hidden="true" />
               </a>
-              <a href={SITE.socialMedia.facebook || '#'} aria-label="Nola Farms Facebook" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-brand-primary">
+              <a href={SITE.socialMedia.facebook || '#'} aria-label="Nola Ranches Facebook" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-brand-primary">
                 <Facebook size={16} aria-hidden="true" />
               </a>
             </div>
@@ -66,7 +66,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col justify-between gap-4 py-8 text-xs text-cream-secondary/55 md:flex-row">
-          <p>&copy; {new Date().getFullYear()} Nola Farms. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Nola Ranches. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="/services" className="hover:text-cream-primary">Ranch Visits</Link>
             <Link href="/products" className="hover:text-cream-primary">Products & Livestock</Link>

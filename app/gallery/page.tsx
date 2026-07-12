@@ -10,15 +10,15 @@ import { breadcrumbSchema, imageGallerySchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Farm Gallery | Photos of Nola Farms - Laikipia, Kenya',
+    title: 'Farm Gallery | Photos of Nola Ranches - Laikipia, Kenya',
     description:
-      'See Nola Farms through the lens - 375 acres of highland fields, exotic cattle, goats, wheat crops, and the Laikipia landscape. Photos of our working estate and the animals we raise.',
-    keywords: ['Nola Farms photos', 'Laikipia farm pictures', 'exotic cattle photos Kenya', 'farm photography Kenya', 'Laikipia landscape photos', 'goat farm pictures Kenya', 'wheat farm Kenya photos', 'agricultural estate photos Laikipia', 'ranch photos Kenya', 'farm animals Kenya photos'],
+      'See Nola Ranches through the lens - 375 acres of highland fields, exotic cattle, goats, wheat crops, and the Laikipia landscape. Photos of our working estate and the animals we raise.',
+    keywords: ['Nola Ranches photos', 'Laikipia farm pictures', 'exotic cattle photos Kenya', 'farm photography Kenya', 'Laikipia landscape photos', 'goat farm pictures Kenya', 'wheat farm Kenya photos', 'agricultural estate photos Laikipia', 'ranch photos Kenya', 'farm animals Kenya photos'],
     path: '/gallery',
     image: '/images/og/gallery-og.jpg',
-    imageAlt: 'Nola Farms gallery - livestock and fields in Laikipia Kenya',
-    ogTitle: 'Gallery - Inside Nola Farms, Laikipia Kenya',
-    ogDescription: 'Photos from inside Nola Farms - fields, exotic livestock, highland views, and 375 acres of working agriculture in Laikipia, Kenya.',
+    imageAlt: 'Nola Ranches gallery - livestock and fields in Laikipia Kenya',
+    ogTitle: 'Gallery - Inside Nola Ranches, Laikipia Kenya',
+    ogDescription: 'Photos from inside Nola Ranches - fields, exotic livestock, highland views, and 375 acres of working agriculture in Laikipia, Kenya.',
   });
 }
 
@@ -29,9 +29,9 @@ export default function GalleryPage() {
       <PageHero
         eyebrow="Farm Gallery"
         title="375 Acres Through the Lens."
-        subtitle="A visual look at the land, fields, animals, and working rhythms of Nola Farms."
+        subtitle="A visual look at the land, fields, animals, and working rhythms of Nola Ranches."
         image={IMAGES.wheat}
-        alt="Nola Farms wheat fields and livestock gallery in Laikipia Kenya"
+        alt="Nola Ranches wheat fields and livestock gallery in Laikipia Kenya"
       />
       <GalleryGrid />
       <section className="bg-cream-primary py-24">

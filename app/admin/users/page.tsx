@@ -3,7 +3,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Users | Nola Farms Admin' };
+export const metadata: Metadata = { title: 'Users | Nola Ranches Admin' };
 
 function fmtDate(ts: number | null | undefined) {
   if (!ts) return '—';
