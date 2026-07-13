@@ -3,121 +3,89 @@ import type { Product, ProductCategory } from './product-types';
 /**
  * The single source of truth for product filtering.
  *
- * The category cards, the sidebar checkboxes and the grid all read their labels, counts and
- * match rules from here. That is deliberate: previously the cards linked to pages while the
- * sidebar filtered client-side, so the two could disagree about what "Livestock" meant. There
- * is now exactly one definition, and any UI that filters products must use these helpers.
+ * The shop is livestock-only. The four cards below are the whole filter UI — there is no sidebar
+ * and no ranch filter. Any code that filters products must use these helpers so the cards, the
+ * counts and the grid can never disagree.
  *
- * Card images are R2 URLs held in code, not in the database. product_categories.hero_image is
- * intentionally NOT used for this.
+ * The crops (vegetables / grains / fruits) are NOT hidden here. They are hidden by toggling those
+ * categories inactive in product_categories, which app/products/page.tsx already honours via
+ * filterVisibleProducts. That keeps the decision reversible from /admin/categories with one
+ * switch, instead of needing a code change to sell a cabbage again.
  */
 
 const R2 = 'https://images.nolaranches.co.ke/products';
 
-export type MainKey = 'livestock' | 'vegetables' | 'grains' | 'fruits' | 'services';
-export type SubKey = 'cattle' | 'goats-sheep' | 'pigs';
+export type CardKey = 'cattle' | 'goats-sheep' | 'pigs' | 'services';
 
-export type MainCategory = {
-  key: MainKey;
+export type CategoryCard = {
+  key: CardKey;
   label: string;
-  blurb: string;
+  /** lucide icon name, resolved in the component (this file stays free of React imports) */
+  icon: 'beef' | 'pawprint' | 'piggybank' | 'dna';
   image: string;
-  subs: SubKey[];
-};
-
-export type SubCategory = {
-  key: SubKey;
-  label: string;
-  image: string;
+  /** product.category values this card covers; empty for the services card, which matches on is_service */
   values: ProductCategory[];
 };
 
-// Order matters — this is the order the cards render in.
-export const MAIN_CATEGORIES: MainCategory[] = [
+// Order matters — cards render in this order, and it is also the default product ordering.
+export const CATEGORY_CARDS: CategoryCard[] = [
   {
-    key: 'livestock',
-    label: 'Livestock',
-    blurb: 'Cattle, goats, sheep & pigs',
+    key: 'cattle',
+    label: 'Cattle',
+    icon: 'beef',
     image: `${R2}/animals/cattle/brahman/cow2.jpeg`,
-    subs: ['cattle', 'goats-sheep', 'pigs'],
+    values: ['cattle'],
   },
   {
-    key: 'vegetables',
-    label: 'Vegetables',
-    blurb: 'Fresh from the field',
-    image: `${R2}/vegetables/swiss-spinach/broad-leaf-swiss-spinach-1.jpg`,
-    subs: [],
+    key: 'goats-sheep',
+    label: 'Goats & Sheep',
+    icon: 'pawprint',
+    image: `${R2}/animals/goat/boer/boer-main-1.jpeg`,
+    values: ['goats', 'sheep'],
   },
   {
-    key: 'grains',
-    label: 'Grains',
-    blurb: 'Wheat, sorghum, millet & soya',
-    image: `${R2}/grains/wheat/wheat.webp`,
-    subs: [],
-  },
-  {
-    key: 'fruits',
-    label: 'Fruits',
-    blurb: 'Seasonal and sweet',
-    image: `${R2}/fruits/watermelon/watermelon1.jpeg`,
-    subs: [],
+    key: 'pigs',
+    label: 'Pigs',
+    icon: 'piggybank',
+    image: `${R2}/animals/pigs/american-yorkshire-pigs/pigs.jpeg`,
+    values: ['pigs'],
   },
   {
     key: 'services',
     label: 'Services',
-    blurb: 'Breeding & boar services',
+    icon: 'dna',
     image: `${R2}/animals/pigs/american-yorkshire-pigs/pigs2.jpeg`,
-    subs: [],
+    values: [],
   },
 ];
 
-export const SUB_CATEGORIES: SubCategory[] = [
-  { key: 'cattle', label: 'Cattle', image: `${R2}/animals/cattle/brahman/cow4.jpeg`, values: ['cattle'] },
-  { key: 'goats-sheep', label: 'Goats & Sheep', image: `${R2}/animals/goat/boer/boer-main-1.jpeg`, values: ['goats', 'sheep'] },
-  { key: 'pigs', label: 'Pigs', image: `${R2}/animals/pigs/american-yorkshire-pigs/pigs.jpeg`, values: ['pigs'] },
-];
-
-const LIVESTOCK_VALUES = new Set<ProductCategory>(['cattle', 'goats', 'sheep', 'pigs', 'poultry']);
-
 /**
- * A service (e.g. Service Boars) is a thing you book, not an animal you buy, so it is kept out of
- * every browsing view except Services — including "All". Otherwise a "per service" hire item sits
- * in the grid next to animals with an Add to Cart button.
+ * A service (Service Boars) is booked, not bought, so it is kept out of every view except its own
+ * card — including the default "all livestock" view. Otherwise a "per service" hire item sits in
+ * the grid beside animals with an Add to Cart button.
  */
 export function isService(p: Product) {
   return p.is_service === true;
 }
 
-export function matchesMain(p: Product, key: MainKey): boolean {
+export function matchesCard(p: Product, key: CardKey): boolean {
   if (key === 'services') return isService(p);
   if (isService(p)) return false;
-  if (key === 'livestock') return LIVESTOCK_VALUES.has(p.category);
-  return p.category === key;
+  const card = CATEGORY_CARDS.find((c) => c.key === key);
+  return card ? card.values.includes(p.category) : false;
 }
 
-export function matchesSub(p: Product, key: SubKey): boolean {
-  if (isService(p)) return false;
-  const sub = SUB_CATEGORIES.find((s) => s.key === key);
-  return sub ? sub.values.includes(p.category) : false;
-}
-
-/** Products shown when no main category is selected ("All") — everything except services. */
+/** What the grid shows when no card is selected: every animal, minus services. */
 export function browsableProducts(products: Product[]): Product[] {
   return products.filter((p) => !isService(p));
 }
 
-export function countMain(products: Product[], key: MainKey): number {
-  return products.filter((p) => matchesMain(p, key)).length;
-}
-
-export function countSub(products: Product[], key: SubKey): number {
-  return products.filter((p) => matchesSub(p, key)).length;
+export function countCard(products: Product[], key: CardKey): number {
+  return products.filter((p) => matchesCard(p, key)).length;
 }
 
 /**
- * Default ordering: cattle first, then goats & sheep, then pigs, then everything else.
- * Livestock is the headline offering, so it leads the first page rather than being scattered
- * through whatever happens to be newest.
+ * Default ordering: cattle first, then goats & sheep, then pigs — the order of the cards above.
  */
 const FEATURED_RANK: Record<ProductCategory, number> = {
   cattle: 0,

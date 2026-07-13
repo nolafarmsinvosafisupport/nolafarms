@@ -20,12 +20,12 @@ export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Farm Products & Livestock | Nola Ranches',
+    title: 'Livestock for Sale | Cattle, Goats, Sheep & Pigs | Nola Ranches',
     description:
-      'Shop fresh farm produce, exotic livestock, and grain from Nola Ranches — two ranches in Oloitoktok and Laikipia, Kenya.',
-    keywords: ['buy goats Kenya', 'buy cattle Laikipia', 'farm produce Kenya', 'exotic livestock Kenya', 'wheat Laikipia', 'spinach Oloitoktok', 'Nola Ranches products'],
+      'Buy cattle, goats, sheep and pigs from Nola Ranches — vaccinated, farm-recorded breeding and market stock from our Oloitoktok and Laikipia ranches in Kenya.',
+    keywords: ['buy cattle Kenya', 'buy goats Kenya', 'buy pigs Kenya', 'sheep for sale Kenya', 'breeding stock Kenya', 'boar services Kenya', 'Nola Ranches livestock'],
     path: '/products',
-    imageAlt: 'Nola Ranches products — livestock and farm produce from Kenya',
+    imageAlt: 'Nola Ranches livestock — cattle, goats, sheep and pigs in Kenya',
   });
 }
 
@@ -80,11 +80,11 @@ export default async function ProductsPage() {
             Oloitoktok &amp; Laikipia
           </p>
           <h1 className="mt-3 font-serif text-4xl text-cream-primary md:text-5xl">
-            Fresh from the Ranch.
+            Our Livestock.
           </h1>
           <p className="mt-4 max-w-xl text-cream-secondary/70">
-            Livestock, vegetables, fruits, and grains from two working ranches in Kenya.
-            Order online — we&apos;ll contact you to arrange delivery or collection.
+            Cattle, goats, sheep and pigs from two working ranches in Kenya — vaccinated,
+            farm-recorded, and selected for performance. Enquire and we&apos;ll arrange the rest.
           </p>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, ShoppingCart, MessageCircle, Check, PackageX, Eye } from 'lucide-react';
+import { ShoppingCart, MessageCircle, Check, PackageX, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-context';
 import { useNotifications } from '@/lib/notification-context';
@@ -66,17 +66,12 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Info */}
       <div className="flex flex-1 flex-col p-3 sm:p-4">
-        {/* Badges */}
+        {/* Badges. No ranch/location badge: the ranch filter is gone from the shop and location is
+            shown on the product detail page instead. */}
         <div className="mb-2 flex flex-wrap gap-1.5">
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${CATEGORY_COLORS[product.category] ?? 'bg-gray-100 text-gray-700'}`}>
             {CATEGORY_LABELS[product.category]}
           </span>
-          {product.ranch !== 'both' && (
-            <span className="flex items-center gap-0.5 rounded-full bg-brand-leaf/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-leaf">
-              <MapPin size={9} />
-              {product.ranch === 'oloitoktok' ? 'Oloitoktok' : 'Laikipia'}
-            </span>
-          )}
         </div>
 
         <Link href={`/products/${product.slug}`} className="flex-1">
