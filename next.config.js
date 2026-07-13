@@ -22,6 +22,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'img.clerk.com' },
       { protocol: 'https', hostname: 'images.clerk.dev' },
+      // The R2 image domain, pinned rather than left to the env var below. The category card
+      // images in lib/product-taxonomy.ts are hardcoded to this host, so the whitelist cannot
+      // depend on R2_PUBLIC_URL being present — if it were missing (as it is in local .env.local)
+      // next/image 400s and every card image silently breaks.
+      { protocol: 'https', hostname: 'images.nolaranches.co.ke' },
+      // Kept so a future bucket/domain change still works by setting the env var alone.
       ...(r2RemotePattern() ? [r2RemotePattern()] : []),
     ],
     // WebP only — AVIF takes 3-5x longer to encode on first request with no

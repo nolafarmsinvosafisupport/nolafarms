@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
-import { ProductStatsBar } from '@/components/products/ProductStatsBar';
 import { TrustBadges } from '@/components/products/TrustBadges';
 import { Truck, ShieldCheck, Sprout, Headset } from 'lucide-react';
 import { SITE } from '@/lib/constants';
@@ -92,7 +91,6 @@ export default async function ProductsPage() {
 
       <section className="bg-cream-primary px-6 py-10 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-8">
-          <ProductStatsBar products={products} />
 
           <Suspense fallback={null}>
             <ProductGrid products={products} />

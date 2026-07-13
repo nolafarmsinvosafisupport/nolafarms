@@ -4,13 +4,22 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
-import { ProductFilters, CATEGORY_FILTER_OPTIONS, matchesCategoryFilter } from './ProductFilters';
-import type { CategoryFilterKey } from './ProductFilters';
+import { ProductFilters } from './ProductFilters';
+import { CategoryCards } from './CategoryCards';
+import {
+  MAIN_CATEGORIES,
+  matchesMain,
+  matchesSub,
+  browsableProducts,
+  featuredRank,
+} from '@/lib/product-taxonomy';
+import type { MainKey, SubKey } from '@/lib/product-taxonomy';
 import type { Product, Ranch } from '@/lib/product-types';
 
-type SortKey = 'newest' | 'price-asc' | 'price-desc' | 'name';
+type SortKey = 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'name';
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'featured', label: 'Featured' },
   { key: 'newest', label: 'Newest First' },
   { key: 'price-asc', label: 'Price: Low to High' },
   { key: 'price-desc', label: 'Price: High to Low' },
@@ -27,18 +36,26 @@ export function ProductGrid({ products }: { products: Product[] }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category');
 
-  const [selectedCategories, setSelectedCategories] = useState<Set<CategoryFilterKey>>(() => {
-    const valid = CATEGORY_FILTER_OPTIONS.some((o) => o.key === initialCategory);
-    return valid ? new Set([initialCategory as CategoryFilterKey]) : new Set();
-  });
+  // One piece of state, two views onto it: the cards and the sidebar both read and write these.
+  // That is what stops the two filters from ever disagreeing.
+  const [selectedMain, setSelectedMain] = useState<MainKey | null>(() =>
+    MAIN_CATEGORIES.some((c) => c.key === initialCategory) ? (initialCategory as MainKey) : null,
+  );
+  const [selectedSubs, setSelectedSubs] = useState<Set<SubKey>>(new Set());
   const [selectedRanches, setSelectedRanches] = useState<Set<Ranch>>(new Set());
 
-  const [sortBy, setSortBy] = useState<SortKey>('newest');
+  const [sortBy, setSortBy] = useState<SortKey>('featured');
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
-  function toggleCategory(key: CategoryFilterKey) {
-    setSelectedCategories((prev) => {
+  // Changing the main category drops any subcategory picks — Cattle is meaningless under Grains.
+  function selectMain(key: MainKey | null) {
+    setSelectedMain(key);
+    setSelectedSubs(new Set());
+  }
+
+  function toggleSub(key: SubKey) {
+    setSelectedSubs((prev) => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
@@ -54,12 +71,16 @@ export function ProductGrid({ products }: { products: Product[] }) {
   }
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
-      if (selectedCategories.size > 0 && !Array.from(selectedCategories).some((c) => matchesCategoryFilter(p, c))) return false;
+    // No main category selected = the whole catalogue, minus services (a bookable service is not
+    // an animal for sale, so it only surfaces under Services).
+    const base = selectedMain === null ? browsableProducts(products) : products.filter((p) => matchesMain(p, selectedMain));
+
+    return base.filter((p) => {
+      if (selectedSubs.size > 0 && !Array.from(selectedSubs).some((s) => matchesSub(p, s))) return false;
       if (selectedRanches.size > 0 && !selectedRanches.has(p.ranch) && p.ranch !== 'both') return false;
       return true;
     });
-  }, [products, selectedCategories, selectedRanches]);
+  }, [products, selectedMain, selectedSubs, selectedRanches]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -70,20 +91,36 @@ export function ProductGrid({ products }: { products: Product[] }) {
         return arr.sort((a, b) => (priceOf(b) ?? -Infinity) - (priceOf(a) ?? -Infinity));
       case 'name':
         return arr.sort((a, b) => a.name.localeCompare(b.name));
-      default:
+      case 'newest':
         return arr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      default:
+        // Featured: cattle, then goats & sheep, then pigs, then everything else — so livestock
+        // leads the first page instead of being scattered through whatever is newest.
+        return arr.sort(
+          (a, b) => featuredRank(a) - featuredRank(b) || a.sort_order - b.sort_order || a.name.localeCompare(b.name),
+        );
     }
   }, [filtered, sortBy]);
 
-  useEffect(() => setPage(1), [selectedCategories, selectedRanches, sortBy]);
+  useEffect(() => setPage(1), [selectedMain, selectedSubs, selectedRanches, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE));
   const paged = sorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
-      {/* Filters — sidebar on desktop, collapsible drawer on mobile/tablet */}
-      <aside className="lg:sticky lg:top-20 lg:self-start">
+    <div className="space-y-5">
+      {/* Category cards — the same state as the sidebar, rendered as pictures. */}
+      <CategoryCards
+        products={products}
+        selectedMain={selectedMain}
+        onSelectMain={selectMain}
+        selectedSubs={selectedSubs}
+        onToggleSub={toggleSub}
+      />
+
+      <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
+        {/* Filters — sidebar on desktop, collapsible drawer on mobile/tablet */}
+        <aside className="lg:sticky lg:top-20 lg:self-start">
         <button
           type="button"
           onClick={() => setShowFilters((v) => !v)}
@@ -95,9 +132,10 @@ export function ProductGrid({ products }: { products: Product[] }) {
         <div className={`${showFilters ? 'block' : 'hidden'} rounded-lg border border-farm-border bg-cream-warm p-4 lg:block`}>
           <ProductFilters
             products={products}
-            selectedCategories={selectedCategories}
-            onToggleCategory={toggleCategory}
-            onClearCategories={() => setSelectedCategories(new Set())}
+            selectedMain={selectedMain}
+            onSelectMain={selectMain}
+            selectedSubs={selectedSubs}
+            onToggleSub={toggleSub}
             selectedRanches={selectedRanches}
             onToggleRanch={toggleRanch}
             onClearRanches={() => setSelectedRanches(new Set())}
@@ -172,6 +210,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
