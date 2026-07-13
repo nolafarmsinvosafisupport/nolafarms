@@ -249,7 +249,8 @@ async function seedProductCategories(sql: ReturnType<typeof postgres>) {
   const [livestock] = await sql<{ id: string }[]>`SELECT id FROM product_categories WHERE slug = 'livestock' LIMIT 1`;
   const livestockId = livestock?.id ?? null;
 
-  // Subcategories of Livestock — the Cattle / Goats & Sheep / Pigs tabs on /products/livestock.
+  // Subcategories of Livestock. No longer rendered publicly (the category landing page was
+  // removed) — kept because toggling a category inactive bulk-hides its products from /products.
   const subcategories = [
     {
       slug: 'cattle', name: 'Cattle', subtitle: 'Zebu, Dairy Cross & Breeding Stock',

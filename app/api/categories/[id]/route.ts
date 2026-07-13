@@ -59,7 +59,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     `;
     if (!category) return Response.json({ success: false, message: 'Category not found.' }, { status: 404 });
     revalidatePath('/products');
-    revalidatePath('/products/livestock');
     revalidateTag('categories');
     return Response.json({ success: true, category });
   } catch (e) {
@@ -78,7 +77,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const sql = getDb();
   await sql`DELETE FROM product_categories WHERE id = ${id}`;
   revalidatePath('/products');
-  revalidatePath('/products/livestock');
   revalidateTag('categories');
   return Response.json({ success: true });
 }

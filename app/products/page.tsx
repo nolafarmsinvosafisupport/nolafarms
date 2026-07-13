@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
-import { CategoryTiles } from '@/components/products/CategoryTiles';
 import { ProductStatsBar } from '@/components/products/ProductStatsBar';
 import { TrustBadges } from '@/components/products/TrustBadges';
 import { Truck, ShieldCheck, Sprout, Headset } from 'lucide-react';
@@ -68,8 +67,10 @@ const TRUST_BADGES = [
 
 export default async function ProductsPage() {
   const [allProducts, categories] = await Promise.all([getProducts(), getCategories()]);
+  // Categories no longer render anything public — the picture tiles and the /products/livestock
+  // landing page are gone. They are still loaded here for one reason: an admin can toggle a whole
+  // category inactive (or "coming soon") to bulk-hide every product under it in one switch.
   const products = filterVisibleProducts(allProducts, categories);
-  const mainCategories = categories.filter((c) => c.parent_id === null);
 
   return (
     <main className="pt-16">
@@ -91,7 +92,6 @@ export default async function ProductsPage() {
 
       <section className="bg-cream-primary px-6 py-10 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-8">
-          <CategoryTiles products={products} categories={mainCategories} />
           <ProductStatsBar products={products} />
 
           <Suspense fallback={null}>

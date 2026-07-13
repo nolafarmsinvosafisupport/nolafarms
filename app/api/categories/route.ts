@@ -37,7 +37,6 @@ export async function POST(request: Request) {
       RETURNING *
     `;
     revalidatePath('/products');
-    revalidatePath('/products/livestock');
     revalidateTag('categories');
     return Response.json({ success: true, category }, { status: 201 });
   } catch (e) {

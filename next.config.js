@@ -34,6 +34,18 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  async redirects() {
+    return [
+      {
+        // The livestock category landing page was removed — the catalogue is now just
+        // /products. A permanent redirect keeps any indexed or shared link working and
+        // passes its search ranking to /products instead of dropping it on a 404.
+        source: '/products/livestock',
+        destination: '/products',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
