@@ -12,7 +12,7 @@ const stats = [
 
 export function FarmStatsSection() {
   return (
-    <MotionSection className="bg-cream-primary py-28">
+    <MotionSection className="bg-cream-primary section-y">
       <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-3 lg:px-8">
         {stats.map((stat) => {
           const Icon = stat.icon;

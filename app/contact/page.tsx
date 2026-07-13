@@ -32,7 +32,7 @@ export default function ContactPage() {
         image={IMAGES.farmRoad}
         alt="Directions road to Nola Ranches in Laikipia County Kenya"
       />
-      <section className="bg-cream-primary py-28">
+      <section className="bg-cream-primary section-y">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
           <div>
             <h2 className="mb-8 font-serif text-5xl text-brand-deep">Send an Enquiry</h2>
@@ -73,7 +73,7 @@ export default function ContactPage() {
           </aside>
         </div>
       </section>
-      <section className="bg-brand-deep py-20">
+      <section className="bg-brand-deep section-y-sm">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <h2 className="mb-8 font-serif text-5xl text-cream-primary">Find Our Ranches</h2>
           <div className="aspect-[16/7] min-h-[360px] overflow-hidden border border-white/10 bg-white/5">

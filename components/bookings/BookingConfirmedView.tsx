@@ -60,7 +60,7 @@ export function BookingConfirmedView({ booking }: { booking: Booking }) {
   return (
     <div className="bg-cream-primary pt-16">
       {/* Hero */}
-      <section className="mx-auto max-w-3xl px-6 py-20 text-center lg:px-8">
+      <section className="mx-auto max-w-3xl px-6 section-y-sm text-center lg:px-8">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}

@@ -11,7 +11,7 @@ export function GalleryGrid() {
   const [active, setActive] = useState<(typeof galleryImages)[number] | null>(null);
 
   return (
-    <MotionSection className="bg-brand-deep py-28">
+    <MotionSection className="bg-brand-deep section-y">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <SectionHeader title="Fields, Herds, and Highland Light." subtitle="Gallery" align="center" dark />
         <div className="grid auto-rows-[280px] gap-5 md:grid-cols-3">

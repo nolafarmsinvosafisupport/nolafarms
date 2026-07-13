@@ -9,7 +9,7 @@ export default function NotFound() {
         <Image src={IMAGES.landscape} alt="" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-farm-dark/55 to-farm-dark" />
       </div>
-      <div className="relative z-10 mx-auto max-w-2xl px-6 py-24 text-center lg:px-8">
+      <div className="relative z-10 mx-auto max-w-2xl px-6 section-y-md text-center lg:px-8">
         <p className="mb-6 font-serif text-7xl text-brand-leaf">404</p>
         <h1 className="font-serif text-4xl leading-tight text-cream-primary md:text-5xl">
           This field hasn&rsquo;t been planted yet.

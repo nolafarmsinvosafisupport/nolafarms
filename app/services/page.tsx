@@ -34,7 +34,7 @@ export default function ServicesPage() {
         alt="Guided ranch visit landscape at Nola Ranches Kenya"
       />
       <ServicesGrid />
-      <section className="bg-cream-secondary py-28">
+      <section className="bg-cream-secondary section-y">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Book a Ranch Visit</p>
@@ -46,7 +46,7 @@ export default function ServicesPage() {
           <BookingForm />
         </div>
       </section>
-      <section className="bg-brand-dark py-24 text-cream-primary">
+      <section className="bg-brand-dark section-y-md text-cream-primary">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Something Else?</p>
           <h2 className="font-serif text-5xl">Have a Different Question?</h2>

@@ -34,7 +34,7 @@ export default function AboutPage() {
         alt="Road through Nola Ranches estate Kenya"
       />
       <OurStorySection />
-      <section className="bg-brand-dark py-20">
+      <section className="bg-brand-dark section-y-sm">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 text-cream-primary md:grid-cols-3 lg:px-8">
           {[
             { value: '375 Acres', label: 'Across two ranches in Kenya' },
@@ -48,7 +48,7 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
-      <section className="bg-cream-secondary py-24">
+      <section className="bg-cream-secondary section-y-md">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeader title="What Drives Us." subtitle="Our Values" />
           <div className="grid gap-6 md:grid-cols-3">

@@ -8,7 +8,7 @@ import { services } from '@/lib/content';
 
 export function ServicesGrid() {
   return (
-    <MotionSection className="bg-cream-primary py-28">
+    <MotionSection className="bg-cream-primary section-y">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <SectionHeader title="Services for Visitors, Buyers, and Partners." subtitle="Farm Services" />
         <div className="grid gap-8 md:grid-cols-3">

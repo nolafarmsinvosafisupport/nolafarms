@@ -34,7 +34,7 @@ export default function GalleryPage() {
         alt="Nola Ranches wheat fields and livestock gallery in Laikipia Kenya"
       />
       <GalleryGrid />
-      <section className="bg-cream-primary py-24">
+      <section className="bg-cream-primary section-y-md">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <h2 className="font-serif text-5xl text-brand-deep">Like what you see? Book a visit.</h2>
           <p className="mt-5 max-w-2xl leading-8 text-brand-deep/75">Experience the farm in person with a guided ranch visit.</p>

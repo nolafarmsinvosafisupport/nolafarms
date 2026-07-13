@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export function CTASection() {
   return (
-    <section className="bg-cream-secondary py-24">
+    <section className="bg-cream-secondary section-y-md">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-6 md:flex-row md:items-center lg:px-8">
         <div>
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Visits & Enquiries</p>

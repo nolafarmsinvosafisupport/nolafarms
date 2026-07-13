@@ -16,7 +16,7 @@ const cards = [
 
 export function FeaturedSection() {
   return (
-    <MotionSection className="bg-brand-deep py-28">
+    <MotionSection className="bg-brand-deep section-y">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <SectionHeader title="A Working Estate with Many Doors In." subtitle="Explore" align="center" dark />
         <div className="grid gap-8 md:grid-cols-3">

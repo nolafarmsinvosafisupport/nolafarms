@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 
 export function OurStorySection() {
   return (
-    <MotionSection className="bg-cream-primary py-28">
+    <MotionSection className="bg-cream-primary section-y">
       <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2 lg:px-8">
         <div>
           <SectionHeader title="Two Ranches. One Farm." subtitle="Our Story" />
@@ -29,7 +29,10 @@ export function OurStorySection() {
             </Link>
           </motion.div>
         </div>
-        <motion.div variants={fadeUp} className="relative min-h-[560px]">
+        {/* Fluid floor rather than a hard 560px: the image column stacks under the text on
+            narrow screens, where a fixed 560px was two-thirds of a phone viewport on its own.
+            Still caps at the original 560px on tall displays. */}
+        <motion.div variants={fadeUp} className="relative min-h-[clamp(18rem,42vh,35rem)]">
           <div className="image-skeleton absolute inset-0 overflow-hidden">
             <Image src={IMAGES.wheat} alt="Wheat fields growing at Nola Ranches in Laikipia Kenya" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           </div>

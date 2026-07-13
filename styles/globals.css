@@ -71,3 +71,42 @@ body {
     background-position-x: -200%;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Vertical rhythm.
+
+   Sections used flat `py-28` (224px of padding per section) with no responsive
+   variants, so a 768px-tall laptop and a phone paid exactly the same vertical
+   tax as a 27" monitor — which is why the next section was barely peeking above
+   the fold. The real constraint is viewport HEIGHT, but Tailwind's breakpoints
+   are width-based and a 1366x768 laptop is wide-but-short, so width variants
+   cannot express it. These scale with vh instead: tight on short screens, and
+   they relax back to the original spacing on tall ones.
+
+   Caps equal the old fixed values, so the design on a large display is
+   unchanged.
+   --------------------------------------------------------------------------- */
+.section-y {
+  padding-block: clamp(2.75rem, 7vh, 7rem); /* was py-28 (112px) */
+}
+
+.section-y-md {
+  padding-block: clamp(2.5rem, 6vh, 6rem); /* was py-24 (96px) */
+}
+
+.section-y-sm {
+  padding-block: clamp(2rem, 5vh, 5rem); /* was py-20 (80px) */
+}
+
+/* Inner-page hero. Was min-h-[72vh] + pt-28 + an inner py-24, which stacked to
+   ~72% of the viewport on every screen and up to 84% on a phone. The padding-top
+   must always clear the fixed navbar (68-88px depending on page), hence the 6rem
+   floor. */
+.page-hero {
+  min-height: clamp(20rem, 50vh, 34rem);
+  padding-top: clamp(6rem, 10vh, 7.5rem);
+}
+
+.page-hero-body {
+  padding-block: clamp(2rem, 4.5vh, 4.5rem);
+}
