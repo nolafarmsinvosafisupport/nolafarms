@@ -35,7 +35,9 @@ jobs:
 
           echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
 
-          MAJOR=$(/usr/lib/postgresql/18/bin/pg_dump --version | grep -oE '[0-9]+' | head -1)
+          # No `| head -1` here: under `set -o pipefail` head can exit first, hand grep a
+          # SIGPIPE, and fail the step at random. sed consumes all of its input.
+          MAJOR=$(/usr/lib/postgresql/18/bin/pg_dump --version | sed -E 's/.*\(PostgreSQL\) ([0-9]+).*/\1/')
           echo "pg_dump major version: ${MAJOR}"
           if [ "$MAJOR" -lt 18 ]; then
             echo "::error::Expected pg_dump 18+, got ${MAJOR} — it cannot dump the Postgres 18 server"
