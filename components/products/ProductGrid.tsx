@@ -15,6 +15,7 @@ import {
 } from '@/lib/product-taxonomy';
 import type { MainKey, SubKey } from '@/lib/product-taxonomy';
 import type { Product, Ranch } from '@/lib/product-types';
+import type { ProductCategoryPage } from '@/lib/category-types';
 
 type SortKey = 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'name';
 
@@ -32,7 +33,15 @@ function priceOf(p: Product) {
   return p.price ? parseFloat(p.price) : null;
 }
 
-export function ProductGrid({ products }: { products: Product[] }) {
+export function ProductGrid({
+  products,
+  categories,
+}: {
+  products: Product[];
+  // Only used for category card images: whatever an admin sets at /admin/categories wins over
+  // the fallback constants in lib/product-taxonomy.
+  categories: ProductCategoryPage[];
+}) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category');
 
@@ -108,19 +117,39 @@ export function ProductGrid({ products }: { products: Product[] }) {
   const paged = sorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <div className="space-y-5">
-      {/* Category cards — the same state as the sidebar, rendered as pictures. */}
+    // Three rows on desktop, so each piece lines up where it should:
+    //   row 1  [ spacer ] [ category cards ]   cards start level with the product images
+    //   row 2  [ spacer ] [ count + sort    ]
+    //   row 3  [ sidebar] [ product grid    ]  sidebar top lines up with the first product row
+    // The spacers are lg-only, so on mobile everything just stacks in reading order.
+    <div className="grid gap-x-8 gap-y-5 lg:grid-cols-[240px_1fr]">
+      <div className="hidden lg:block" aria-hidden />
       <CategoryCards
         products={products}
+        categories={categories}
         selectedMain={selectedMain}
         onSelectMain={selectMain}
         selectedSubs={selectedSubs}
         onToggleSub={toggleSub}
       />
 
-      <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
-        {/* Filters — sidebar on desktop, collapsible drawer on mobile/tablet */}
-        <aside className="lg:sticky lg:top-20 lg:self-start">
+      <div className="hidden lg:block" aria-hidden />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-brand-deep/50">
+          Showing {paged.length} of {sorted.length} product{sorted.length !== 1 ? 's' : ''}
+        </p>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortKey)}
+          className="rounded-lg border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
+        >
+          {SORT_OPTIONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
+        </select>
+      </div>
+
+      {/* Filters — sticky sidebar on desktop, collapsible drawer on mobile/tablet. max-h + its own
+          scrollbar so a long filter list can never outgrow the viewport and break the stickiness. */}
+      <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
         <button
           type="button"
           onClick={() => setShowFilters((v) => !v)}
@@ -152,19 +181,6 @@ export function ProductGrid({ products }: { products: Product[] }) {
 
       {/* Grid */}
       <div>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs text-brand-deep/50">
-            Showing {paged.length} of {sorted.length} product{sorted.length !== 1 ? 's' : ''}
-          </p>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortKey)}
-            className="rounded-lg border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
-          >
-            {SORT_OPTIONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
-        </div>
-
         {paged.length === 0 ? (
           <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filters.</p>
         ) : (
@@ -210,7 +226,6 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </button>
           </div>
         )}
-        </div>
       </div>
     </div>
   );

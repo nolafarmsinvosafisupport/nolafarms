@@ -93,7 +93,7 @@ export default async function ProductsPage() {
         <div className="mx-auto max-w-7xl space-y-8">
 
           <Suspense fallback={null}>
-            <ProductGrid products={products} />
+            <ProductGrid products={products} categories={categories} />
           </Suspense>
 
           {/* Bulk orders CTA */}

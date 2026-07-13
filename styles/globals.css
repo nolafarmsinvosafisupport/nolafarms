@@ -26,14 +26,17 @@
 html {
   scroll-behavior: smooth;
   background: var(--color-cream-primary);
-  /* Prevent any component from causing horizontal page scroll */
-  overflow-x: hidden;
+  /* Prevent any component from causing horizontal page scroll.
+     `clip`, NOT `hidden`: overflow-x:hidden on html/body silently turns them into scroll
+     containers, which breaks `position: sticky` for every descendant — that is why the products
+     sidebar refused to stick. `clip` gives the same protection without creating one. */
+  overflow-x: clip;
 }
 
 body {
   background: var(--color-cream-primary);
   color: var(--color-text-primary);
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100vw;
 }
 

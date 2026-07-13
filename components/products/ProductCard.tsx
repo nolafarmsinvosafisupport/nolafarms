@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, ShoppingCart, MessageCircle, Check, PackageX } from 'lucide-react';
+import { MapPin, ShoppingCart, MessageCircle, Check, PackageX, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-context';
 import { useNotifications } from '@/lib/notification-context';
@@ -103,44 +103,62 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* View Details + quick action */}
-        <div className="mt-3 flex gap-2 border-t border-farm-border pt-3">
-          <Link
-            href={`/products/${product.slug}`}
-            className="flex-1 rounded-lg border border-brand-deep py-2 text-center text-xs font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:bg-brand-deep hover:text-cream-primary"
-          >
-            View Details
-          </Link>
-          {!isAdmin && (
-            product.is_service ? (
+        {/* Actions: eye (view) — WhatsApp (primary) — cart.
+            An admin gets a plain View Details instead: they manage enquiries from the admin panel
+            and have no reason to WhatsApp or buy from their own shop. */}
+        <div className="mt-3 flex items-stretch gap-2 border-t border-farm-border pt-3">
+          {isAdmin ? (
+            <Link
+              href={`/products/${product.slug}`}
+              className="flex-1 rounded-lg border border-brand-deep py-2 text-center text-xs font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:bg-brand-deep hover:text-cream-primary"
+            >
+              View Details
+            </Link>
+          ) : (
+            <>
+              <Link
+                href={`/products/${product.slug}`}
+                aria-label={`View details for ${product.name}`}
+                title="View details"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-brand-deep text-brand-deep transition-colors hover:bg-brand-deep hover:text-cream-primary"
+              >
+                <Eye size={14} />
+              </Link>
+
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Request this service on WhatsApp"
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-leaf text-white hover:bg-brand-deep"
+                className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-leaf text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-brand-deep"
               >
                 <MessageCircle size={14} />
+                WhatsApp
               </a>
-            ) : !product.in_stock ? (
-              <span
-                aria-label="Out of stock"
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-deep/10 text-brand-deep/40"
-              >
-                <PackageX size={14} />
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={handleQuickAdd}
-                aria-label="Add to cart"
-                className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors ${
-                  added ? 'bg-brand-leaf text-white' : 'bg-brand-deep text-cream-primary hover:bg-brand-primary'
-                }`}
-              >
-                {added ? <Check size={14} /> : <ShoppingCart size={14} />}
-              </button>
-            )
+
+              {/* A service is booked, not bought — no cart button for it. */}
+              {!product.is_service &&
+                (!product.in_stock ? (
+                  <span
+                    aria-label="Out of stock"
+                    title="Out of stock"
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-deep/10 text-brand-deep/40"
+                  >
+                    <PackageX size={14} />
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleQuickAdd}
+                    aria-label={`Add ${product.name} to cart`}
+                    title="Add to cart"
+                    className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors ${
+                      added ? 'bg-brand-leaf text-white' : 'bg-brand-deep text-cream-primary hover:bg-brand-primary'
+                    }`}
+                  >
+                    {added ? <Check size={14} /> : <ShoppingCart size={14} />}
+                  </button>
+                ))}
+            </>
           )}
         </div>
       </div>
