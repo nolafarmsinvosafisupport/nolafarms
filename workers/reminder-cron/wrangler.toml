@@ -1,0 +1,23 @@
+name = "nola-reminder-cron"
+main = "src/index.js"
+compatibility_date = "2026-07-13"
+
+# Cron-only Worker: no `fetch` handler and no workers.dev route, so it is not reachable over
+# HTTP and adds no public attack surface.
+#
+# This key MUST stay above [vars] and [triggers]. In TOML, every key after a table header
+# belongs to that table — putting `workers_dev` below [vars] silently turns it into a variable
+# named "workers_dev" instead of a setting, which is exactly what happened on the first deploy
+# and is why Cloudflare prompted for a subdomain and published this Worker publicly.
+workers_dev = false
+
+# 05:00 UTC = 08:00 EAT. Unlike GitHub's scheduled workflows, Cloudflare runs this on time.
+[triggers]
+crons = ["0 5 * * *"]
+
+[vars]
+SITE_URL = "https://nolaranches.co.ke"
+
+# CRON_SECRET is NOT here — it is an encrypted secret, set out of band and never in the repo:
+#   npx wrangler@3 secret put CRON_SECRET
+# It must match CRON_SECRET on the Railway app service exactly.

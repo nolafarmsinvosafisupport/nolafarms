@@ -1,8 +1,14 @@
-name: Daily Booking Reminders
+name: Booking Reminders (manual)
 
+# The daily schedule now lives in the Cloudflare Worker at workers/reminder-cron.
+#
+# GitHub's scheduled workflows are best-effort: this job was firing 5-9 hours late every day
+# (an 08:00 EAT reminder arriving mid-afternoon) and can be dropped entirely under load, which
+# is not acceptable for time-sensitive visit reminders. Cloudflare's cron triggers run on time.
+#
+# This workflow is kept as a manual "send now" button. Do not re-add a `schedule:` here, or
+# reminders would be triggered twice a day from two different systems.
 on:
-  schedule:
-    - cron: '0 5 * * *' # 05:00 UTC = 08:00 EAT
   workflow_dispatch: {}
 
 jobs:
