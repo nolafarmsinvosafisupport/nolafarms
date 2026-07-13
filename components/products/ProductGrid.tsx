@@ -101,7 +101,10 @@ export function ProductGrid({
       {paged.length === 0 ? (
         <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filter.</p>
       ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        // 5 columns only from 2xl. At 1366 five columns left each card ~205px, which squeezed the
+        // WhatsApp button down to 94px and crushed its label — the card has three buttons to fit,
+        // so it needs the width.
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {paged.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

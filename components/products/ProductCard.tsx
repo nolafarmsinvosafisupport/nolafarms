@@ -101,7 +101,7 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Actions: eye (view) — WhatsApp (primary) — cart.
             An admin gets a plain View Details instead: they manage enquiries from the admin panel
             and have no reason to WhatsApp or buy from their own shop. */}
-        <div className="mt-3 flex items-stretch gap-2 border-t border-farm-border pt-3">
+        <div className="mt-3 flex items-stretch gap-1.5 border-t border-farm-border pt-3 sm:gap-2">
           {isAdmin ? (
             <Link
               href={`/products/${product.slug}`}
@@ -120,14 +120,20 @@ export function ProductCard({ product }: { product: Product }) {
                 <Eye size={14} />
               </Link>
 
+              {/* min-w-0 lets this shrink instead of forcing the row wider than the card. On the
+                  narrowest cards (2-up on a phone) there is only ~50px here, so the label drops
+                  and the icon carries it — a squashed, clipped word is worse than no word. It is
+                  still visibly the primary action: it is the only one that flexes. */}
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-leaf text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-brand-deep"
+                aria-label={`Enquire about ${product.name} on WhatsApp`}
+                title="Enquire on WhatsApp"
+                className="flex h-9 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-leaf px-2 text-[10px] font-semibold uppercase tracking-wide text-white transition-colors hover:bg-brand-deep sm:text-xs"
               >
-                <MessageCircle size={14} />
-                WhatsApp
+                <MessageCircle size={14} className="flex-shrink-0" />
+                <span className="hidden truncate sm:inline">WhatsApp</span>
               </a>
 
               {/* A service is booked, not bought — no cart button for it. */}
