@@ -1,11 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Beef, PawPrint, PiggyBank, MessageCircle, HeartPulse, ClipboardCheck, Droplets, Dna, Headset } from 'lucide-react';
+import { Beef, PawPrint, PiggyBank, MessageCircle, HeartPulse, ClipboardCheck, Droplets, Dna, Headset, ArrowLeft } from 'lucide-react';
 import { TrustBadges } from './TrustBadges';
-import type { Ranch } from '@/lib/product-types';
 import { SITE } from '@/lib/constants';
 import type { Product } from '@/lib/product-types';
 import type { ProductCategoryPage } from '@/lib/category-types';
@@ -24,11 +23,9 @@ const LIVESTOCK_TRUST_BADGES = [
   { icon: Headset, label: 'Expert Support', description: 'Breeding & health advice' },
 ];
 
-const RANCH_OPTIONS: { key: Ranch | 'all'; label: string }[] = [
-  { key: 'all', label: 'All Ranches' },
-  { key: 'oloitoktok', label: 'Oloitoktok Ranch' },
-  { key: 'laikipia', label: 'Laikipia Ranch' },
-];
+// Every block on this page sits in its own bordered card so the sections read as
+// distinct panels rather than running together.
+const PANEL = 'rounded-xl border border-farm-border bg-cream-warm';
 
 function whatsappHref(message: string | null) {
   const number = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : '254750958780';
@@ -37,15 +34,9 @@ function whatsappHref(message: string | null) {
 
 export function LivestockCategoryTabs({ products, categories }: { products: Product[]; categories: ProductCategoryPage[] }) {
   const [selectedSlug, setSelectedSlug] = useState(categories[0]?.slug ?? '');
-  const [ranch, setRanch] = useState<Ranch | 'all'>('all');
-
-  const filteredProducts = useMemo(
-    () => products.filter((p) => ranch === 'all' || p.ranch === ranch || p.ranch === 'both'),
-    [products, ranch],
-  );
 
   const breedsFor = (category: ProductCategoryPage) =>
-    filteredProducts.filter((p) => category.category_values.includes(p.category));
+    products.filter((p) => category.category_values.includes(p.category));
 
   const selected = categories.find((c) => c.slug === selectedSlug) ?? categories[0];
   const others = categories.filter((c) => c.slug !== selected?.slug);
@@ -54,36 +45,23 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
 
   return (
     <>
-      {/* Header */}
-      <div className="bg-farm-dark px-6 py-12 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-warm">Products / Livestock</p>
-            <h1 className="mt-3 font-serif text-4xl text-cream-primary md:text-5xl">Our Livestock</h1>
-            <p className="mt-2 text-sm font-medium text-cream-secondary/80">Healthy. Productive. Farm-Raised.</p>
-            <p className="mt-3 max-w-xl text-sm text-cream-secondary/70">
-              Quality livestock from our ranches in Oloitoktok and Laikipia. All animals are vaccinated, healthy,
-              and selected for performance in Kajiado&apos;s climate.
-            </p>
-          </div>
-          <label className="flex-shrink-0">
-            <span className="sr-only">Filter by ranch</span>
-            <select
-              value={ranch}
-              onChange={(e) => setRanch(e.target.value as Ranch | 'all')}
-              className="rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-medium text-cream-primary outline-none focus:border-gold-warm sm:w-48"
-            >
-              {RANCH_OPTIONS.map((r) => (
-                <option key={r.key} value={r.key} className="bg-farm-dark">{r.label}</option>
-              ))}
-            </select>
-          </label>
+      {/* Header — centred, and roughly 40% shorter than before. The "Products / Livestock"
+          breadcrumb and the ranch picker that used to live up here are both gone; the way back
+          to the catalogue is now a pill at the foot of the page. */}
+      <div className="bg-farm-dark px-6 py-5 lg:px-8">
+        <div className="mx-auto max-w-xl text-center">
+          <h1 className="font-serif text-2xl text-cream-primary md:text-3xl">Our Livestock</h1>
+          <p className="mt-1 text-xs font-medium text-gold-warm">Healthy. Productive. Farm-Raised.</p>
+          <p className="mt-1.5 text-xs leading-5 text-cream-secondary/70">
+            Vaccinated, farm-recorded animals from our Oloitoktok and Laikipia ranches, selected for
+            performance in Kajiado&apos;s climate.
+          </p>
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Category tabs — centred */}
       <div className="border-b border-farm-border bg-cream-primary px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto py-4">
+        <div className="mx-auto flex max-w-7xl justify-center gap-2 overflow-x-auto py-3">
           {categories.map((c) => {
             const Icon = CATEGORY_ICONS[c.slug] ?? PawPrint;
             const active = c.slug === selected.slug;
@@ -92,14 +70,14 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                 key={c.slug}
                 type="button"
                 onClick={() => setSelectedSlug(c.slug)}
-                className={`flex flex-shrink-0 items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
+                className={`flex flex-shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
                   active ? 'border-brand-leaf bg-brand-leaf/10' : 'border-farm-border hover:border-brand-deep/30'
                 }`}
               >
-                <Icon size={22} className={active ? 'text-brand-leaf' : 'text-brand-deep/50'} />
+                <Icon size={16} className={active ? 'text-brand-leaf' : 'text-brand-deep/50'} />
                 <span>
-                  <span className="block text-xs font-semibold uppercase tracking-wide text-brand-deep">{c.name}</span>
-                  {c.subtitle && <span className="block text-[10px] text-brand-deep/50">{c.subtitle}</span>}
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-brand-deep">{c.name}</span>
+                  {c.subtitle && <span className="hidden text-[9px] text-brand-deep/50 sm:block">{c.subtitle}</span>}
                 </span>
               </button>
             );
@@ -107,20 +85,23 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
         </div>
       </div>
 
-      <div className="bg-cream-primary px-6 py-10 lg:px-8">
-        <div className="mx-auto max-w-7xl space-y-12">
-          {/* Selected category — full detail */}
-          <section>
-            <h2 className="font-serif text-3xl text-brand-deep">{selected.name}</h2>
-            {selected.subtitle && <p className="mt-1 text-sm font-medium text-brand-leaf">{selected.subtitle}</p>}
-            <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-center">
+      <div className="bg-cream-primary px-6 py-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-6">
+          {/* Selected category — now inside its own panel */}
+          <section className={`${PANEL} p-4`}>
+            <h2 className="font-serif text-lg text-brand-deep">{selected.name}</h2>
+            {selected.subtitle && <p className="mt-0.5 text-xs font-medium text-brand-leaf">{selected.subtitle}</p>}
+
+            {/* items-start, not items-center: centring stretched the row to the image's height and
+                left dead space above and below the text. */}
+            <div className="mt-3 grid gap-4 lg:grid-cols-2 lg:items-start">
               {selected.hero_description && (
                 <div>
-                  <p className="leading-7 text-brand-deep/75">{selected.hero_description}</p>
+                  <p className="text-sm leading-6 text-brand-deep/75">{selected.hero_description}</p>
                   {selected.details.length > 0 && (
-                    <ul className="mt-4 grid gap-1.5 sm:grid-cols-2">
+                    <ul className="mt-3 grid gap-1 sm:grid-cols-2">
                       {selected.details.map((d, i) => (
-                        <li key={i} className="text-sm text-brand-deep/70">• {d}</li>
+                        <li key={i} className="text-xs text-brand-deep/70">• {d}</li>
                       ))}
                     </ul>
                   )}
@@ -129,34 +110,39 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                       href={whatsappHref(selected.whatsapp_message)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-leaf px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
+                      className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand-leaf px-4 py-2 text-[11px] font-semibold uppercase tracking-widest text-white transition-colors hover:bg-brand-deep"
                     >
-                      <MessageCircle size={14} />
+                      <MessageCircle size={13} />
                       {selected.cta_label}
                     </a>
                   )}
                 </div>
               )}
-              <div className="image-skeleton relative aspect-[4/3] overflow-hidden rounded-xl bg-cream-secondary">
+              {/* Fixed height, not an aspect ratio: an aspect box takes its height from the column
+                  width, so on a wide screen this grew to 346px and pushed the breed cards off the
+                  fold — the whole thing we are trying to fix. */}
+              <div className="image-skeleton relative h-40 overflow-hidden rounded-lg bg-cream-secondary lg:h-44">
                 <Image
                   src={selected.hero_image || '/images/farm/farm.webp'}
                   alt={`${selected.name} at Nola Ranches`}
                   fill
+                  priority
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                 />
               </div>
             </div>
 
-            {/* Breed boxes */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Breed cards. The image was aspect-square, which on a 4-column grid made each card
+                444px tall — so not one of them fitted above the fold on a 768px laptop. */}
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {breedsFor(selected).map((product, i) => (
                 <Link
                   key={product.id}
                   href={`/products/${product.slug}`}
-                  className="group block overflow-hidden rounded-xl border border-farm-border bg-cream-warm transition-shadow hover:shadow-md"
+                  className="group block overflow-hidden rounded-lg border border-farm-border bg-cream-primary transition-shadow hover:shadow-md"
                 >
-                  <div className="image-skeleton relative aspect-square overflow-hidden bg-cream-secondary">
+                  <div className="image-skeleton relative aspect-[16/10] overflow-hidden bg-cream-secondary">
                     <Image
                       src={product.images[0] ?? '/images/farm/farm.webp'}
                       alt={product.name}
@@ -170,24 +156,25 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                       </span>
                     )}
                   </div>
-                  <div className="p-4">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-brand-leaf">{i + 1}.</p>
-                    <h3 className="mt-0.5 text-sm font-semibold text-brand-deep group-hover:text-brand-leaf">{product.name}</h3>
+                  <div className="p-3">
+                    <h3 className="text-xs font-semibold text-brand-deep group-hover:text-brand-leaf">
+                      <span className="text-brand-leaf">{i + 1}.</span> {product.name}
+                    </h3>
                     {product.description && (
-                      <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-brand-deep/60">{product.description}</p>
+                      <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-brand-deep/60">{product.description}</p>
                     )}
                   </div>
                 </Link>
               ))}
               {breedsFor(selected).length === 0 && (
-                <p className="col-span-full py-6 text-sm text-brand-deep/50">No breeds match the selected ranch filter.</p>
+                <p className="col-span-full py-4 text-sm text-brand-deep/50">No breeds in this category yet.</p>
               )}
             </div>
           </section>
 
-          {/* Other categories — condensed teasers */}
+          {/* Other categories — condensed teasers, each its own panel */}
           {others.length > 0 && (
-            <section className="grid gap-6 sm:grid-cols-2">
+            <section className="grid gap-4 sm:grid-cols-2">
               {others.map((c) => {
                 const Icon = CATEGORY_ICONS[c.slug] ?? PawPrint;
                 return (
@@ -197,9 +184,9 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                     tabIndex={0}
                     onClick={() => setSelectedSlug(c.slug)}
                     onKeyDown={(e) => e.key === 'Enter' && setSelectedSlug(c.slug)}
-                    className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-farm-border bg-cream-warm text-left transition-shadow hover:shadow-md"
+                    className={`${PANEL} group flex cursor-pointer flex-col overflow-hidden text-left transition-shadow hover:shadow-md`}
                   >
-                    <div className="image-skeleton relative aspect-[16/9] overflow-hidden bg-cream-secondary">
+                    <div className="image-skeleton relative aspect-[21/9] overflow-hidden bg-cream-secondary">
                       <Image
                         src={c.hero_image || '/images/farm/farm.webp'}
                         alt={`${c.name} at Nola Ranches`}
@@ -208,14 +195,14 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div className="p-5">
+                    <div className="p-4">
                       <div className="flex items-center gap-2">
-                        <Icon size={16} className="text-brand-leaf" />
-                        <h3 className="font-serif text-xl text-brand-deep">{c.name}</h3>
+                        <Icon size={14} className="text-brand-leaf" />
+                        <h3 className="font-serif text-base text-brand-deep">{c.name}</h3>
                       </div>
-                      {c.subtitle && <p className="mt-1 text-xs font-medium text-brand-leaf">{c.subtitle}</p>}
+                      {c.subtitle && <p className="mt-0.5 text-[11px] font-medium text-brand-leaf">{c.subtitle}</p>}
                       {c.hero_description && (
-                        <p className="mt-2 line-clamp-2 text-xs leading-5 text-brand-deep/60">{c.hero_description}</p>
+                        <p className="mt-1.5 line-clamp-2 text-[11px] leading-4 text-brand-deep/60">{c.hero_description}</p>
                       )}
                       {c.cta_label && (
                         <a
@@ -223,9 +210,9 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand-leaf px-4 py-2 text-[11px] font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
+                          className="mt-3 inline-flex items-center gap-2 rounded-lg bg-brand-leaf px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-white transition-colors hover:bg-brand-deep"
                         >
-                          <MessageCircle size={12} />
+                          <MessageCircle size={11} />
                           {c.cta_label}
                         </a>
                       )}
@@ -236,10 +223,22 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
             </section>
           )}
 
-          {/* Trust badges */}
-          <section className="border-t border-farm-border pt-8">
+          {/* Trust badges — also a panel now */}
+          <section className={`${PANEL} px-5 py-4`}>
             <TrustBadges badges={LIVESTOCK_TRUST_BADGES} />
           </section>
+
+          {/* The way back to the catalogue: a pill at the foot of the page, replacing the
+              old-school "Products / Livestock" breadcrumb that sat above the hero. */}
+          <div className="flex justify-center pt-1">
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 rounded-full border border-farm-border bg-cream-warm px-5 py-2 text-[11px] font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:border-brand-leaf hover:text-brand-leaf"
+            >
+              <ArrowLeft size={13} />
+              All Products
+            </Link>
+          </div>
         </div>
       </div>
     </>

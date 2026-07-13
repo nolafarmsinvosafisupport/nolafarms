@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { unstable_cache } from 'next/cache';
 import { LivestockCategoryTabs } from '@/components/products/LivestockCategoryTabs';
@@ -73,19 +72,10 @@ export default async function LivestockCategoryPage() {
         ])}
       />
 
-      {/* Breadcrumb */}
-      <div className="border-b border-farm-border bg-cream-secondary px-6 py-2 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <nav className="flex items-center gap-2 text-xs text-brand-deep/50">
-            <Link href="/" className="hover:text-brand-deep">Home</Link>
-            <span>/</span>
-            <Link href="/products" className="hover:text-brand-deep">Products</Link>
-            <span>/</span>
-            <span className="text-brand-deep">Livestock</span>
-          </nav>
-        </div>
-      </div>
-
+      {/* The visible Home / Products / Livestock breadcrumb bar that used to sit here is gone —
+          the way back to the catalogue is now an "All Products" pill at the foot of the page.
+          The JSON-LD breadcrumb above stays: it is invisible to visitors but is what lets Google
+          render the breadcrumb trail in search results, so removing it would cost SEO for nothing. */}
       <LivestockCategoryTabs products={products} categories={subcategories} />
     </main>
   );
