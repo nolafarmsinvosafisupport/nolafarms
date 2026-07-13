@@ -2,12 +2,14 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { MapPin, Star, Heart, Eye, ShoppingCart, MessageCircle, Check } from 'lucide-react';
 import { useState } from 'react';
-import { MapPin, Minus, Plus } from 'lucide-react';
-import { AddToCartButton } from './AddToCartButton';
+import { useCart } from '@/lib/cart-context';
+import { useWishlist } from '@/lib/wishlist-context';
 import { useNotifications } from '@/lib/notification-context';
+import { SITE } from '@/lib/constants';
 import type { Product } from '@/lib/product-types';
-import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
+import { CATEGORY_LABELS } from '@/lib/product-types';
 
 const CATEGORY_COLORS: Record<string, string> = {
   cattle: 'bg-amber-100 text-amber-800',
@@ -20,18 +22,49 @@ const CATEGORY_COLORS: Record<string, string> = {
   grains: 'bg-stone-100 text-stone-700',
 };
 
-export function ProductCard({ product }: { product: Product }) {
+// Decorative-only rating (no reviews system exists) — deterministic per product so it's
+// stable across renders/visits instead of visibly identical or randomly flickering.
+function decorativeRating(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return 4 + ((hash % 3) * 0.5); // 4.0, 4.5, or 5.0
+}
+
+export function ProductCard({ product, onQuickView }: { product: Product; onQuickView?: (product: Product) => void }) {
+  const { addItem } = useCart();
+  const { isWishlisted, toggleItem } = useWishlist();
   const { isAdmin } = useNotifications();
-  const [qty, setQty] = useState(1);
-  const [showQty, setShowQty] = useState(false);
+  const [added, setAdded] = useState(false);
 
   const price = product.price ? parseFloat(product.price) : null;
   const compareAt = product.compare_at_price ? parseFloat(product.compare_at_price) : null;
   const isOnSale = price !== null && compareAt !== null && compareAt > price;
   const imageSrc = product.images[0] ?? '/images/farm/farm.webp';
+  const rating = decorativeRating(product.id);
+  const wishlisted = isWishlisted(product.id);
+
+  function handleQuickAdd(e: React.MouseEvent) {
+    e.preventDefault();
+    addItem(product, 1);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  }
+
+  function handleToggleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    toggleItem(product.id);
+  }
+
+  function handleQuickView(e: React.MouseEvent) {
+    e.preventDefault();
+    onQuickView?.(product);
+  }
+
+  const whatsappNumber = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : '254750958780';
+  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello, I'd like to request ${product.name} from Nola Ranches. Please provide more details.`)}`;
 
   return (
-    <article className="group flex flex-col border border-farm-border bg-cream-warm transition-shadow hover:shadow-md">
+    <article className="group relative flex flex-col border border-farm-border bg-cream-warm transition-shadow hover:shadow-md">
       {/* Image */}
       <Link href={`/products/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-cream-secondary">
         <Image
@@ -46,6 +79,29 @@ export function ProductCard({ product }: { product: Product }) {
             Sale
           </span>
         )}
+
+        {/* Wishlist + quick view */}
+        <div className="absolute right-2 top-2 flex flex-col gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+          <button
+            type="button"
+            onClick={handleToggleWishlist}
+            aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-pressed={wishlisted}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-brand-deep shadow hover:bg-white"
+          >
+            <Heart size={14} className={wishlisted ? 'fill-red-500 text-red-500' : ''} />
+          </button>
+          {onQuickView && (
+            <button
+              type="button"
+              onClick={handleQuickView}
+              aria-label="Quick view"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-brand-deep shadow hover:bg-white"
+            >
+              <Eye size={14} />
+            </button>
+          )}
+        </div>
       </Link>
 
       {/* Info */}
@@ -69,6 +125,14 @@ export function ProductCard({ product }: { product: Product }) {
           </h3>
         </Link>
 
+        {/* Decorative rating */}
+        <div className="mt-1 flex items-center gap-1">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star key={i} size={11} className={i < Math.round(rating) ? 'fill-gold-warm text-gold-warm' : 'text-farm-border'} />
+          ))}
+          <span className="ml-0.5 text-[10px] text-brand-deep/40">{rating.toFixed(1)}</span>
+        </div>
+
         {/* Price */}
         <div className="mt-2">
           {price !== null ? (
@@ -87,33 +151,39 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* Add to cart — hidden for admin accounts, who browse but don't purchase */}
-        {!isAdmin && (
-        <div className="mt-3 border-t border-farm-border pt-3">
-          {showQty ? (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center border border-farm-border">
-                <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="flex h-8 w-8 items-center justify-center text-brand-deep hover:bg-cream-secondary">
-                  <Minus size={12} />
-                </button>
-                <span className="w-8 text-center text-sm font-medium text-brand-deep">{qty}</span>
-                <button type="button" onClick={() => setQty((q) => q + 1)} className="flex h-8 w-8 items-center justify-center text-brand-deep hover:bg-cream-secondary">
-                  <Plus size={12} />
-                </button>
-              </div>
-              <AddToCartButton product={product} qty={qty} compact className="h-8 flex-1 px-2" />
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setShowQty(true)}
-              className="w-full border border-brand-deep py-2 text-xs font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:bg-brand-deep hover:text-cream-primary"
-            >
-              Add to Cart
-            </button>
+        {/* View Details + quick action */}
+        <div className="mt-3 flex gap-2 border-t border-farm-border pt-3">
+          <Link
+            href={`/products/${product.slug}`}
+            className="flex-1 border border-brand-deep py-2 text-center text-xs font-semibold uppercase tracking-widest text-brand-deep transition-colors hover:bg-brand-deep hover:text-cream-primary"
+          >
+            View Details
+          </Link>
+          {!isAdmin && (
+            product.is_service ? (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Request this service on WhatsApp"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center bg-brand-leaf text-white hover:bg-brand-deep"
+              >
+                <MessageCircle size={14} />
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={handleQuickAdd}
+                aria-label="Add to cart"
+                className={`flex h-9 w-9 flex-shrink-0 items-center justify-center transition-colors ${
+                  added ? 'bg-brand-leaf text-white' : 'bg-brand-deep text-cream-primary hover:bg-brand-primary'
+                }`}
+              >
+                {added ? <Check size={14} /> : <ShoppingCart size={14} />}
+              </button>
+            )
           )}
         </div>
-        )}
       </div>
     </article>
   );

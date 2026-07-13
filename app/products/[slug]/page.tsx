@@ -131,8 +131,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <ProductAddToCart product={product} />
             </div>
 
-            {/* WhatsApp enquiry — hidden for admin; they manage enquiries from the admin panel, not as a customer */}
-            {!isAdmin && (
+            {/* WhatsApp enquiry — hidden for admin (manage enquiries from the admin panel) and for
+                services, whose ProductAddToCart already renders a "Request This Service" WhatsApp CTA */}
+            {!isAdmin && !product.is_service && (
               <div className="mt-3">
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}

@@ -53,6 +53,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         images = COALESCE(${body.images ?? null}, images),
         available = COALESCE(${body.available ?? null}, available),
         sort_order = COALESCE(${body.sort_order ?? null}, sort_order),
+        is_service = COALESCE(${body.is_service ?? null}, is_service),
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *

@@ -17,6 +17,7 @@ export type Product = {
   images: string[];
   available: boolean;
   sort_order: number;
+  is_service: boolean;
   created_at: string;
   updated_at: string;
 };

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import { useNotifications } from '@/lib/notification-context';
+import { SITE } from '@/lib/constants';
 import type { Product } from '@/lib/product-types';
 
 export function ProductAddToCart({ product }: { product: Product }) {
@@ -22,6 +23,23 @@ export function ProductAddToCart({ product }: { product: Product }) {
   // Admin accounts browse the storefront but don't place orders themselves —
   // they view what visitors have purchased/booked instead.
   if (isAdmin) return null;
+
+  // Services (e.g. boar hire) are booked, not added to a cart — send straight to WhatsApp.
+  if (product.is_service) {
+    const whatsappNumber = SITE.whatsapp !== 'PLACEHOLDER_WHATSAPP_NUMBER' ? SITE.whatsapp : '254750958780';
+    const text = encodeURIComponent(`Hello, I'd like to request ${product.name} from Nola Ranches. Please provide more details.`);
+    return (
+      <a
+        href={`https://wa.me/${whatsappNumber}?text=${text}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 bg-brand-deep py-3 text-xs font-semibold uppercase tracking-widest text-cream-primary transition-colors hover:bg-brand-primary"
+      >
+        <MessageCircle size={14} />
+        Request This Service
+      </a>
+    );
+  }
 
   return (
     <div className="space-y-3">

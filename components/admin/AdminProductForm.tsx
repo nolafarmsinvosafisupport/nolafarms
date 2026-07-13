@@ -37,6 +37,7 @@ export function AdminProductForm({ product }: Props) {
   const [priceUnit, setPriceUnit] = useState(product?.price_unit ?? 'per kg');
   const [bulkInfo, setBulkInfo] = useState(product?.bulk_info ?? '');
   const [images, setImages] = useState<string[]>(product?.images ?? []);
+  const [isService, setIsService] = useState(product?.is_service ?? false);
   const [available, setAvailable] = useState(product?.available ?? true);
   const [sortOrder, setSortOrder] = useState(String(product?.sort_order ?? '0'));
   const [loading, setLoading] = useState(false);
@@ -70,6 +71,7 @@ export function AdminProductForm({ product }: Props) {
         images: images.filter(Boolean),
         available,
         sort_order: parseInt(sortOrder) || 0,
+        is_service: isService,
       };
       const url = isEdit ? `/api/products/${product!.id}` : '/api/products';
       const method = isEdit ? 'PATCH' : 'POST';
@@ -256,6 +258,32 @@ export function AdminProductForm({ product }: Props) {
 
       {/* Images */}
       <AdminImageUploader images={images.filter(Boolean)} onChange={setImages} />
+
+      {/* Service toggle */}
+      <div className="flex items-center pb-1">
+        <label className="flex cursor-pointer items-center gap-3">
+          <div
+            role="checkbox"
+            aria-checked={isService}
+            tabIndex={0}
+            onClick={() => setIsService((v) => !v)}
+            onKeyDown={(e) => e.key === 'Enter' && setIsService((v) => !v)}
+            className={`relative h-6 w-11 rounded-full transition-colors ${isService ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                isService ? 'translate-x-5' : 'translate-x-0.5'
+              }`}
+            />
+          </div>
+          <span className="text-sm font-medium text-brand-deep">
+            This is a service, not a physical item
+            <span className="block text-xs font-normal text-brand-deep/50">
+              Replaces Add-to-Cart with a &quot;Request This Service&quot; WhatsApp button (e.g. boar hire).
+            </span>
+          </span>
+        </label>
+      </div>
 
       {/* Sort order + Available toggle */}
       <div className="grid gap-4 sm:grid-cols-2">

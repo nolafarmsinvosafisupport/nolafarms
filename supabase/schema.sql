@@ -75,9 +75,58 @@ CREATE TABLE IF NOT EXISTS products (
   images TEXT[] DEFAULT '{}',
   available BOOLEAN NOT NULL DEFAULT TRUE,
   sort_order INTEGER DEFAULT 0,
+  is_service BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Category-level landing content (hero photo/description/CTA) for grouped product
+-- categories like the Livestock page's Cattle / Goats & Sheep / Pigs tabs. Separate from
+-- products.category (which stays a flat enum) — category_values maps a category page to
+-- one or more of those enum values, e.g. ARRAY['goats','sheep'].
+CREATE TABLE IF NOT EXISTS product_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  subtitle TEXT,
+  hero_image TEXT,
+  hero_description TEXT,
+  category_values TEXT[] NOT NULL DEFAULT '{}',
+  cta_label TEXT,
+  whatsapp_message TEXT,
+  details TEXT[] DEFAULT '{}',
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Seed the 3 category records (safe to re-run)
+INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order) VALUES
+  ('cattle', 'Cattle', 'Zebu, Dairy Cross & Breeding Stock',
+   'https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow4.jpeg',
+   'Nola Ranch maintains a diverse herd of cattle in Oloitoktok, Kajiado County. Our animals are selected for drought resistance, fertility, and market performance. All cattle are vaccinated, tagged, and farm-recorded.',
+   ARRAY['cattle'], 'View Available Sales Stock',
+   'Hello, I''m interested in the cattle available at Nola Ranches. Please provide more details.',
+   ARRAY[]::TEXT[], 10)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order) VALUES
+  ('goats-sheep', 'Goats & Sheep', 'Premium Meat Breeds Adapted for Kajiado',
+   'https://images.nolaranches.co.ke/products/animals/goat/boer/boer-main-1.jpeg',
+   'Nola Ranch raises hardy meat goats and sheep bred for drought resistance and fast growth. All animals are vaccinated, healthy, and ready for breeding or meat market.',
+   ARRAY['goats','sheep'], 'Contact Us for Sales Stock',
+   'Hello, I''m interested in the goats and sheep available at Nola Ranches. Please provide more details.',
+   ARRAY[]::TEXT[], 20)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order) VALUES
+  ('pigs', 'Pigs', 'Commercial Breeding Stock & Meat Production',
+   'https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg',
+   'Nola Ranch operates a modern piggery in Oloitoktok focused on genetics, fertility, and fast growth. We maintain pure breeds and terminal crosses to supply quality piglets, gilts, and porkers to farmers and the market.',
+   ARRAY['pigs'], 'Inquire About Piglets, Gilts & Boar Services',
+   'Hello, I''m interested in piglets, gilts, or boar services at Nola Ranches. Please provide more details.',
+   ARRAY['Purebred Gilts & Boars Available','High Fertility & Large Litters','Fast Growth: Market-Ready in 6 Months','Full Vaccination & Deworming Program','Breeding & Genetic Advice Offered'], 30)
+ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -94,47 +143,118 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Corrects the 5 breed rows below if they were already seeded before this content was
+-- refreshed (safe to re-run — re-sets the same target values each time).
+UPDATE products SET name = 'Brahman Cattle', description = 'Premium breeding bulls. Used to improve calf size, growth rate, and heat tolerance.', details = ARRAY['Premium breeding bulls','Improves calf size and growth rate','Excellent heat tolerance','Used to strengthen herd genetics'], updated_at = NOW() WHERE slug = 'brahman-cattle';
+UPDATE products SET name = 'Cross Holstein-Friesian Cattle', description = 'Dairy cross for improved milk yield. Ideal for farmers wanting both milk and beef production.', details = ARRAY['Dairy cross bloodline','Improved milk yield','Suited to both milk and beef production','Available as heifers and in-calf cows'], updated_at = NOW() WHERE slug = 'holstein-dairy-cattle';
+UPDATE products SET name = 'Boer Cross Goats', description = 'Fast-growing meat goats. Crossed for improved size and kid growth. Excellent for commercial meat production.', details = ARRAY['Boer cross bloodline','Fast growth rate','Improved size and kid growth','Excellent for commercial meat production'], updated_at = NOW() WHERE slug = 'boer-goats';
+UPDATE products SET name = 'Pure Large White / Yorkshire Pigs', description = 'The world''s leading mother breed. Known for large litters of 12-14 piglets, excellent mothering ability, and high milk production. Foundation of our breeding program.', details = ARRAY['Large litters of 12-14 piglets','Excellent mothering ability','High milk production','Foundation of our breeding program'], updated_at = NOW() WHERE slug = 'american-yorkshire-pigs';
+UPDATE products SET name = 'Dorper Sheep', description = 'Premium meat sheep. Quick growth, no wool, excellent carcass quality. Ideal for dry areas.', details = ARRAY['Quick growth','No wool — low maintenance','Excellent carcass quality','Ideal for dry areas'], updated_at = NOW() WHERE slug = 'dorper-sheep';
+
+-- Temporary placeholder photos for breeds/categories the client hasn't sent real photos
+-- for yet — reuses existing R2-hosted photos of a related breed. Guarded to only fill
+-- empty fields, so a real photo added later (via admin or a fresh seed) is never overwritten.
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow3.jpeg'], updated_at = NOW() WHERE slug = 'boran-cattle' AND (images IS NULL OR images = '{}');
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/cattle/holstein/cow5.jpeg'], updated_at = NOW() WHERE slug = 'sahiwal-cattle' AND (images IS NULL OR images = '{}');
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/goat/boer/boer-main-3.jpeg'], updated_at = NOW() WHERE slug = 'galla-goats' AND (images IS NULL OR images = '{}');
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs2.jpeg'], updated_at = NOW() WHERE slug = 'landrace-pigs' AND (images IS NULL OR images = '{}');
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs3.jpeg'], updated_at = NOW() WHERE slug = 'pietrain-pigs' AND (images IS NULL OR images = '{}');
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg'], updated_at = NOW() WHERE slug = 'duroc-pigs' AND (images IS NULL OR images = '{}');
+UPDATE products SET images = ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs2.jpeg'], updated_at = NOW() WHERE slug = 'service-boars' AND (images IS NULL OR images = '{}');
+UPDATE product_categories SET hero_image = 'https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow4.jpeg', updated_at = NOW() WHERE slug = 'cattle' AND hero_image IS NULL;
+UPDATE product_categories SET hero_image = 'https://images.nolaranches.co.ke/products/animals/goat/boer/boer-main-1.jpeg', updated_at = NOW() WHERE slug = 'goats-sheep' AND hero_image IS NULL;
+UPDATE product_categories SET hero_image = 'https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg', updated_at = NOW() WHERE slug = 'pigs' AND hero_image IS NULL;
+
 -- Seed products (safe to re-run)
 INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
   ('Brahman Cattle', 'brahman-cattle', 'cattle', 'oloitoktok',
-   'Hardy, heat-tolerant Brahman cattle ideal for the East African climate. Known for excellent feed conversion and disease resistance.',
-   ARRAY['Purebred Brahman bloodline','Heat and tick tolerant','Excellent for beef production','Available as calves, heifers, or bulls'],
+   'Premium breeding bulls. Used to improve calf size, growth rate, and heat tolerance.',
+   ARRAY['Premium breeding bulls','Improves calf size and growth rate','Excellent heat tolerance','Used to strengthen herd genetics'],
    NULL, NULL, 'per head', NULL,
    ARRAY['/images/products/animals/cattle/brahman/cow2.jpeg','/images/products/animals/cattle/brahman/cow3.jpeg','/images/products/animals/cattle/brahman/cow4.jpeg'],
    10)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
-  ('Holstein Dairy Cattle', 'holstein-dairy-cattle', 'cattle', 'oloitoktok',
-   'High-performance Holstein dairy cattle bred for maximum milk yield under Kenyan conditions.',
-   ARRAY['Top-tier dairy bloodline','High daily milk yield','Well-adapted to zero-grazing','Available as heifers and in-calf cows'],
+  ('Boran Cattle', 'boran-cattle', 'cattle', 'oloitoktok',
+   'Kenya''s leading beef breed. Extremely drought tolerant with excellent fertility and beef quality.',
+   ARRAY['Kenya''s premier beef breed','Extremely drought tolerant','Excellent fertility','Premium beef quality'],
+   NULL, NULL, 'per head', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow3.jpeg'], 11)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Sahiwal Cattle', 'sahiwal-cattle', 'cattle', 'oloitoktok',
+   'Dual-purpose breed from Pakistan/India. Heat tolerant. Ideal for milk production and raising strong calves.',
+   ARRAY['Dual-purpose breed from Pakistan/India','Heat tolerant','Ideal for milk production','Raises strong, fast-growing calves'],
+   NULL, NULL, 'per head', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/cattle/holstein/cow5.jpeg'], 12)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Cross Holstein-Friesian Cattle', 'holstein-dairy-cattle', 'cattle', 'oloitoktok',
+   'Dairy cross for improved milk yield. Ideal for farmers wanting both milk and beef production.',
+   ARRAY['Dairy cross bloodline','Improved milk yield','Suited to both milk and beef production','Available as heifers and in-calf cows'],
    NULL, NULL, 'per head', NULL,
    ARRAY['/images/products/animals/cattle/holstein/cow.jpeg','/images/products/animals/cattle/holstein/cow5.jpeg','/images/products/animals/cattle/holstein/cow6.jpeg'],
    20)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
-  ('Boer Goats', 'boer-goats', 'goats', 'oloitoktok',
-   'Premium Boer goats bred for exceptional meat quality and rapid growth. South African bloodline raised at our Oloitoktok ranch.',
-   ARRAY['Purebred Boer bloodline','Fast growth rate','Superior meat-to-bone ratio','Available as kids, does, and bucks'],
+  ('Boer Cross Goats', 'boer-goats', 'goats', 'oloitoktok',
+   'Fast-growing meat goats. Crossed for improved size and kid growth. Excellent for commercial meat production.',
+   ARRAY['Boer cross bloodline','Fast growth rate','Improved size and kid growth','Excellent for commercial meat production'],
    NULL, NULL, 'per head', NULL,
    ARRAY['/images/products/animals/goat/boer/boer main 1.jpeg','/images/products/animals/goat/boer/boer main 2.jpeg','/images/products/animals/goat/boer/boer main 3.jpeg','/images/products/animals/goat/boer/boer main 4.jpeg','/images/products/animals/goat/boer/boer main 5.jpeg'],
    30)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
-  ('American Yorkshire Pigs', 'american-yorkshire-pigs', 'pigs', 'oloitoktok',
-   'American Yorkshire pigs, the most recorded breed in the world. Known for lean carcass quality and outstanding mothering ability.',
-   ARRAY['American Yorkshire bloodline','Lean, high-quality pork','Excellent feed efficiency','Available as weaners, gilts, and boars'],
+  ('Galla Goats', 'galla-goats', 'goats', 'oloitoktok',
+   'Kenya''s leading meat goat. Tall, drought resistant, and in high demand. Produces heavy carcasses.',
+   ARRAY['Kenya''s leading meat goat breed','Tall and drought resistant','High market demand','Produces heavy carcasses'],
+   NULL, NULL, 'per head', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/goat/boer/boer-main-3.jpeg'], 31)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Pure Large White / Yorkshire Pigs', 'american-yorkshire-pigs', 'pigs', 'oloitoktok',
+   'The world''s leading mother breed. Known for large litters of 12-14 piglets, excellent mothering ability, and high milk production. Foundation of our breeding program.',
+   ARRAY['Large litters of 12-14 piglets','Excellent mothering ability','High milk production','Foundation of our breeding program'],
    NULL, NULL, 'per head', NULL,
    ARRAY['/images/products/animals/pigs/American Yorkshire pigs/pigs.jpeg','/images/products/animals/pigs/American Yorkshire pigs/pigs2.jpeg','/images/products/animals/pigs/American Yorkshire pigs/pigs3.jpeg'],
    40)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Pure Landrace Pigs', 'landrace-pigs', 'pigs', 'oloitoktok',
+   'Premium maternal breed. Prolific, docile, and excellent for cross breeding. Produces long-bodied piglets with high survival rates.',
+   ARRAY['Premium maternal breed','Prolific and docile','Excellent for cross breeding','Long-bodied piglets with high survival rates'],
+   NULL, NULL, 'per head', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs2.jpeg'], 41)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Pietrain Pigs', 'pietrain-pigs', 'pigs', 'oloitoktok',
+   'Terminal sire breed. Adds superior muscling, leanness, and fast growth to market pigs. Used to improve carcass quality.',
+   ARRAY['Terminal sire breed','Superior muscling and leanness','Fast growth rate','Improves carcass quality'],
+   NULL, NULL, 'per head', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs3.jpeg'], 42)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Duroc Pigs', 'duroc-pigs', 'pigs', 'oloitoktok',
+   'Hardy terminal sire breed. Excellent for growth rate, meat quality, and adaptability. Produces strong, fast-growing porkers.',
+   ARRAY['Hardy terminal sire breed','Excellent growth rate and meat quality','Highly adaptable','Produces strong, fast-growing porkers'],
+   NULL, NULL, 'per head', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg'], 43)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order, is_service) VALUES
+  ('Service Boars', 'service-boars', 'pigs', 'oloitoktok',
+   'Professional boar services. Pure Pietrain and Duroc boars available for hire to improve your herd genetics.',
+   ARRAY['Pure Pietrain and Duroc boars available','Improves herd genetics','Professional service booking via WhatsApp'],
+   NULL, NULL, 'per service', NULL, ARRAY['https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs2.jpeg'], 44, TRUE)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
   ('Dorper Sheep', 'dorper-sheep', 'sheep', 'oloitoktok',
-   'Dorper sheep — a South African breed developed for arid conditions. Excellent meat quality with minimal management requirements.',
-   ARRAY['Dorper breed — low maintenance','Fast maturing','Superior meat quality','Adapted to dry conditions'],
+   'Premium meat sheep. Quick growth, no wool, excellent carcass quality. Ideal for dry areas.',
+   ARRAY['Quick growth','No wool — low maintenance','Excellent carcass quality','Ideal for dry areas'],
    NULL, NULL, 'per head', NULL,
    ARRAY['/images/products/animals/sheep/dorper/sheep.jpeg'],
    50)

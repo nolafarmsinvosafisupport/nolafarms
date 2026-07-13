@@ -1,87 +1,219 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { SlidersHorizontal, LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
-import type { Product, ProductCategory, Ranch } from '@/lib/product-types';
+import { ProductQuickView } from './ProductQuickView';
+import { ProductFilters, CATEGORY_FILTER_OPTIONS, matchesCategoryFilter } from './ProductFilters';
+import type { CategoryFilterKey } from './ProductFilters';
+import type { Product, Ranch } from '@/lib/product-types';
 
-type CategoryFilter = ProductCategory | 'all' | 'livestock';
+type SortKey = 'newest' | 'price-asc' | 'price-desc' | 'name';
 
-const CATEGORY_TABS: { key: CategoryFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'livestock', label: 'Livestock' },
-  { key: 'vegetables', label: 'Vegetables' },
-  { key: 'grains', label: 'Grains' },
-  { key: 'fruits', label: 'Fruits' },
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'newest', label: 'Newest First' },
+  { key: 'price-asc', label: 'Price: Low to High' },
+  { key: 'price-desc', label: 'Price: High to Low' },
+  { key: 'name', label: 'Name A-Z' },
 ];
 
-const LIVESTOCK_CATS = new Set(['cattle', 'goats', 'sheep', 'pigs', 'poultry']);
+const ITEMS_PER_PAGE = 8;
 
-const RANCH_OPTIONS: { key: Ranch | 'all'; label: string }[] = [
-  { key: 'all', label: 'All Ranches' },
-  { key: 'oloitoktok', label: 'Oloitoktok' },
-  { key: 'laikipia', label: 'Laikipia' },
-];
+function priceOf(p: Product) {
+  return p.price ? parseFloat(p.price) : null;
+}
 
 export function ProductGrid({ products }: { products: Product[] }) {
-  const [category, setCategory] = useState<CategoryFilter>('all');
-  const [ranch, setRanch] = useState<Ranch | 'all'>('all');
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get('category');
+
+  const [selectedCategories, setSelectedCategories] = useState<Set<CategoryFilterKey>>(() => {
+    const valid = CATEGORY_FILTER_OPTIONS.some((o) => o.key === initialCategory);
+    return valid ? new Set([initialCategory as CategoryFilterKey]) : new Set();
+  });
+  const [selectedRanches, setSelectedRanches] = useState<Set<Ranch>>(new Set());
+
+  const priceBounds = useMemo<[number, number]>(() => {
+    const prices = products.map(priceOf).filter((p): p is number => p !== null);
+    if (prices.length === 0) return [0, 500];
+    return [0, Math.ceil(Math.max(...prices) / 10) * 10];
+  }, [products]);
+  const [priceRange, setPriceRange] = useState<[number, number]>(priceBounds);
+  useEffect(() => setPriceRange(priceBounds), [priceBounds]);
+
+  const [sortBy, setSortBy] = useState<SortKey>('newest');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [page, setPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+
+  function toggleCategory(key: CategoryFilterKey) {
+    setSelectedCategories((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
+  function toggleRanch(r: Ranch) {
+    setSelectedRanches((prev) => {
+      const next = new Set(prev);
+      next.has(r) ? next.delete(r) : next.add(r);
+      return next;
+    });
+  }
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      if (category === 'livestock' && !LIVESTOCK_CATS.has(p.category)) return false;
-      if (category !== 'all' && category !== 'livestock' && p.category !== category) return false;
-      if (ranch !== 'all' && p.ranch !== ranch && p.ranch !== 'both') return false;
+      if (selectedCategories.size > 0 && !Array.from(selectedCategories).some((c) => matchesCategoryFilter(p, c))) return false;
+      if (selectedRanches.size > 0 && !selectedRanches.has(p.ranch) && p.ranch !== 'both') return false;
+      const price = priceOf(p);
+      if (price !== null && (price < priceRange[0] || price > priceRange[1])) return false;
       return true;
     });
-  }, [products, category, ranch]);
+  }, [products, selectedCategories, selectedRanches, priceRange]);
+
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case 'price-asc':
+        return arr.sort((a, b) => (priceOf(a) ?? Infinity) - (priceOf(b) ?? Infinity));
+      case 'price-desc':
+        return arr.sort((a, b) => (priceOf(b) ?? -Infinity) - (priceOf(a) ?? -Infinity));
+      case 'name':
+        return arr.sort((a, b) => a.name.localeCompare(b.name));
+      default:
+        return arr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+  }, [filtered, sortBy]);
+
+  useEffect(() => setPage(1), [selectedCategories, selectedRanches, priceRange, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE));
+  const paged = sorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <div className="space-y-6">
-      {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {/* Category tabs */}
-        <div className="flex gap-1 overflow-x-auto pb-1">
-          {CATEGORY_TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setCategory(tab.key)}
-              className={`flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-colors ${
-                category === tab.key
-                  ? 'bg-brand-deep text-cream-primary'
-                  : 'border border-farm-border text-brand-deep/60 hover:text-brand-deep'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Ranch filter */}
-        <select
-          value={ranch}
-          onChange={(e) => setRanch(e.target.value as Ranch | 'all')}
-          className="border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf sm:w-44"
+    <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
+      {/* Filters — sidebar on desktop, collapsible drawer on mobile/tablet */}
+      <aside className="lg:sticky lg:top-20 lg:self-start">
+        <button
+          type="button"
+          onClick={() => setShowFilters((v) => !v)}
+          className="mb-3 flex w-full items-center justify-between border border-farm-border bg-cream-warm px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-brand-deep lg:hidden"
         >
-          {RANCH_OPTIONS.map((r) => (
-            <option key={r.key} value={r.key}>{r.label}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Count */}
-      <p className="text-xs text-brand-deep/50">
-        {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
-      </p>
+          <span className="flex items-center gap-2"><SlidersHorizontal size={14} /> Filter &amp; Sort</span>
+          <span>{showFilters ? '−' : '+'}</span>
+        </button>
+        <div className={`${showFilters ? 'block' : 'hidden'} border border-farm-border bg-cream-warm p-4 lg:block`}>
+          <ProductFilters
+            products={products}
+            selectedCategories={selectedCategories}
+            onToggleCategory={toggleCategory}
+            onClearCategories={() => setSelectedCategories(new Set())}
+            selectedRanches={selectedRanches}
+            onToggleRanch={toggleRanch}
+            onClearRanches={() => setSelectedRanches(new Set())}
+            priceBounds={priceBounds}
+            priceRange={priceRange}
+            onPriceRangeChange={setPriceRange}
+          />
+          <button
+            type="button"
+            onClick={() => setShowFilters(false)}
+            className="mt-5 w-full bg-brand-leaf py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep lg:hidden"
+          >
+            Apply Filters
+          </button>
+        </div>
+      </aside>
 
       {/* Grid */}
-      {filtered.length === 0 ? (
-        <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filters.</p>
-      ) : (
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      <div>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-brand-deep/50">
+            Showing {paged.length} of {sorted.length} product{sorted.length !== 1 ? 's' : ''}
+          </p>
+          <div className="flex items-center gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortKey)}
+              className="border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
+            >
+              {SORT_OPTIONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
+            </select>
+            <div className="hidden items-center border border-farm-border sm:flex">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                aria-label="Grid view"
+                aria-pressed={viewMode === 'grid'}
+                className={`flex h-8 w-8 items-center justify-center ${viewMode === 'grid' ? 'bg-brand-deep text-cream-primary' : 'text-brand-deep/50'}`}
+              >
+                <LayoutGrid size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                aria-label="List view"
+                aria-pressed={viewMode === 'list'}
+                className={`flex h-8 w-8 items-center justify-center ${viewMode === 'list' ? 'bg-brand-deep text-cream-primary' : 'text-brand-deep/50'}`}
+              >
+                <List size={14} />
+              </button>
+            </div>
+          </div>
         </div>
+
+        {paged.length === 0 ? (
+          <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filters.</p>
+        ) : (
+          <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4' : 'grid grid-cols-1 gap-3'}>
+            {paged.map((product) => (
+              <ProductCard key={product.id} product={product} onQuickView={setQuickViewProduct} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              aria-label="Previous page"
+              className="flex h-8 w-8 items-center justify-center border border-farm-border text-brand-deep disabled:opacity-30"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setPage(n)}
+                className={`flex h-8 w-8 items-center justify-center text-xs font-semibold ${
+                  n === page ? 'bg-brand-deep text-cream-primary' : 'border border-farm-border text-brand-deep/60'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              aria-label="Next page"
+              className="flex h-8 w-8 items-center justify-center border border-farm-border text-brand-deep disabled:opacity-30"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {quickViewProduct && (
+        <ProductQuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
       )}
     </div>
   );

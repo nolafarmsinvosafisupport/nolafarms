@@ -38,9 +38,25 @@ export const productCreateSchema = z.object({
   images: z.array(z.string()).optional(),
   available: z.boolean().optional(),
   sort_order: z.coerce.number().int().optional(),
+  is_service: z.boolean().optional(),
 });
 
 export const productUpdateSchema = productCreateSchema.partial();
+
+export const categoryCreateSchema = z.object({
+  slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and hyphens only.'),
+  name: z.string().min(1),
+  subtitle: z.string().optional().nullable(),
+  hero_image: z.string().optional().nullable(),
+  hero_description: z.string().optional().nullable(),
+  category_values: z.array(z.enum(PRODUCT_CATEGORIES)).min(1),
+  cta_label: z.string().optional().nullable(),
+  whatsapp_message: z.string().optional().nullable(),
+  details: z.array(z.string()).optional(),
+  sort_order: z.coerce.number().int().optional(),
+});
+
+export const categoryUpdateSchema = categoryCreateSchema.partial();
 
 export const orderUpdateSchema = z.object({
   status: z.enum(ORDER_STATUSES).optional(),

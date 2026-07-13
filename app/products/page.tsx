@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
+import { CategoryTiles } from '@/components/products/CategoryTiles';
+import { ProductStatsBar } from '@/components/products/ProductStatsBar';
+import { TrustBadges } from '@/components/products/TrustBadges';
+import { Truck, ShieldCheck, Sprout, Headset } from 'lucide-react';
+import { SITE } from '@/lib/constants';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
 import type { Product } from '@/lib/product-types';
@@ -40,6 +46,13 @@ const getProducts = unstable_cache(
   { revalidate: 300, tags: ['products'] },
 );
 
+const TRUST_BADGES = [
+  { icon: Truck, label: 'Farm to You', description: 'Directly from our ranches to your table' },
+  { icon: ShieldCheck, label: 'Quality Guaranteed', description: 'Fresh, safe, and carefully selected' },
+  { icon: Sprout, label: 'Sustainable Farming', description: 'Ethical practices for a better tomorrow' },
+  { icon: Headset, label: 'We Are Here', description: 'Chat with us for orders and enquiries' },
+];
+
 export default async function ProductsPage() {
   const products = await getProducts();
 
@@ -61,10 +74,34 @@ export default async function ProductsPage() {
         </div>
       </div>
 
-      {/* Products */}
       <section className="bg-cream-primary px-6 py-10 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <ProductGrid products={products} />
+        <div className="mx-auto max-w-7xl space-y-8">
+          <CategoryTiles products={products} />
+          <ProductStatsBar products={products} />
+
+          <Suspense fallback={null}>
+            <ProductGrid products={products} />
+          </Suspense>
+
+          {/* Bulk orders CTA */}
+          <div className="flex flex-col items-start justify-between gap-4 bg-farm-dark p-6 sm:flex-row sm:items-center">
+            <div>
+              <p className="font-serif text-xl text-cream-primary">Need bulk orders or a custom request?</p>
+              <p className="mt-1 text-sm text-cream-secondary/70">We supply farms, institutions, schools and businesses.</p>
+            </div>
+            <a
+              href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a bulk order enquiry for Nola Ranches.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 border border-cream-primary/30 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-cream-primary/10"
+            >
+              Contact Us
+            </a>
+          </div>
+
+          <div className="border-t border-farm-border pt-8">
+            <TrustBadges badges={TRUST_BADGES} />
+          </div>
         </div>
       </section>
     </main>

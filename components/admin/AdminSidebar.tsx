@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ClipboardList, CalendarDays, Ban, Settings, Package, ShoppingCart, Users } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, CalendarDays, Ban, Settings, Package, Layers, ShoppingCart, Users } from 'lucide-react';
 import { useNotifications } from '@/lib/notification-context';
 
 const links = [
@@ -11,6 +11,7 @@ const links = [
   { label: 'Calendar', href: '/admin/calendar', icon: CalendarDays, exact: false },
   { label: 'Blocked Dates', href: '/admin/blocked-dates', icon: Ban, exact: false },
   { label: 'Products', href: '/admin/products', icon: Package, exact: false },
+  { label: 'Categories', href: '/admin/categories', icon: Layers, exact: false },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingCart, exact: false },
   { label: 'Users', href: '/admin/users', icon: Users, exact: false },
   { label: 'Settings', href: '/admin/settings', icon: Settings, exact: false },

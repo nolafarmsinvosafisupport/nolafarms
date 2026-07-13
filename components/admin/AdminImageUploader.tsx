@@ -12,7 +12,7 @@ type UploadingFile = {
 
 const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB — generous for farm photography, small enough to upload fast on mobile data
 
-export function AdminImageUploader({ images, onChange }: { images: string[]; onChange: (images: string[]) => void }) {
+export function AdminImageUploader({ images, onChange, label = 'Product Images' }: { images: string[]; onChange: (images: string[]) => void; label?: string }) {
   const [uploading, setUploading] = useState<UploadingFile[]>([]);
   const [showManual, setShowManual] = useState(false);
   const [manualValue, setManualValue] = useState('');
@@ -74,7 +74,7 @@ export function AdminImageUploader({ images, onChange }: { images: string[]; onC
 
   return (
     <div>
-      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50">Product Images</label>
+      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50">{label}</label>
 
       {(images.length > 0 || uploading.length > 0) && (
         <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
