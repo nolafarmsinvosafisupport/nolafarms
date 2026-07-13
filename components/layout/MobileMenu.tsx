@@ -128,14 +128,16 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           </div>
 
           {/* Footer brand */}
-          <div className="flex items-center justify-center border-t border-white/5 py-4">
+          {/* Emblem + text, matching the navbar — the wordmark lockup is illegible at this size. */}
+          <div className="flex items-center justify-center gap-2 border-t border-white/5 py-4">
             <Image
-              src="/images/logos/wordmark-light.png"
+              src="/images/logos/small logo.png"
               alt="Nola Ranches"
-              width={642}
-              height={388}
-              className="h-12 w-auto object-contain opacity-40"
+              width={20}
+              height={20}
+              className="object-contain opacity-40"
             />
+            <span className="text-[10px] font-serif tracking-widest text-cream-secondary/30">NOLA RANCHES</span>
           </div>
         </motion.div>
       )}

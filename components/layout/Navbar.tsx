@@ -40,17 +40,20 @@ export function Navbar() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
-          {/* Brand: full Nola Ranches lockup. The light variant is required here — the stock
-              wordmark is dark artwork and would be invisible against farm-dark. */}
-          <Link href="/" className="flex items-center">
+          {/* Brand: emblem + live text, deliberately not the full wordmark lockup. At nav size the
+              lockup's "DIVERSIFIED PORTFOLIO" subtitle renders ~4px tall and turns to mush; text
+              stays sharp at any size. The full lockup lives on the loader and footer, where there
+              is room for it. */}
+          <Link href="/" className="flex items-center gap-2.5 font-serif text-2xl tracking-wider text-cream-primary">
             <Image
-              src="/images/logos/wordmark-light.png"
-              alt="Nola Ranches"
-              width={642}
-              height={388}
-              className="h-14 w-auto object-contain"
+              src="/images/logos/small logo.png"
+              alt="Nola Ranches logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
               priority
             />
+            NOLA<span className="text-brand-leaf">RANCHES</span>
           </Link>
 
           {/* Desktop nav */}
