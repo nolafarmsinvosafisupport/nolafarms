@@ -63,19 +63,25 @@ const brand = {
   green: '#1E3C28', leaf: '#486018', cream: '#FAF5F0', gold: '#D4A76A', muted: '#7A8C7E',
 };
 
+const displayWhatsapp = `+${SITE.whatsapp}`;
+
 function baseLayout(content: string) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:${brand.cream};font-family:Inter,Arial,sans-serif;color:${brand.green}">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${brand.cream}">
     <tr><td align="center" style="padding:40px 16px">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-        <tr><td style="background:${brand.cream};padding:28px 40px;text-align:center">
-          <img src="${SITE.url}/images/logos/email-logo.png" width="200" height="121" alt="Nola Ranches" style="display:inline-block;border:0;outline:none;text-decoration:none" />
-          <p style="margin:10px 0 0;font-size:11px;color:${brand.muted};letter-spacing:0.15em;text-transform:uppercase">Oloitoktok &amp; Laikipia, Kenya</p>
+        <tr><td style="background:${brand.green};padding:36px 40px;text-align:center">
+          <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 auto">
+            <tr><td width="130" height="130" align="center" valign="middle" style="background:#ffffff;border-radius:65px;width:130px;height:130px">
+              <img src="${SITE.url}/images/logos/email-logo.png" width="100" height="61" alt="Nola Ranches" style="display:block;border:0;outline:none;text-decoration:none" />
+            </td></tr>
+          </table>
+          <p style="margin:16px 0 0;font-size:12px;color:${brand.gold};letter-spacing:0.15em;text-transform:uppercase">2 Ranches 1 Home</p>
         </td></tr>
         <tr><td style="background:#ffffff;padding:40px">${content}</td></tr>
         <tr><td style="background:${brand.green};padding:24px 40px;text-align:center">
-          <p style="margin:0 0 8px;font-size:12px;color:${brand.muted}">WhatsApp <a href="https://wa.me/${SITE.whatsapp}" style="color:${brand.gold};text-decoration:underline">${SITE.whatsapp}</a> &bull; <a href="${SITE.url}" style="color:${brand.gold};text-decoration:underline">${SITE.url.replace(/^https?:\/\//, '')}</a></p>
+          <p style="margin:0 0 8px;font-size:12px;color:${brand.muted}">WhatsApp <a href="https://wa.me/${SITE.whatsapp}" style="color:${brand.gold};text-decoration:underline">${displayWhatsapp}</a> &bull; <a href="${SITE.url}" style="color:${brand.gold};text-decoration:underline">${SITE.url.replace(/^https?:\/\//, '')}</a></p>
           <p style="margin:0;font-size:11px;color:${brand.muted};line-height:1.6">This is an automated, no-reply message — please don't reply to this email. For help, WhatsApp us or use the contact form on our website.</p>
         </td></tr>
       </table>
@@ -87,15 +93,26 @@ function baseLayout(content: string) {
 function detailsTable(booking: Booking) {
   const rows = [
     ['Reference', booking.reference], ['Name', booking.full_name],
+    ['Phone', booking.phone_number],
     ['Date', booking.visit_date], ['Time', VISIT_TIMES[booking.visit_time]],
     ['Group size', `${booking.group_size} ${booking.group_size === 1 ? 'person' : 'people'}`],
     ['Purpose', booking.purpose],
+    ...(booking.special_requests ? [['Special requests', booking.special_requests]] : []),
   ];
   return `<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;border-collapse:collapse">
     ${rows.map(([l, v]) => `<tr>
       <td style="padding:10px 14px;border:1px solid #E8E0D4;background:#FAF5F0;width:38%;font-size:13px;font-weight:600;color:${brand.green}">${l}</td>
-      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green}">${v}</td>
+      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green}">${escapeHtml(String(v))}</td>
     </tr>`).join('')}
+  </table>`;
+}
+
+function ctaRow(buttons: { label: string; href: string }[]) {
+  const cell = (b: { label: string; href: string }) => `<td width="${Math.floor(100 / buttons.length)}%" align="center">
+      <a href="${b.href}" style="display:block;background:${brand.green};color:${brand.cream};padding:12px 8px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;text-align:center">${b.label}</a>
+    </td>`;
+  return `<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:32px">
+    <tr>${buttons.map((b, i) => (i === 0 ? '' : '<td width="8"></td>') + cell(b)).join('')}</tr>
   </table>`;
 }
 
@@ -112,7 +129,7 @@ function buildReceivedVisitorHtml(booking: Booking) {
     <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">Reference: ${booking.reference}</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for your interest in visiting Nola Ranches. We will confirm within <strong>24 hours</strong>.</p>
     ${detailsTable(booking)}
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -123,7 +140,6 @@ function buildReceivedAdminHtml(booking: Booking) {
     <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">${booking.reference}</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">A new booking request is awaiting your approval.</p>
     ${detailsTable(booking)}
-    ${booking.special_requests ? `<p style="margin:16px 0 0;font-size:13px"><strong>Special requests:</strong> ${booking.special_requests}</p>` : ''}
     <div style="margin-top:32px"><a href="${url}" style="display:inline-block;background:${brand.green};color:${brand.cream};padding:14px 28px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;text-decoration:none">View in Dashboard →</a></div>
   `);
 }
@@ -134,7 +150,7 @@ function buildApprovedHtml(booking: Booking) {
     <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Confirmed</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">We're looking forward to welcoming you on <strong>${booking.visit_date}</strong>. Please arrive a few minutes early.</p>
     ${detailsTable(booking)}
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Need to make changes? Contact us at least 24 hours in advance via WhatsApp at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Need to make changes? Contact us at least 24 hours in advance via WhatsApp at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -145,7 +161,7 @@ function buildRejectedHtml(booking: Booking, note?: string | null) {
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Unfortunately we are unable to accommodate your visit on <strong>${booking.visit_date}</strong>.</p>
     ${noteBlock(note)}
     ${detailsTable(booking)}
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">We'd love to host you another time. Visit our website or WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">We'd love to host you another time. Visit our website or WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -156,7 +172,7 @@ function buildCancelledHtml(booking: Booking, note?: string | null) {
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Your booking for <strong>${booking.visit_date}</strong> has been cancelled.</p>
     ${noteBlock(note)}
     ${detailsTable(booking)}
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">To rebook, visit our website or WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">To rebook, visit our website or WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -166,7 +182,7 @@ function buildReminderHtml(booking: Booking) {
     <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Reminder</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Your visit is scheduled for <strong>tomorrow, ${booking.visit_date}</strong>.</p>
     ${detailsTable(booking)}
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Please arrive a few minutes early. To cancel, contact us immediately at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Please arrive a few minutes early. To cancel, contact us immediately at <strong>${displayWhatsapp}</strong>.</p>
     <p style="margin:16px 0 0;font-size:14px">We look forward to seeing you!</p>
   `);
 }
@@ -230,16 +246,18 @@ function buildWelcomeHtml(firstName?: string) {
   return baseLayout(`
     <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">${greeting}</h1>
     <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Account created</p>
-    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for creating an account with Nola Ranches — a working agricultural estate across two ranches in Oloitoktok and Laikipia, Kenya. Your account lets you:</p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for creating an account with Nola Ranches — a working agricultural estate in Kenya. Your account lets you:</p>
     <ul style="margin:16px 0 0;padding-left:20px;font-size:14px;line-height:1.9;color:${brand.green}">
       <li>Order fresh produce, grain, and livestock from our farm shop</li>
       <li>Request and track guided ranch visits</li>
       <li>Get updates on your bookings and orders by email</li>
     </ul>
-    <div style="margin-top:32px">
-      <a href="${SITE.url}/products" style="display:inline-block;background:${brand.green};color:${brand.cream};padding:14px 28px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;text-decoration:none">Explore the Farm Shop →</a>
-    </div>
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    ${ctaRow([
+      { label: 'The Homestead', href: `${SITE.url}/` },
+      { label: 'Ranch Market', href: `${SITE.url}/products` },
+      { label: 'Visit the Ranch', href: `${SITE.url}/services` },
+    ])}
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -296,7 +314,7 @@ function buildContactAckHtml(m: ContactMessage) {
       <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:${brand.green}">Your message (${escapeHtml(m.subject)})</p>
       <p style="margin:0;font-size:13px;line-height:1.7;color:${brand.green};white-space:pre-wrap">${escapeHtml(m.message)}</p>
     </div>
-    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Need us sooner? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:28px 0 0;font-size:14px;line-height:1.7">Need us sooner? WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -327,9 +345,11 @@ function orderItemsTable(order: Order) {
   const rows = items.map((it) => {
     const priceNum = it.price_at_time ? parseFloat(it.price_at_time) : null;
     const lineTotal = priceNum !== null ? `KES ${(priceNum * it.quantity).toLocaleString()}` : 'Contact for price';
+    // product_name/unit come from order.items, which the checkout API stores verbatim from the
+    // request body — they are attacker-controlled strings, not trusted catalogue data.
     return `<tr>
-      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green}">${it.product_name}</td>
-      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green};text-align:center">${it.quantity} ${it.unit}</td>
+      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green}">${escapeHtml(String(it.product_name))}</td>
+      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green};text-align:center">${escapeHtml(String(it.quantity))} ${escapeHtml(String(it.unit))}</td>
       <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green};text-align:right">${lineTotal}</td>
     </tr>`;
   }).join('');
@@ -356,14 +376,29 @@ function orderItemsTable(order: Order) {
   </table>`;
 }
 
+function orderMetaTable(order: Order) {
+  const rows: [string, string][] = [
+    ['Name', order.customer_name],
+    ['Phone', order.customer_phone],
+    ...(order.delivery_location ? [['Delivery to', order.delivery_location] as [string, string]] : []),
+    ...(order.delivery_notes ? [['Delivery notes', order.delivery_notes] as [string, string]] : []),
+  ];
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;border-collapse:collapse">
+    ${rows.map(([l, v]) => `<tr>
+      <td style="padding:10px 14px;border:1px solid #E8E0D4;background:#FAF5F0;width:38%;font-size:13px;font-weight:600;color:${brand.green}">${l}</td>
+      <td style="padding:10px 14px;border:1px solid #E8E0D4;font-size:13px;color:${brand.green}">${escapeHtml(String(v))}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
 function buildOrderReceivedHtml(order: Order) {
   return baseLayout(`
     <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">We've received your order</h1>
     <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">Order ${order.reference}</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you, ${order.customer_name}. We've received your order and will contact you within <strong>24 hours</strong> to confirm availability, final pricing, and arrange payment and delivery.</p>
+    ${orderMetaTable(order)}
     ${orderItemsTable(order)}
-    ${order.delivery_location ? `<p style="margin:20px 0 0;font-size:14px"><strong>Delivery to:</strong> ${order.delivery_location}</p>` : ''}
-    <p style="margin:24px 0 0;font-size:14px;line-height:1.7">No payment is required now. Questions? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:24px 0 0;font-size:14px;line-height:1.7">No payment is required now. Questions? WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
@@ -387,8 +422,9 @@ function buildOrderStatusHtml(order: Order, status: OrderStatus) {
     <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">${c.heading}</h1>
     <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">Order ${order.reference}</p>
     <p style="margin:24px 0 0;font-size:15px;line-height:1.7">${c.body}</p>
+    ${orderMetaTable(order)}
     ${orderItemsTable(order)}
-    <p style="margin:24px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${SITE.whatsapp}</strong>.</p>
+    <p style="margin:24px 0 0;font-size:14px;line-height:1.7">Questions? WhatsApp us at <strong>${displayWhatsapp}</strong>.</p>
   `);
 }
 
