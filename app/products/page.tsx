@@ -73,9 +73,10 @@ export default async function ProductsPage() {
 
   return (
     <main className="pt-16">
-      {/* Hero strip */}
-      <div className="bg-farm-dark py-16 px-6">
-        <div className="mx-auto max-w-7xl">
+      {/* Hero strip. The ~10% side gutter matches the product section below so the headline lines
+          up with the category cards; the dark background still bleeds to the full width. */}
+      <div className="bg-farm-dark px-6 py-16 lg:px-[10%]">
+        <div className="mx-auto w-full max-w-[1600px]">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-leaf">
             Oloitoktok &amp; Laikipia
           </p>
@@ -89,8 +90,10 @@ export default async function ProductsPage() {
         </div>
       </div>
 
-      <section className="bg-cream-primary px-6 py-10 lg:px-8">
-        <div className="mx-auto max-w-7xl space-y-8">
+      {/* ~10% gutter each side, so the grid no longer runs edge to edge now that the sidebar is
+          gone. max-w keeps it from getting silly on an ultrawide monitor. */}
+      <section className="bg-cream-primary px-6 py-10 lg:px-[10%]">
+        <div className="mx-auto w-full max-w-[1600px] space-y-8">
 
           <Suspense fallback={null}>
             <ProductGrid products={products} categories={categories} />
