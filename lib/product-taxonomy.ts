@@ -21,7 +21,7 @@ export type CategoryCard = {
   key: CardKey;
   label: string;
   /** lucide icon name, resolved in the component (this file stays free of React imports) */
-  icon: 'beef' | 'pawprint' | 'piggybank' | 'dna';
+  icon: 'cow' | 'goat' | 'piggybank' | 'dna';
   image: string;
   /** product.category values this card covers; empty for the services card, which matches on is_service */
   values: ProductCategory[];
@@ -32,14 +32,14 @@ export const CATEGORY_CARDS: CategoryCard[] = [
   {
     key: 'cattle',
     label: 'Cattle',
-    icon: 'beef',
+    icon: 'cow',
     image: `${R2}/animals/cattle/brahman/cow2.jpeg`,
     values: ['cattle'],
   },
   {
     key: 'goats-sheep',
     label: 'Goats & Sheep',
-    icon: 'pawprint',
+    icon: 'goat',
     image: `${R2}/animals/goat/boer/boer-main-1.jpeg`,
     values: ['goats', 'sheep'],
   },

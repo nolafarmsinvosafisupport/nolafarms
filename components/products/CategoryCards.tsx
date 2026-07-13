@@ -1,18 +1,22 @@
 'use client';
 
 import Image from 'next/image';
-import { Beef, PawPrint, PiggyBank, Dna, ArrowRight } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { PiggyBank, Dna, ArrowRight } from 'lucide-react';
+import { CowIcon, GoatIcon } from '@/components/ui/AnimalIcons';
 import { CATEGORY_CARDS, countCard } from '@/lib/product-taxonomy';
 import type { CardKey } from '@/lib/product-taxonomy';
 import type { Product } from '@/lib/product-types';
 import type { ProductCategoryPage } from '@/lib/category-types';
 
-const ICONS: Record<string, LucideIcon> = {
-  beef: Beef,
-  pawprint: PawPrint,
-  piggybank: PiggyBank,
-  dna: Dna,
+// lucide has no cow/goat/sheep icon, so cattle was showing `Beef` (a steak) and goats a paw
+// print. CowIcon/GoatIcon are drawn to match lucide's style — see components/ui/AnimalIcons.
+type AnimalIcon = (props: { size?: number; className?: string }) => JSX.Element;
+
+const ICONS: Record<string, AnimalIcon> = {
+  cow: CowIcon,
+  goat: GoatIcon,
+  piggybank: PiggyBank as unknown as AnimalIcon,
+  dna: Dna as unknown as AnimalIcon,
 };
 
 /**
@@ -41,7 +45,7 @@ export function CategoryCards({
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {CATEGORY_CARDS.map((c) => {
-        const Icon = ICONS[c.icon] ?? Beef;
+        const Icon = ICONS[c.icon] ?? CowIcon;
         const isActive = c.key === selected;
         const count = countCard(products, c.key);
 
@@ -69,7 +73,7 @@ export function CategoryCards({
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4">
               <div>
                 <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow">
-                  <Icon size={18} className="text-brand-deep" />
+                  <Icon size={20} className="text-brand-deep" />
                 </span>
                 <p className="text-sm font-bold uppercase tracking-wide text-white">{c.label}</p>
                 <p className="mt-0.5 text-xs text-white/70">
