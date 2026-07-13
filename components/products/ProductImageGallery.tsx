@@ -17,8 +17,10 @@ export function ProductImageGallery({ images, name }: { images: string[]; name: 
 
   return (
     <div className="space-y-3">
-      {/* Main image */}
-      <div className="relative aspect-square w-full overflow-hidden bg-cream-secondary">
+      {/* Main image. Deliberately NOT aspect-square: a square box takes its height from the
+          column width, so on a short, wide screen it grew to 584px and shoved the thumbnails
+          off the fold. .product-media sizes on viewport height instead. */}
+      <div className="product-media relative w-full overflow-hidden bg-cream-secondary">
         <Image
           src={images[active]}
           alt={`${name} — image ${active + 1}`}
@@ -57,7 +59,7 @@ export function ProductImageGallery({ images, name }: { images: string[]; name: 
               key={src}
               type="button"
               onClick={() => setActive(i)}
-              className={`relative h-16 w-16 flex-shrink-0 overflow-hidden border-2 transition-colors ${i === active ? 'border-brand-leaf' : 'border-transparent hover:border-farm-border'}`}
+              className={`relative h-14 w-14 flex-shrink-0 overflow-hidden border-2 transition-colors sm:h-16 sm:w-16 ${i === active ? 'border-brand-leaf' : 'border-transparent hover:border-farm-border'}`}
             >
               <Image src={src} alt={`${name} thumbnail ${i + 1}`} fill sizes="64px" className="object-cover" />
             </button>

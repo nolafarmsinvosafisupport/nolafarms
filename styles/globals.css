@@ -110,3 +110,27 @@ body {
 .page-hero-body {
   padding-block: clamp(2rem, 4.5vh, 4.5rem);
 }
+
+/* Product detail page.
+
+   The gallery image was `aspect-square`, so its height was driven by the COLUMN
+   WIDTH, not the viewport: on a wide-but-short 1366x768 laptop that made it 584px
+   tall — nearly the whole screen — and pushed the thumbnails below the fold. Height
+   now tracks the viewport instead, so the page fits in one screen and scrolling
+   reveals the footer. */
+.product-media {
+  height: clamp(13rem, 38vh, 20rem);
+}
+
+/* On the two-column layout the row's height is set by the details column (~580px), so the
+   image can grow into the empty space beneath the thumbnails at zero cost to page height —
+   it stays within the budget that already fits on one screen. */
+@media (min-width: 1024px) {
+  .product-media {
+    height: min(62vh, 34rem);
+  }
+}
+
+.product-body {
+  padding-block: clamp(0.75rem, 2.5vh, 2rem);
+}

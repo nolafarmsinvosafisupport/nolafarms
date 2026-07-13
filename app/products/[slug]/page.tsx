@@ -54,7 +54,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     <main className="pt-16 bg-cream-primary min-h-screen">
       <JsonLd data={productJsonLd(product)} />
       {/* Breadcrumb */}
-      <div className="border-b border-farm-border bg-cream-secondary px-6 py-3 lg:px-8">
+      <div className="border-b border-farm-border bg-cream-secondary px-6 py-2 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <nav className="flex items-center gap-2 text-xs text-brand-deep/50">
             <Link href="/" className="hover:text-brand-deep">Home</Link>
@@ -66,8 +66,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div className="product-body mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
           {/* Images */}
           <ProductImageGallery images={product.images} name={product.name} />
 
@@ -85,10 +85,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </span>
             </div>
 
-            <h1 className="font-serif text-3xl text-brand-deep md:text-4xl">{product.name}</h1>
+            <h1 className="font-serif text-2xl text-brand-deep sm:text-3xl md:text-4xl">{product.name}</h1>
 
             {/* Price */}
-            <div className="mt-4">
+            <div className="mt-3">
               {price !== null ? (
                 <div className="flex items-baseline gap-2">
                   <span className="font-serif text-2xl font-semibold text-brand-deep">
@@ -111,12 +111,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {/* Description */}
             {product.description && (
-              <p className="mt-5 leading-7 text-brand-deep/75">{product.description}</p>
+              <p className="mt-4 leading-7 text-brand-deep/75">{product.description}</p>
             )}
 
             {/* Details list */}
             {product.details.length > 0 && (
-              <ul className="mt-5 space-y-2">
+              <ul className="mt-4 space-y-1.5">
                 {product.details.map((d, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-brand-deep/80">
                     <CheckCircle2 size={14} className="mt-0.5 flex-shrink-0 text-brand-leaf" />
@@ -127,13 +127,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             )}
 
             {/* Add to cart */}
-            <div className="mt-8 border-t border-farm-border pt-6">
+            <div className="mt-5 border-t border-farm-border pt-4">
               <ProductAddToCart product={product} />
             </div>
 
             {/* WhatsApp enquiry — hidden for admin; they manage enquiries from the admin panel, not as a customer */}
             {!isAdmin && (
-              <div className="mt-4">
+              <div className="mt-3">
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
                   target="_blank"
