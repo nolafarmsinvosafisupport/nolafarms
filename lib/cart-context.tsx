@@ -15,7 +15,10 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | null>(null);
 
-const STORAGE_KEY = 'nolafarms_cart';
+const STORAGE_KEY = 'nolaranches_cart';
+// Pre-rebrand key name (site was nolafarms.co.ke). Only read as a fallback so a cart someone
+// filled before the rename doesn't just vanish; safe to delete once that's had time to expire.
+const LEGACY_STORAGE_KEY = 'nolafarms_cart';
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -23,8 +26,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
       if (stored) setItems(JSON.parse(stored));
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch {
       // ignore invalid JSON
     }
