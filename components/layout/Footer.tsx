@@ -9,17 +9,14 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 border-b border-white/10 pb-16 md:grid-cols-4">
           <div className="md:col-span-1">
-            <div className="mb-5 flex items-center gap-3">
+            <div className="mb-5">
               <Image
-                src="/images/logos/small logo.png"
+                src="/images/logos/wordmark-light.png"
                 alt="Nola Ranches"
-                width={44}
-                height={44}
-                className="object-contain"
+                width={642}
+                height={388}
+                className="h-24 w-auto object-contain"
               />
-              <span className="font-serif text-2xl tracking-wider text-cream-primary">
-                NOLA<span className="text-brand-leaf">RANCHES</span>
-              </span>
             </div>
             <p className="text-sm leading-7 text-cream-secondary/75">{SITE.description}</p>
             <div className="mt-7 flex gap-3">
