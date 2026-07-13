@@ -71,7 +71,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
             <select
               value={ranch}
               onChange={(e) => setRanch(e.target.value as Ranch | 'all')}
-              className="border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-medium text-cream-primary outline-none focus:border-gold-warm sm:w-48"
+              className="rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-medium text-cream-primary outline-none focus:border-gold-warm sm:w-48"
             >
               {RANCH_OPTIONS.map((r) => (
                 <option key={r.key} value={r.key} className="bg-farm-dark">{r.label}</option>
@@ -92,7 +92,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                 key={c.slug}
                 type="button"
                 onClick={() => setSelectedSlug(c.slug)}
-                className={`flex flex-shrink-0 items-center gap-3 border px-4 py-3 text-left transition-colors ${
+                className={`flex flex-shrink-0 items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
                   active ? 'border-brand-leaf bg-brand-leaf/10' : 'border-farm-border hover:border-brand-deep/30'
                 }`}
               >
@@ -129,7 +129,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                       href={whatsappHref(selected.whatsapp_message)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-6 inline-flex items-center gap-2 bg-brand-leaf px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
+                      className="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-leaf px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
                     >
                       <MessageCircle size={14} />
                       {selected.cta_label}
@@ -137,7 +137,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                   )}
                 </div>
               )}
-              <div className="image-skeleton relative aspect-[4/3] overflow-hidden bg-cream-secondary">
+              <div className="image-skeleton relative aspect-[4/3] overflow-hidden rounded-xl bg-cream-secondary">
                 <Image
                   src={selected.hero_image || '/images/farm/farm.webp'}
                   alt={`${selected.name} at Nola Ranches`}
@@ -154,7 +154,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                 <Link
                   key={product.id}
                   href={`/products/${product.slug}`}
-                  className="group block border border-farm-border bg-cream-warm transition-shadow hover:shadow-md"
+                  className="group block overflow-hidden rounded-xl border border-farm-border bg-cream-warm transition-shadow hover:shadow-md"
                 >
                   <div className="image-skeleton relative aspect-square overflow-hidden bg-cream-secondary">
                     <Image
@@ -197,7 +197,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                     tabIndex={0}
                     onClick={() => setSelectedSlug(c.slug)}
                     onKeyDown={(e) => e.key === 'Enter' && setSelectedSlug(c.slug)}
-                    className="group flex cursor-pointer flex-col overflow-hidden border border-farm-border bg-cream-warm text-left transition-shadow hover:shadow-md"
+                    className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-farm-border bg-cream-warm text-left transition-shadow hover:shadow-md"
                   >
                     <div className="image-skeleton relative aspect-[16/9] overflow-hidden bg-cream-secondary">
                       <Image
@@ -223,7 +223,7 @@ export function LivestockCategoryTabs({ products, categories }: { products: Prod
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="mt-4 inline-flex items-center gap-2 bg-brand-leaf px-4 py-2 text-[11px] font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
+                          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand-leaf px-4 py-2 text-[11px] font-semibold uppercase tracking-widest text-white hover:bg-brand-deep transition-colors"
                         >
                           <MessageCircle size={12} />
                           {c.cta_label}

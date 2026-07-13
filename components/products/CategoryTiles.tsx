@@ -24,7 +24,7 @@ export function CategoryTiles({ products }: { products: Product[] }) {
           <Link
             key={tile.key}
             href={tile.href}
-            className="group relative block aspect-[4/3] overflow-hidden bg-farm-dark sm:aspect-[16/10]"
+            className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-farm-dark sm:aspect-[16/10]"
           >
             <Image
               src={image}

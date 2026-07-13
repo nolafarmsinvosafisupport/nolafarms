@@ -30,9 +30,6 @@ type Props = {
   selectedRanches: Set<Ranch>;
   onToggleRanch: (r: Ranch) => void;
   onClearRanches: () => void;
-  priceBounds: [number, number];
-  priceRange: [number, number];
-  onPriceRangeChange: (range: [number, number]) => void;
 };
 
 export function ProductFilters({
@@ -43,11 +40,8 @@ export function ProductFilters({
   selectedRanches,
   onToggleRanch,
   onClearRanches,
-  priceBounds,
-  priceRange,
-  onPriceRangeChange,
 }: Props) {
-  const checkboxCls = 'h-4 w-4 flex-shrink-0 accent-brand-leaf';
+  const checkboxCls = 'h-4 w-4 flex-shrink-0 rounded accent-brand-leaf';
 
   return (
     <div className="space-y-6">
@@ -91,33 +85,6 @@ export function ProductFilters({
             </label>
           ))}
         </div>
-      </div>
-
-      {/* Price range */}
-      <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand-deep/60">Price Range (KES)</p>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min={priceBounds[0]}
-            max={priceRange[1]}
-            value={priceRange[0]}
-            onChange={(e) => onPriceRangeChange([Math.min(Number(e.target.value) || 0, priceRange[1]), priceRange[1]])}
-            className="w-full border border-farm-border bg-cream-primary px-2 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
-          />
-          <span className="text-brand-deep/30">–</span>
-          <input
-            type="number"
-            min={priceRange[0]}
-            max={priceBounds[1]}
-            value={priceRange[1]}
-            onChange={(e) => onPriceRangeChange([priceRange[0], Math.max(Number(e.target.value) || 0, priceRange[0])])}
-            className="w-full border border-farm-border bg-cream-primary px-2 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
-          />
-        </div>
-        <p className="mt-1.5 text-[10px] text-brand-deep/40">
-          Applies to priced items only — &quot;Contact for Price&quot; items are always shown.
-        </p>
       </div>
     </div>
   );

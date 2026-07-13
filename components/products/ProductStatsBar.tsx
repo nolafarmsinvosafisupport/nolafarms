@@ -18,7 +18,7 @@ export function ProductStatsBar({ products }: { products: Product[] }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 border border-farm-border bg-cream-warm px-6 py-5 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 rounded-xl border border-farm-border bg-cream-warm px-6 py-5 sm:grid-cols-4">
       {stats.map(({ icon: Icon, value, label }) => (
         <div key={label} className="flex items-center gap-3">
           <Icon size={20} className="flex-shrink-0 text-brand-leaf" />

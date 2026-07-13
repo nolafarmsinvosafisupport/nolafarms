@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { SlidersHorizontal, LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
-import { ProductQuickView } from './ProductQuickView';
 import { ProductFilters, CATEGORY_FILTER_OPTIONS, matchesCategoryFilter } from './ProductFilters';
 import type { CategoryFilterKey } from './ProductFilters';
 import type { Product, Ranch } from '@/lib/product-types';
@@ -34,19 +33,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
   });
   const [selectedRanches, setSelectedRanches] = useState<Set<Ranch>>(new Set());
 
-  const priceBounds = useMemo<[number, number]>(() => {
-    const prices = products.map(priceOf).filter((p): p is number => p !== null);
-    if (prices.length === 0) return [0, 500];
-    return [0, Math.ceil(Math.max(...prices) / 10) * 10];
-  }, [products]);
-  const [priceRange, setPriceRange] = useState<[number, number]>(priceBounds);
-  useEffect(() => setPriceRange(priceBounds), [priceBounds]);
-
   const [sortBy, setSortBy] = useState<SortKey>('newest');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   function toggleCategory(key: CategoryFilterKey) {
     setSelectedCategories((prev) => {
@@ -68,11 +57,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
     return products.filter((p) => {
       if (selectedCategories.size > 0 && !Array.from(selectedCategories).some((c) => matchesCategoryFilter(p, c))) return false;
       if (selectedRanches.size > 0 && !selectedRanches.has(p.ranch) && p.ranch !== 'both') return false;
-      const price = priceOf(p);
-      if (price !== null && (price < priceRange[0] || price > priceRange[1])) return false;
       return true;
     });
-  }, [products, selectedCategories, selectedRanches, priceRange]);
+  }, [products, selectedCategories, selectedRanches]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -88,7 +75,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
     }
   }, [filtered, sortBy]);
 
-  useEffect(() => setPage(1), [selectedCategories, selectedRanches, priceRange, sortBy]);
+  useEffect(() => setPage(1), [selectedCategories, selectedRanches, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE));
   const paged = sorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -100,12 +87,12 @@ export function ProductGrid({ products }: { products: Product[] }) {
         <button
           type="button"
           onClick={() => setShowFilters((v) => !v)}
-          className="mb-3 flex w-full items-center justify-between border border-farm-border bg-cream-warm px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-brand-deep lg:hidden"
+          className="mb-3 flex w-full items-center justify-between rounded-lg border border-farm-border bg-cream-warm px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-brand-deep lg:hidden"
         >
           <span className="flex items-center gap-2"><SlidersHorizontal size={14} /> Filter &amp; Sort</span>
           <span>{showFilters ? '−' : '+'}</span>
         </button>
-        <div className={`${showFilters ? 'block' : 'hidden'} border border-farm-border bg-cream-warm p-4 lg:block`}>
+        <div className={`${showFilters ? 'block' : 'hidden'} rounded-lg border border-farm-border bg-cream-warm p-4 lg:block`}>
           <ProductFilters
             products={products}
             selectedCategories={selectedCategories}
@@ -114,14 +101,11 @@ export function ProductGrid({ products }: { products: Product[] }) {
             selectedRanches={selectedRanches}
             onToggleRanch={toggleRanch}
             onClearRanches={() => setSelectedRanches(new Set())}
-            priceBounds={priceBounds}
-            priceRange={priceRange}
-            onPriceRangeChange={setPriceRange}
           />
           <button
             type="button"
             onClick={() => setShowFilters(false)}
-            className="mt-5 w-full bg-brand-leaf py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep lg:hidden"
+            className="mt-5 w-full rounded-lg bg-brand-leaf py-2.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-deep lg:hidden"
           >
             Apply Filters
           </button>
@@ -134,43 +118,21 @@ export function ProductGrid({ products }: { products: Product[] }) {
           <p className="text-xs text-brand-deep/50">
             Showing {paged.length} of {sorted.length} product{sorted.length !== 1 ? 's' : ''}
           </p>
-          <div className="flex items-center gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortKey)}
-              className="border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
-            >
-              {SORT_OPTIONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
-            </select>
-            <div className="hidden items-center border border-farm-border sm:flex">
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                aria-label="Grid view"
-                aria-pressed={viewMode === 'grid'}
-                className={`flex h-8 w-8 items-center justify-center ${viewMode === 'grid' ? 'bg-brand-deep text-cream-primary' : 'text-brand-deep/50'}`}
-              >
-                <LayoutGrid size={14} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('list')}
-                aria-label="List view"
-                aria-pressed={viewMode === 'list'}
-                className={`flex h-8 w-8 items-center justify-center ${viewMode === 'list' ? 'bg-brand-deep text-cream-primary' : 'text-brand-deep/50'}`}
-              >
-                <List size={14} />
-              </button>
-            </div>
-          </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortKey)}
+            className="rounded-lg border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
+          >
+            {SORT_OPTIONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
+          </select>
         </div>
 
         {paged.length === 0 ? (
           <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filters.</p>
         ) : (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4' : 'grid grid-cols-1 gap-3'}>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
             {paged.map((product) => (
-              <ProductCard key={product.id} product={product} onQuickView={setQuickViewProduct} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
@@ -183,7 +145,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               aria-label="Previous page"
-              className="flex h-8 w-8 items-center justify-center border border-farm-border text-brand-deep disabled:opacity-30"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-farm-border text-brand-deep disabled:opacity-30"
             >
               <ChevronLeft size={14} />
             </button>
@@ -192,7 +154,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 key={n}
                 type="button"
                 onClick={() => setPage(n)}
-                className={`flex h-8 w-8 items-center justify-center text-xs font-semibold ${
+                className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold ${
                   n === page ? 'bg-brand-deep text-cream-primary' : 'border border-farm-border text-brand-deep/60'
                 }`}
               >
@@ -204,17 +166,13 @@ export function ProductGrid({ products }: { products: Product[] }) {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               aria-label="Next page"
-              className="flex h-8 w-8 items-center justify-center border border-farm-border text-brand-deep disabled:opacity-30"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-farm-border text-brand-deep disabled:opacity-30"
             >
               <ChevronRight size={14} />
             </button>
           </div>
         )}
       </div>
-
-      {quickViewProduct && (
-        <ProductQuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
-      )}
     </div>
   );
 }

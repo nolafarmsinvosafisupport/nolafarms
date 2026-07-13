@@ -6,7 +6,6 @@ import '@/styles/globals.css';
 import { ConditionalFooter } from '@/components/layout/ConditionalFooter';
 import { Navbar } from '@/components/layout/Navbar';
 import { CartProvider } from '@/lib/cart-context';
-import { WishlistProvider } from '@/lib/wishlist-context';
 import { NotificationProvider } from '@/lib/notification-context';
 import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { DustParticles } from '@/components/ui/DustParticles';
@@ -92,7 +91,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body className="font-sans">
           <NotificationProvider>
           <CartProvider>
-          <WishlistProvider>
           <JsonLd data={localBusinessSchema} />
           <ScrollProgressBar />
           <DustParticles />
@@ -113,7 +111,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Script>
             </>
           )}
-          </WishlistProvider>
           </CartProvider>
           </NotificationProvider>
         </body>

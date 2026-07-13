@@ -84,7 +84,7 @@ export default async function ProductsPage() {
           </Suspense>
 
           {/* Bulk orders CTA */}
-          <div className="flex flex-col items-start justify-between gap-4 bg-farm-dark p-6 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-start justify-between gap-4 rounded-xl bg-farm-dark p-6 sm:flex-row sm:items-center">
             <div>
               <p className="font-serif text-xl text-cream-primary">Need bulk orders or a custom request?</p>
               <p className="mt-1 text-sm text-cream-secondary/70">We supply farms, institutions, schools and businesses.</p>
@@ -93,7 +93,7 @@ export default async function ProductsPage() {
               href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a bulk order enquiry for Nola Ranches.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 border border-cream-primary/30 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-cream-primary/10"
+              className="flex-shrink-0 rounded-lg border border-cream-primary/30 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-cream-primary/10"
             >
               Contact Us
             </a>

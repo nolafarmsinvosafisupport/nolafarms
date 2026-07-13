@@ -11,7 +11,6 @@ import { AccountButton } from './AccountButton';
 import { NotificationBell } from './NotificationBell';
 import { MobileMenu } from './MobileMenu';
 import { CartIcon } from '@/components/products/CartIcon';
-import { WishlistIcon } from './WishlistIcon';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -76,7 +75,6 @@ export function Navbar() {
               );
             })}
             <NotificationBell />
-            {!isAdmin && <WishlistIcon />}
             {!isAdmin && <CartIcon />}
             <AccountButton />
           </div>
@@ -84,7 +82,6 @@ export function Navbar() {
           {/* Mobile right: bell (signed-in only) + cart/dashboard + hamburger */}
           <div className="flex items-center gap-1 md:hidden">
             <NotificationBell />
-            {!isAdmin && <WishlistIcon />}
             {!isAdmin && <CartIcon />}
             <button
               type="button"
