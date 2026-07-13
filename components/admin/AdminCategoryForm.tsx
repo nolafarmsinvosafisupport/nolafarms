@@ -14,9 +14,9 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-type Props = { category?: ProductCategoryPage };
+type Props = { category?: ProductCategoryPage; mainCategories: ProductCategoryPage[] };
 
-export function AdminCategoryForm({ category }: Props) {
+export function AdminCategoryForm({ category, mainCategories }: Props) {
   const router = useRouter();
   const isEdit = Boolean(category);
 
@@ -32,8 +32,15 @@ export function AdminCategoryForm({ category }: Props) {
   const [whatsappMessage, setWhatsappMessage] = useState(category?.whatsapp_message ?? '');
   const [details, setDetails] = useState<string[]>(category?.details?.length ? category.details : ['']);
   const [sortOrder, setSortOrder] = useState(String(category?.sort_order ?? '0'));
+  const [parentId, setParentId] = useState(category?.parent_id ?? '');
+  const [active, setActive] = useState(category?.active ?? true);
+  const [comingSoon, setComingSoon] = useState(category?.coming_soon ?? false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const isMain = parentId === '';
+  // A main category can't be parented to itself.
+  const parentOptions = mainCategories.filter((c) => c.id !== category?.id);
 
   function handleNameChange(v: string) {
     setName(v);
@@ -64,6 +71,9 @@ export function AdminCategoryForm({ category }: Props) {
         whatsapp_message: whatsappMessage || null,
         details: details.filter(Boolean),
         sort_order: parseInt(sortOrder) || 0,
+        parent_id: parentId || null,
+        active,
+        coming_soon: isMain ? comingSoon : false,
       };
       const url = isEdit ? `/api/categories/${category!.id}` : '/api/categories';
       const method = isEdit ? 'PATCH' : 'POST';
@@ -87,6 +97,25 @@ export function AdminCategoryForm({ category }: Props) {
       <label className={labelCls}>{label}</label>
       {children}
     </div>
+  );
+
+  const Toggle = ({ checked, onChange, label, hint }: { checked: boolean; onChange: (v: boolean) => void; label: string; hint?: string }) => (
+    <label className="flex cursor-pointer items-center gap-3">
+      <div
+        role="checkbox"
+        aria-checked={checked}
+        tabIndex={0}
+        onClick={() => onChange(!checked)}
+        onKeyDown={(e) => e.key === 'Enter' && onChange(!checked)}
+        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${checked ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
+      >
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
+      </div>
+      <span className="text-sm font-medium text-brand-deep">
+        {label}
+        {hint && <span className="block text-xs font-normal text-brand-deep/50">{hint}</span>}
+      </span>
+    </label>
   );
 
   return (
@@ -116,6 +145,16 @@ export function AdminCategoryForm({ category }: Props) {
           />
         </Field>
       </div>
+
+      {/* Parent category */}
+      <Field label="Parent Category">
+        <select value={parentId} onChange={(e) => setParentId(e.target.value)} className={inputCls}>
+          <option value="">— None (this is a main category on /products) —</option>
+          {parentOptions.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+      </Field>
 
       <Field label="Subtitle">
         <input
@@ -213,6 +252,24 @@ export function AdminCategoryForm({ category }: Props) {
 
       {/* Hero image */}
       <AdminImageUploader images={heroImage.filter(Boolean)} onChange={(imgs) => setHeroImage(imgs.slice(-1))} label="Hero Image" />
+
+      {/* Active + Coming Soon toggles */}
+      <div className="space-y-4 border border-farm-border bg-cream-secondary p-4">
+        <Toggle
+          checked={active}
+          onChange={setActive}
+          label={active ? 'Visible to customers' : 'Hidden from customers'}
+          hint="Turning this off also hides every product in it, everywhere on the site."
+        />
+        {isMain && (
+          <Toggle
+            checked={comingSoon}
+            onChange={setComingSoon}
+            label="Coming Soon"
+            hint="Shows the tile on /products (non-clickable) without listing its products yet — useful for seasonal categories."
+          />
+        )}
+      </div>
 
       {/* Sort order */}
       <Field label="Sort Order">

@@ -10,6 +10,9 @@ export type ProductCategoryPage = {
   whatsapp_message: string | null;
   details: string[];
   sort_order: number;
+  parent_id: string | null;
+  active: boolean;
+  coming_soon: boolean;
   created_at: string;
   updated_at: string;
 };

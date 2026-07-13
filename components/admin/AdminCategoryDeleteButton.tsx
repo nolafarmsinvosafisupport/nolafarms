@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
-export function AdminCategoryDeleteButton({ categoryId, categoryName }: { categoryId: string; categoryName: string }) {
+export function AdminCategoryDeleteButton({ categoryId, categoryName, subcategoryCount = 0 }: { categoryId: string; categoryName: string; subcategoryCount?: number }) {
   const router = useRouter();
   const [confirm, setConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,9 +29,12 @@ export function AdminCategoryDeleteButton({ categoryId, categoryName }: { catego
   }
 
   if (confirm) {
+    const warning = subcategoryCount > 0
+      ? `Delete "${categoryName}" and its ${subcategoryCount} subcategor${subcategoryCount === 1 ? 'y' : 'ies'}?`
+      : `Delete "${categoryName}"?`;
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-red-600">{error || `Delete "${categoryName}"?`}</span>
+        <span className="text-xs text-red-600">{error || warning}</span>
         <button
           type="button"
           disabled={loading}

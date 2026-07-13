@@ -9,7 +9,9 @@ import { Truck, ShieldCheck, Sprout, Headset } from 'lucide-react';
 import { SITE } from '@/lib/constants';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
+import { filterVisibleProducts } from '@/lib/category-visibility';
 import type { Product } from '@/lib/product-types';
+import type { ProductCategoryPage } from '@/lib/category-types';
 
 // Not ISR: this route has no dynamic segments, so Next.js would try to
 // prerender it during `next build` — which fails on Railway because the
@@ -46,6 +48,17 @@ const getProducts = unstable_cache(
   { revalidate: 300, tags: ['products'] },
 );
 
+const getCategories = unstable_cache(
+  async (): Promise<ProductCategoryPage[]> => {
+    if (!isDbConfigured()) return [];
+    await ensureMigrated();
+    const sql = getDb();
+    return sql<ProductCategoryPage[]>`SELECT * FROM product_categories ORDER BY sort_order, name`;
+  },
+  ['categories-all'],
+  { revalidate: 300, tags: ['categories'] },
+);
+
 const TRUST_BADGES = [
   { icon: Truck, label: 'Farm to You', description: 'Directly from our ranches to your table' },
   { icon: ShieldCheck, label: 'Quality Guaranteed', description: 'Fresh, safe, and carefully selected' },
@@ -54,7 +67,9 @@ const TRUST_BADGES = [
 ];
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const [allProducts, categories] = await Promise.all([getProducts(), getCategories()]);
+  const products = filterVisibleProducts(allProducts, categories);
+  const mainCategories = categories.filter((c) => c.parent_id === null);
 
   return (
     <main className="pt-16">
@@ -76,7 +91,7 @@ export default async function ProductsPage() {
 
       <section className="bg-cream-primary px-6 py-10 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-8">
-          <CategoryTiles products={products} />
+          <CategoryTiles products={products} categories={mainCategories} />
           <ProductStatsBar products={products} />
 
           <Suspense fallback={null}>

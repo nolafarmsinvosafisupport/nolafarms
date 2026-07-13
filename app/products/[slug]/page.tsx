@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MapPin, CheckCircle2, MessageCircle, Package } from 'lucide-react';
+import { MapPin, CheckCircle2, MessageCircle, Package, PackageX } from 'lucide-react';
 import { ProductImageGallery } from '@/components/products/ProductImageGallery';
 import { ProductAddToCart } from '@/components/products/ProductAddToCart';
 import { JsonLd } from '@/components/ui/JsonLd';
@@ -10,8 +10,10 @@ import { isCurrentUserAdmin } from '@/lib/auth';
 import { SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
 import { productJsonLd } from '@/lib/schema';
+import { computeHiddenCategoryValues } from '@/lib/category-visibility';
 import type { Product } from '@/lib/product-types';
 import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
+import type { ProductCategoryPage } from '@/lib/category-types';
 
 // Cached for 5 minutes and revalidated on demand by product writes
 // (see revalidatePath() calls in app/api/products routes).
@@ -23,6 +25,14 @@ async function getProduct(slug: string): Promise<Product | null> {
   const sql = getDb();
   const [product] = await sql<Product[]>`SELECT * FROM products WHERE slug = ${slug} LIMIT 1`;
   return product ?? null;
+}
+
+async function getHiddenCategoryValues(): Promise<Set<string>> {
+  if (!isDbConfigured()) return new Set();
+  await ensureMigrated();
+  const sql = getDb();
+  const categories = await sql<ProductCategoryPage[]>`SELECT * FROM product_categories`;
+  return computeHiddenCategoryValues(categories);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -41,8 +51,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [product, isAdmin] = await Promise.all([getProduct(slug), isCurrentUserAdmin()]);
+  const [product, isAdmin, hiddenCategoryValues] = await Promise.all([getProduct(slug), isCurrentUserAdmin(), getHiddenCategoryValues()]);
   if (!product) notFound();
+  // Admins can still preview a delisted/cascade-hidden product (e.g. to check it before
+  // re-enabling it); everyone else gets the same 404 they'd hit browsing the catalogue.
+  if (!isAdmin && (!product.available || hiddenCategoryValues.has(product.category))) notFound();
 
   const price = product.price ? parseFloat(product.price) : null;
   const compareAt = product.compare_at_price ? parseFloat(product.compare_at_price) : null;
@@ -83,6 +96,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <MapPin size={10} />
                 {RANCH_LABELS[product.ranch]}
               </span>
+              {!product.in_stock && !product.is_service && (
+                <span className="flex items-center gap-1 rounded-full bg-brand-deep px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                  <PackageX size={10} />
+                  Out of Stock
+                </span>
+              )}
             </div>
 
             <h1 className="font-serif text-2xl text-brand-deep sm:text-3xl md:text-4xl">{product.name}</h1>

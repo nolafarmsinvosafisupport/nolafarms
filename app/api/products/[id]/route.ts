@@ -54,6 +54,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         available = COALESCE(${body.available ?? null}, available),
         sort_order = COALESCE(${body.sort_order ?? null}, sort_order),
         is_service = COALESCE(${body.is_service ?? null}, is_service),
+        in_stock = COALESCE(${body.in_stock ?? null}, in_stock),
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *

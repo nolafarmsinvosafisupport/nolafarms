@@ -39,6 +39,7 @@ export const productCreateSchema = z.object({
   available: z.boolean().optional(),
   sort_order: z.coerce.number().int().optional(),
   is_service: z.boolean().optional(),
+  in_stock: z.boolean().optional(),
 });
 
 export const productUpdateSchema = productCreateSchema.partial();
@@ -54,6 +55,9 @@ export const categoryCreateSchema = z.object({
   whatsapp_message: z.string().optional().nullable(),
   details: z.array(z.string()).optional(),
   sort_order: z.coerce.number().int().optional(),
+  parent_id: z.string().uuid().optional().nullable(),
+  active: z.boolean().optional(),
+  coming_soon: z.boolean().optional(),
 });
 
 export const categoryUpdateSchema = categoryCreateSchema.partial();

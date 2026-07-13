@@ -1,7 +1,9 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireDb, requireAdminResponse, productCreateSchema, parseJsonBody, dbErrorResponse } from '@/lib/api-utils';
 import { getDb, ensureMigrated } from '@/lib/db';
+import { computeHiddenCategoryValues } from '@/lib/category-visibility';
 import type { Product } from '@/lib/product-types';
+import type { ProductCategoryPage } from '@/lib/category-types';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +25,9 @@ export async function GET(request: Request) {
     products = await sql<Product[]>`SELECT * FROM products ORDER BY sort_order, name`;
   } else {
     products = await sql<Product[]>`SELECT * FROM products WHERE available = TRUE ORDER BY sort_order, name`;
+    const categories = await sql<ProductCategoryPage[]>`SELECT * FROM product_categories`;
+    const hidden = computeHiddenCategoryValues(categories);
+    products = products.filter((p) => !hidden.has(p.category));
   }
 
   let filtered = products;
@@ -57,13 +62,13 @@ export async function POST(request: Request) {
 
   const parsed = productCreateSchema.safeParse(body);
   if (!parsed.success) return Response.json({ success: false, errors: parsed.error.flatten() }, { status: 400 });
-  const { name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service } = parsed.data;
+  const { name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service, in_stock } = parsed.data;
 
   const sql = getDb();
   try {
     const [product] = await sql<Product[]>`
-      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service)
-      VALUES (${name}, ${slug}, ${category}, ${ranch}, ${description ?? null}, ${details ?? []}, ${price ?? null}, ${compare_at_price ?? null}, ${price_unit ?? 'per kg'}, ${bulk_info ?? null}, ${images ?? []}, ${available ?? true}, ${sort_order ?? 0}, ${is_service ?? false})
+      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service, in_stock)
+      VALUES (${name}, ${slug}, ${category}, ${ranch}, ${description ?? null}, ${details ?? []}, ${price ?? null}, ${compare_at_price ?? null}, ${price_unit ?? 'per kg'}, ${bulk_info ?? null}, ${images ?? []}, ${available ?? true}, ${sort_order ?? 0}, ${is_service ?? false}, ${in_stock ?? true})
       RETURNING *
     `;
     revalidatePath('/products');

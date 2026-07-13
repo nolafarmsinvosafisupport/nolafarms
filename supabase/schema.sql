@@ -76,14 +76,20 @@ CREATE TABLE IF NOT EXISTS products (
   available BOOLEAN NOT NULL DEFAULT TRUE,
   sort_order INTEGER DEFAULT 0,
   is_service BOOLEAN NOT NULL DEFAULT FALSE,
+  -- Separate from `available` (shown on the site at all) — a visible product can still be
+  -- temporarily out of stock, which disables Add-to-Cart and shows a badge instead of
+  -- delisting it the way `available = FALSE` does.
+  in_stock BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Category-level landing content (hero photo/description/CTA) for grouped product
--- categories like the Livestock page's Cattle / Goats & Sheep / Pigs tabs. Separate from
--- products.category (which stays a flat enum) — category_values maps a category page to
--- one or more of those enum values, e.g. ARRAY['goats','sheep'].
+-- categories. Separate from products.category (which stays a flat enum) — category_values
+-- maps a category page to one or more of those enum values, e.g. ARRAY['goats','sheep'].
+-- Self-referencing parent_id: NULL = a main/top-level category (Livestock, Vegetables,
+-- Grains, Fruits — the tiles on /products), set = a subcategory of that main category
+-- (e.g. Cattle / Goats & Sheep / Pigs under Livestock).
 CREATE TABLE IF NOT EXISTS product_categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug TEXT UNIQUE NOT NULL,
@@ -96,37 +102,59 @@ CREATE TABLE IF NOT EXISTS product_categories (
   whatsapp_message TEXT,
   details TEXT[] DEFAULT '{}',
   sort_order INTEGER DEFAULT 0,
+  parent_id UUID REFERENCES product_categories(id) ON DELETE CASCADE,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  coming_soon BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Seed the 3 category records (safe to re-run)
-INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order) VALUES
+-- Main (top-level) categories — the tiles on /products (safe to re-run)
+INSERT INTO product_categories (slug, name, category_values, sort_order) VALUES
+  ('livestock', 'Livestock', ARRAY['cattle','goats','sheep','pigs','poultry'], 10)
+ON CONFLICT (slug) DO NOTHING;
+INSERT INTO product_categories (slug, name, category_values, sort_order) VALUES
+  ('vegetables', 'Vegetables', ARRAY['vegetables'], 20)
+ON CONFLICT (slug) DO NOTHING;
+INSERT INTO product_categories (slug, name, category_values, sort_order) VALUES
+  ('grains', 'Grains', ARRAY['grains'], 30)
+ON CONFLICT (slug) DO NOTHING;
+INSERT INTO product_categories (slug, name, category_values, sort_order) VALUES
+  ('fruits', 'Fruits', ARRAY['fruits'], 40)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Subcategories of Livestock — the Cattle / Goats & Sheep / Pigs tabs on /products/livestock
+-- (safe to re-run)
+INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order, parent_id) VALUES
   ('cattle', 'Cattle', 'Zebu, Dairy Cross & Breeding Stock',
    'https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow4.jpeg',
    'Nola Ranch maintains a diverse herd of cattle in Oloitoktok, Kajiado County. Our animals are selected for drought resistance, fertility, and market performance. All cattle are vaccinated, tagged, and farm-recorded.',
    ARRAY['cattle'], 'View Available Sales Stock',
    'Hello, I''m interested in the cattle available at Nola Ranches. Please provide more details.',
-   ARRAY[]::TEXT[], 10)
+   ARRAY[]::TEXT[], 10, (SELECT id FROM product_categories WHERE slug = 'livestock'))
 ON CONFLICT (slug) DO NOTHING;
 
-INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order) VALUES
+INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order, parent_id) VALUES
   ('goats-sheep', 'Goats & Sheep', 'Premium Meat Breeds Adapted for Kajiado',
    'https://images.nolaranches.co.ke/products/animals/goat/boer/boer-main-1.jpeg',
    'Nola Ranch raises hardy meat goats and sheep bred for drought resistance and fast growth. All animals are vaccinated, healthy, and ready for breeding or meat market.',
    ARRAY['goats','sheep'], 'Contact Us for Sales Stock',
    'Hello, I''m interested in the goats and sheep available at Nola Ranches. Please provide more details.',
-   ARRAY[]::TEXT[], 20)
+   ARRAY[]::TEXT[], 20, (SELECT id FROM product_categories WHERE slug = 'livestock'))
 ON CONFLICT (slug) DO NOTHING;
 
-INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order) VALUES
+INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order, parent_id) VALUES
   ('pigs', 'Pigs', 'Commercial Breeding Stock & Meat Production',
    'https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg',
    'Nola Ranch operates a modern piggery in Oloitoktok focused on genetics, fertility, and fast growth. We maintain pure breeds and terminal crosses to supply quality piglets, gilts, and porkers to farmers and the market.',
    ARRAY['pigs'], 'Inquire About Piglets, Gilts & Boar Services',
    'Hello, I''m interested in piglets, gilts, or boar services at Nola Ranches. Please provide more details.',
-   ARRAY['Purebred Gilts & Boars Available','High Fertility & Large Litters','Fast Growth: Market-Ready in 6 Months','Full Vaccination & Deworming Program','Breeding & Genetic Advice Offered'], 30)
+   ARRAY['Purebred Gilts & Boars Available','High Fertility & Large Litters','Fast Growth: Market-Ready in 6 Months','Full Vaccination & Deworming Program','Breeding & Genetic Advice Offered'], 30, (SELECT id FROM product_categories WHERE slug = 'livestock'))
 ON CONFLICT (slug) DO NOTHING;
+
+-- Re-parents rows seeded before parent_id existed (safe to re-run — a no-op once parented)
+UPDATE product_categories SET parent_id = (SELECT id FROM product_categories WHERE slug = 'livestock')
+WHERE slug IN ('cattle', 'goats-sheep', 'pigs') AND parent_id IS NULL;
 
 CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

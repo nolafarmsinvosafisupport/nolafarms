@@ -27,13 +27,13 @@ export async function POST(request: Request) {
 
   const parsed = categoryCreateSchema.safeParse(body);
   if (!parsed.success) return Response.json({ success: false, errors: parsed.error.flatten() }, { status: 400 });
-  const { slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order } = parsed.data;
+  const { slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order, parent_id, active, coming_soon } = parsed.data;
 
   const sql = getDb();
   try {
     const [category] = await sql<ProductCategoryPage[]>`
-      INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order)
-      VALUES (${slug}, ${name}, ${subtitle ?? null}, ${hero_image ?? null}, ${hero_description ?? null}, ${category_values}, ${cta_label ?? null}, ${whatsapp_message ?? null}, ${details ?? []}, ${sort_order ?? 0})
+      INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order, parent_id, active, coming_soon)
+      VALUES (${slug}, ${name}, ${subtitle ?? null}, ${hero_image ?? null}, ${hero_description ?? null}, ${category_values}, ${cta_label ?? null}, ${whatsapp_message ?? null}, ${details ?? []}, ${sort_order ?? 0}, ${parent_id ?? null}, ${active ?? true}, ${coming_soon ?? false})
       RETURNING *
     `;
     revalidatePath('/products');

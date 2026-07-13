@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Plus, Pencil } from 'lucide-react';
 import { AdminProductDeleteButton } from '@/components/admin/AdminProductDeleteButton';
+import { AdminQuickToggle } from '@/components/admin/AdminQuickToggle';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import type { Product } from '@/lib/product-types';
 import { CATEGORY_LABELS, RANCH_LABELS } from '@/lib/product-types';
@@ -65,6 +66,11 @@ export default async function AdminProductsPage() {
                       Hidden
                     </span>
                   )}
+                  {product.available && !product.in_stock && (
+                    <span className="flex-shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-700">
+                      Out of Stock
+                    </span>
+                  )}
                 </div>
 
                 {/* Category */}
@@ -89,7 +95,9 @@ export default async function AdminProductsPage() {
                 </span>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <AdminQuickToggle endpoint={`/api/products/${product.id}`} field="available" value={product.available} label="Visible" />
+                  <AdminQuickToggle endpoint={`/api/products/${product.id}`} field="in_stock" value={product.in_stock} label="In Stock" />
                   <Link
                     href={`/admin/products/${product.id}/edit`}
                     className="flex items-center gap-1.5 border border-farm-border px-3 py-1.5 text-xs font-semibold text-brand-deep/60 hover:border-brand-leaf hover:text-brand-leaf transition-colors"

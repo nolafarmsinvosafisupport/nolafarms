@@ -105,11 +105,17 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
     // Added for boar-hire and similar bookable services that shouldn't go through
     // Add-to-Cart/checkout like a physical product does.
     await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS is_service BOOLEAN NOT NULL DEFAULT FALSE`;
+    // Separate from `available` (shown on the site at all) — a visible product can still be
+    // temporarily out of stock, which disables Add-to-Cart and shows a badge instead of
+    // delisting it the way `available = FALSE` does.
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS in_stock BOOLEAN NOT NULL DEFAULT TRUE`;
 
     // Category-level landing content (hero photo/description/CTA) for grouped product
-    // categories like the Livestock page's Cattle / Goats & Sheep / Pigs tabs. Deliberately
-    // separate from `products.category` (which stays a flat enum) — `category_values` maps
-    // a category page to one or more of those enum values, e.g. ['goats','sheep'].
+    // categories. Deliberately separate from `products.category` (which stays a flat enum)
+    // — `category_values` maps a category page to one or more of those enum values, e.g.
+    // ['goats','sheep']. Self-referencing `parent_id`: NULL = a main/top-level category
+    // (Livestock, Vegetables, Grains, Fruits — the tiles on /products), set = a subcategory
+    // of that main category (e.g. Cattle / Goats & Sheep / Pigs under Livestock).
     await sql`
       CREATE TABLE IF NOT EXISTS product_categories (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -123,10 +129,18 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
         whatsapp_message TEXT,
         details TEXT[] DEFAULT '{}',
         sort_order INTEGER DEFAULT 0,
+        parent_id UUID REFERENCES product_categories(id) ON DELETE CASCADE,
+        active BOOLEAN NOT NULL DEFAULT TRUE,
+        coming_soon BOOLEAN NOT NULL DEFAULT FALSE,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `;
+    // ADD COLUMN IF NOT EXISTS backfill for databases where this table already existed
+    // before parent_id/active/coming_soon were added.
+    await sql`ALTER TABLE product_categories ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES product_categories(id) ON DELETE CASCADE`;
+    await sql`ALTER TABLE product_categories ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE`;
+    await sql`ALTER TABLE product_categories ADD COLUMN IF NOT EXISTS coming_soon BOOLEAN NOT NULL DEFAULT FALSE`;
 
     await sql`
       CREATE TABLE IF NOT EXISTS orders (
@@ -215,7 +229,28 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
 }
 
 async function seedProductCategories(sql: ReturnType<typeof postgres>) {
-  const categories = [
+  // Main (top-level) categories — the tiles on /products. Livestock is the only one with
+  // subcategories today; Vegetables/Grains/Fruits link straight to a filtered product grid
+  // until they have subcategory-worthy content of their own.
+  const mainCategories = [
+    { slug: 'livestock', name: 'Livestock', category_values: ['cattle', 'goats', 'sheep', 'pigs', 'poultry'], sort_order: 10 },
+    { slug: 'vegetables', name: 'Vegetables', category_values: ['vegetables'], sort_order: 20 },
+    { slug: 'grains', name: 'Grains', category_values: ['grains'], sort_order: 30 },
+    { slug: 'fruits', name: 'Fruits', category_values: ['fruits'], sort_order: 40 },
+  ];
+  for (const c of mainCategories) {
+    await sql`
+      INSERT INTO product_categories (slug, name, category_values, sort_order)
+      VALUES (${c.slug}, ${c.name}, ${c.category_values}, ${c.sort_order})
+      ON CONFLICT (slug) DO NOTHING
+    `;
+  }
+
+  const [livestock] = await sql<{ id: string }[]>`SELECT id FROM product_categories WHERE slug = 'livestock' LIMIT 1`;
+  const livestockId = livestock?.id ?? null;
+
+  // Subcategories of Livestock — the Cattle / Goats & Sheep / Pigs tabs on /products/livestock.
+  const subcategories = [
     {
       slug: 'cattle', name: 'Cattle', subtitle: 'Zebu, Dairy Cross & Breeding Stock',
       hero_image: CATEGORY_PLACEHOLDER_IMAGES.cattle,
@@ -246,12 +281,18 @@ async function seedProductCategories(sql: ReturnType<typeof postgres>) {
     },
   ];
 
-  for (const c of categories) {
+  for (const c of subcategories) {
     await sql`
-      INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order)
-      VALUES (${c.slug}, ${c.name}, ${c.subtitle}, ${c.hero_image}, ${c.hero_description}, ${c.category_values}, ${c.cta_label}, ${c.whatsapp_message}, ${c.details}, ${c.sort_order})
+      INSERT INTO product_categories (slug, name, subtitle, hero_image, hero_description, category_values, cta_label, whatsapp_message, details, sort_order, parent_id)
+      VALUES (${c.slug}, ${c.name}, ${c.subtitle}, ${c.hero_image}, ${c.hero_description}, ${c.category_values}, ${c.cta_label}, ${c.whatsapp_message}, ${c.details}, ${c.sort_order}, ${livestockId})
       ON CONFLICT (slug) DO NOTHING
     `;
+  }
+
+  // Re-parents rows that were seeded before parent_id existed (safe to re-run — a no-op
+  // once they're already parented).
+  if (livestockId) {
+    await sql`UPDATE product_categories SET parent_id = ${livestockId} WHERE slug IN ('cattle', 'goats-sheep', 'pigs') AND parent_id IS NULL`;
   }
 }
 

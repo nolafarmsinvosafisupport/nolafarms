@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Minus, Plus, ShoppingCart, MessageCircle } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, MessageCircle, PackageX } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import { useNotifications } from '@/lib/notification-context';
@@ -38,6 +38,15 @@ export function ProductAddToCart({ product }: { product: Product }) {
         <MessageCircle size={14} />
         Request This Service
       </a>
+    );
+  }
+
+  if (!product.in_stock) {
+    return (
+      <div className="flex items-center justify-center gap-2 bg-brand-deep/10 py-3 text-xs font-semibold uppercase tracking-widest text-brand-deep/50">
+        <PackageX size={14} />
+        Out of Stock
+      </div>
     );
   }
 

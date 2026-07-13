@@ -39,6 +39,7 @@ export function AdminProductForm({ product }: Props) {
   const [images, setImages] = useState<string[]>(product?.images ?? []);
   const [isService, setIsService] = useState(product?.is_service ?? false);
   const [available, setAvailable] = useState(product?.available ?? true);
+  const [inStock, setInStock] = useState(product?.in_stock ?? true);
   const [sortOrder, setSortOrder] = useState(String(product?.sort_order ?? '0'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -72,6 +73,7 @@ export function AdminProductForm({ product }: Props) {
         available,
         sort_order: parseInt(sortOrder) || 0,
         is_service: isService,
+        in_stock: inStock,
       };
       const url = isEdit ? `/api/products/${product!.id}` : '/api/products';
       const method = isEdit ? 'PATCH' : 'POST';
@@ -285,37 +287,57 @@ export function AdminProductForm({ product }: Props) {
         </label>
       </div>
 
-      {/* Sort order + Available toggle */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Sort Order">
-          <input
-            type="number"
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className={inputCls}
-          />
-        </Field>
-        <div className="flex items-end pb-1">
-          <label className="flex cursor-pointer items-center gap-3">
-            <div
-              role="checkbox"
-              aria-checked={available}
-              tabIndex={0}
-              onClick={() => setAvailable((v) => !v)}
-              onKeyDown={(e) => e.key === 'Enter' && setAvailable((v) => !v)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${available ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
-            >
-              <span
-                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                  available ? 'translate-x-5' : 'translate-x-0.5'
-                }`}
-              />
-            </div>
-            <span className="text-sm font-medium text-brand-deep">
-              {available ? 'Visible to customers' : 'Hidden from customers'}
-            </span>
-          </label>
-        </div>
+      {/* Sort order */}
+      <Field label="Sort Order">
+        <input
+          type="number"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          className={`${inputCls} max-w-xs`}
+        />
+      </Field>
+
+      {/* Available + In Stock toggles */}
+      <div className="grid gap-4 border border-farm-border bg-cream-secondary p-4 sm:grid-cols-2">
+        <label className="flex cursor-pointer items-center gap-3">
+          <div
+            role="checkbox"
+            aria-checked={available}
+            tabIndex={0}
+            onClick={() => setAvailable((v) => !v)}
+            onKeyDown={(e) => e.key === 'Enter' && setAvailable((v) => !v)}
+            className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${available ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                available ? 'translate-x-5' : 'translate-x-0.5'
+              }`}
+            />
+          </div>
+          <span className="text-sm font-medium text-brand-deep">
+            {available ? 'Visible to customers' : 'Hidden from customers'}
+          </span>
+        </label>
+        <label className="flex cursor-pointer items-center gap-3">
+          <div
+            role="checkbox"
+            aria-checked={inStock}
+            tabIndex={0}
+            onClick={() => setInStock((v) => !v)}
+            onKeyDown={(e) => e.key === 'Enter' && setInStock((v) => !v)}
+            className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${inStock ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                inStock ? 'translate-x-5' : 'translate-x-0.5'
+              }`}
+            />
+          </div>
+          <span className="text-sm font-medium text-brand-deep">
+            {inStock ? 'In stock' : 'Out of stock'}
+            <span className="block text-xs font-normal text-brand-deep/50">Stays visible, but Add-to-Cart is replaced with an Out of Stock badge.</span>
+          </span>
+        </label>
       </div>
 
       {/* Submit */}

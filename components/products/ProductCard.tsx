@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, ShoppingCart, MessageCircle, Check } from 'lucide-react';
+import { MapPin, ShoppingCart, MessageCircle, Check, PackageX } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-context';
 import { useNotifications } from '@/lib/notification-context';
@@ -55,6 +55,11 @@ export function ProductCard({ product }: { product: Product }) {
         {isOnSale && (
           <span className="absolute left-2 top-2 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white">
             Sale
+          </span>
+        )}
+        {!product.in_stock && (
+          <span className="absolute right-2 top-2 rounded-full bg-brand-deep px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white">
+            Out of Stock
           </span>
         )}
       </Link>
@@ -117,6 +122,13 @@ export function ProductCard({ product }: { product: Product }) {
               >
                 <MessageCircle size={14} />
               </a>
+            ) : !product.in_stock ? (
+              <span
+                aria-label="Out of stock"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-deep/10 text-brand-deep/40"
+              >
+                <PackageX size={14} />
+              </span>
             ) : (
               <button
                 type="button"

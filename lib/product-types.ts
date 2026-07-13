@@ -18,6 +18,7 @@ export type Product = {
   available: boolean;
   sort_order: number;
   is_service: boolean;
+  in_stock: boolean;
   created_at: string;
   updated_at: string;
 };

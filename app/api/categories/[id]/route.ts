@@ -50,6 +50,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         whatsapp_message = ${body.whatsapp_message !== undefined ? (body.whatsapp_message ?? null) : sql`whatsapp_message`},
         details = COALESCE(${body.details ?? null}, details),
         sort_order = COALESCE(${body.sort_order ?? null}, sort_order),
+        parent_id = ${body.parent_id !== undefined ? (body.parent_id ?? null) : sql`parent_id`},
+        active = COALESCE(${body.active ?? null}, active),
+        coming_soon = COALESCE(${body.coming_soon ?? null}, coming_soon),
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *
