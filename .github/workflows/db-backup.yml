@@ -16,8 +16,15 @@ jobs:
     steps:
       # The runner ships pg_dump 16, which refuses to dump a newer server ("server version
       # mismatch"). Railway runs Postgres 18, so the matching client has to come from PGDG.
+      #
+      # Installing it is not enough: the runner image already has PostgreSQL 16 ahead of the
+      # new one on PATH, so a bare `pg_dump` still resolves to 16. Push 18's bin directory to
+      # the front of PATH for the later steps, and assert the version rather than just printing
+      # it — an unasserted version check is how the first run got all the way to the dump before
+      # failing.
       - name: Install PostgreSQL 18 client
         run: |
+          set -euo pipefail
           sudo install -d /usr/share/postgresql-common/pgdg
           sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
             https://www.postgresql.org/media/keys/ACCC4CF8.asc
@@ -25,7 +32,15 @@ jobs:
             | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client-18
-          pg_dump --version
+
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+
+          MAJOR=$(/usr/lib/postgresql/18/bin/pg_dump --version | grep -oE '[0-9]+' | head -1)
+          echo "pg_dump major version: ${MAJOR}"
+          if [ "$MAJOR" -lt 18 ]; then
+            echo "::error::Expected pg_dump 18+, got ${MAJOR} — it cannot dump the Postgres 18 server"
+            exit 1
+          fi
 
       - name: Dump database
         env:
