@@ -40,7 +40,7 @@ export default function ServicesPage() {
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf">Book a Ranch Visit</p>
             <h2 className="font-serif text-5xl leading-tight text-brand-deep">Request a Guided Farm Tour.</h2>
             <p className="mt-6 leading-8 text-brand-deep/75">
-              Submit your preferred date, visit purpose, and group size. Every request is reviewed by the farm team before confirmation.
+              Book a farm visit to view Boran, Holstein, and Girolando cattle.
             </p>
           </div>
           <BookingForm />

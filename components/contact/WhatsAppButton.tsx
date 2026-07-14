@@ -1,11 +1,21 @@
-import { SITE } from '@/lib/constants';
+'use client';
+
+import { usePathname } from 'next/navigation';
+import { whatsappHref } from '@/lib/whatsapp';
 
 export function WhatsAppButton() {
-  const message = encodeURIComponent("Hello Nola Ranches, I'd like to enquire about...");
+  const pathname = usePathname();
+
+  const message =
+    pathname === '/services'
+      ? "Hello Nola Ranches, I'd like to book a farm visit."
+      : pathname?.startsWith('/products')
+        ? "Hello Nola Ranches, I'd like to make an inquiry about one of your products."
+        : "Hello Nola Ranches, I'd like to enquire about...";
 
   return (
     <a
-      href={`https://wa.me/${SITE.whatsapp}?text=${message}`}
+      href={whatsappHref(message)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with Nola Ranches on WhatsApp"
