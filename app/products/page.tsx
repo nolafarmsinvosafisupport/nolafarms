@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Suspense } from 'react';
 import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
@@ -100,20 +101,34 @@ export default async function ProductsPage() {
             <ProductGrid products={products} categories={categories} />
           </Suspense>
 
-          {/* Bulk orders CTA */}
-          <div className="flex flex-col items-start justify-between gap-4 rounded-xl bg-farm-dark p-6 sm:flex-row sm:items-center">
-            <div>
-              <p className="font-serif text-xl text-cream-primary">Need bulk orders or a custom request?</p>
-              <p className="mt-1 text-sm text-cream-secondary/70">We supply farms, institutions, schools and businesses.</p>
+          {/* Bulk orders CTA — cattle/sheep/goats/pigs banner. The gradient is solid brand-deep
+              green on the left (text needs a guaranteed-legible background) fading to transparent
+              on the right (where the animals are, per the source photo's composition). Flat on
+              mobile instead of left-to-right: text goes full-width there, so a horizontal fade
+              would leave the right edge of the text sitting on bare photo. */}
+          <div className="relative h-64 overflow-hidden rounded-xl sm:h-72 lg:h-80">
+            <Image
+              src="/images/banner/bottom banner.png"
+              alt="Cattle, sheep, goats and pigs together at Nola Ranches"
+              fill
+              sizes="(min-width: 1024px) 1600px, 100vw"
+              className="object-cover object-right"
+            />
+            <div className="absolute inset-0 bg-brand-deep/80 sm:bg-transparent sm:bg-gradient-to-r sm:from-brand-deep sm:via-brand-deep/85 sm:to-brand-deep/10" />
+            <div className="relative flex h-full flex-col items-start justify-center gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-serif text-2xl text-cream-primary drop-shadow-sm sm:text-3xl">Need bulk orders or a custom request?</p>
+                <p className="mt-2 max-w-sm text-sm text-cream-secondary/85 drop-shadow-sm">We supply farms, institutions, schools and businesses.</p>
+              </div>
+              <a
+                href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a bulk order enquiry for Nola Ranches.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 rounded-lg border border-cream-primary/40 bg-cream-primary/5 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream-primary backdrop-blur-sm hover:bg-cream-primary/15"
+              >
+                Contact Us
+              </a>
             </div>
-            <a
-              href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hello, I have a bulk order enquiry for Nola Ranches.')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-shrink-0 rounded-lg border border-cream-primary/30 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream-primary hover:bg-cream-primary/10"
-            >
-              Contact Us
-            </a>
           </div>
 
           <div className="border-t border-farm-border pt-8">
