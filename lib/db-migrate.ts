@@ -254,7 +254,10 @@ async function seedProductCategories(sql: ReturnType<typeof postgres>) {
   const subcategories = [
     {
       slug: 'cattle', name: 'Cattle', subtitle: 'Zebu, Dairy Cross & Breeding Stock',
-      hero_image: CATEGORY_PLACEHOLDER_IMAGES.cattle,
+      // null on purpose: a NULL hero_image makes the category card fall back to its
+      // purpose-shot artwork in lib/product-taxonomy. Seeding a product photo here would
+      // override that card art on any fresh install.
+      hero_image: null as string | null,
       hero_description: 'Nola Ranch maintains a diverse herd of cattle in Oloitoktok, Kajiado County. Our animals are selected for drought resistance, fertility, and market performance. All cattle are vaccinated, tagged, and farm-recorded.',
       category_values: ['cattle'],
       cta_label: 'View Available Sales Stock',
@@ -263,7 +266,7 @@ async function seedProductCategories(sql: ReturnType<typeof postgres>) {
     },
     {
       slug: 'goats-sheep', name: 'Goats & Sheep', subtitle: 'Premium Meat Breeds Adapted for Kajiado',
-      hero_image: CATEGORY_PLACEHOLDER_IMAGES['goats-sheep'],
+      hero_image: null as string | null,
       hero_description: 'Nola Ranch raises hardy meat goats and sheep bred for drought resistance and fast growth. All animals are vaccinated, healthy, and ready for breeding or meat market.',
       category_values: ['goats', 'sheep'],
       cta_label: 'Contact Us for Sales Stock',
@@ -272,7 +275,7 @@ async function seedProductCategories(sql: ReturnType<typeof postgres>) {
     },
     {
       slug: 'pigs', name: 'Pigs', subtitle: 'Commercial Breeding Stock & Meat Production',
-      hero_image: CATEGORY_PLACEHOLDER_IMAGES.pigs,
+      hero_image: null as string | null,
       hero_description: 'Nola Ranch operates a modern piggery in Oloitoktok focused on genetics, fertility, and fast growth. We maintain pure breeds and terminal crosses to supply quality piglets, gilts, and porkers to farmers and the market.',
       category_values: ['pigs'],
       cta_label: 'Inquire About Piglets, Gilts & Boar Services',
@@ -331,9 +334,13 @@ async function backfillPlaceholderImages(sql: ReturnType<typeof postgres>) {
   })) {
     await sql`UPDATE products SET images = ${[url]}, updated_at = NOW() WHERE slug = ${slug} AND (images IS NULL OR images = '{}')`;
   }
-  for (const [slug, url] of Object.entries(CATEGORY_PLACEHOLDER_IMAGES)) {
-    await sql`UPDATE product_categories SET hero_image = ${url}, updated_at = NOW() WHERE slug = ${slug} AND hero_image IS NULL`;
-  }
+
+  // Category hero_image is deliberately NOT backfilled any more. The category cards now have
+  // purpose-shot 4:3 artwork in code (CATEGORY_CARDS in lib/product-taxonomy), and the card falls
+  // back to it precisely when hero_image is NULL. Backfilling a product photo into that column
+  // therefore *overrode* the card art on every boot — set the column to NULL and this loop put a
+  // pig photo straight back. A NULL hero_image is now the correct "use the card artwork" state;
+  // an admin uploading at /admin/categories still overrides it.
 }
 
 // Corrects the 5 breed products above that were already seeded before the client sent

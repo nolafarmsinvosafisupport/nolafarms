@@ -13,7 +13,10 @@ import type { Product, ProductCategory } from './product-types';
  * switch, instead of needing a code change to sell a cabbage again.
  */
 
-const R2 = 'https://images.nolaranches.co.ke/products';
+// Card artwork lives in /public — these are purpose-shot 4:3 images for the cards, not product
+// photos. An admin can still override any of them from /admin/categories (which uploads to R2 and
+// writes product_categories.hero_image); these are what shows when no override is set.
+const CARDS = '/images/product-cards';
 
 export type CardKey = 'cattle' | 'goats-sheep' | 'pigs' | 'services';
 
@@ -33,28 +36,28 @@ export const CATEGORY_CARDS: CategoryCard[] = [
     key: 'cattle',
     label: 'Cattle',
     icon: 'cow',
-    image: `${R2}/animals/cattle/brahman/cow2.jpeg`,
+    image: `${CARDS}/cattle.webp`,
     values: ['cattle'],
   },
   {
     key: 'goats-sheep',
     label: 'Goats & Sheep',
     icon: 'goat',
-    image: `${R2}/animals/goat/boer/boer-main-1.jpeg`,
+    image: `${CARDS}/goats-sheep.webp`,
     values: ['goats', 'sheep'],
   },
   {
     key: 'pigs',
     label: 'Pigs',
     icon: 'piggybank',
-    image: `${R2}/animals/pigs/american-yorkshire-pigs/pigs.jpeg`,
+    image: `${CARDS}/pigs.webp`,
     values: ['pigs'],
   },
   {
     key: 'services',
     label: 'Services',
     icon: 'dna',
-    image: `${R2}/animals/pigs/american-yorkshire-pigs/pigs2.jpeg`,
+    image: `${CARDS}/services.webp`,
     values: [],
   },
 ];
