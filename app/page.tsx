@@ -9,6 +9,14 @@ import { SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
 import { breadcrumbSchema, websiteSchema } from '@/lib/schema';
 
+// The homepage reads products from the database now (HighDemandSection), and this route has no
+// dynamic segments — so Next.js would try to PRERENDER it during `next build`. That fails on
+// Railway, because postgres.railway.internal only resolves at runtime inside the private network:
+// the build dies with `getaddrinfo ENOTFOUND postgres.railway.internal`. Exactly the reason
+// /products is already force-dynamic. Rendering per request costs almost nothing here — the query
+// is wrapped in unstable_cache (5 min) and Cloudflare caches "/" at the edge for an hour.
+export const dynamic = 'force-dynamic';
+
 export function generateMetadata(): Metadata {
   return pageMetadata({
     title: 'Nola Ranches | Large-Scale Agricultural Estate in Laikipia, Kenya',
