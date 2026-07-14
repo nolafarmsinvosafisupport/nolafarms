@@ -69,7 +69,8 @@ export function FarmSettingsForm() {
           />
         </label>
         <p className="mt-2 text-xs text-brand-deep/55">
-          New booking alerts are sent to this address. Leave blank to use the default site email.
+          New booking and order alerts (and contact form messages) are sent to this address.
+          Leave blank to use the default site email.
         </p>
       </div>
 

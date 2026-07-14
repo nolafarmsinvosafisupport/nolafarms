@@ -5,7 +5,7 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nolaranches.co.ke',
   phone: '0750 958 780',
   whatsapp: '254750958780',
-  email: 'nolalivestockspoultryfarm@gmail.com',
+  email: 'nolaranches4@gmail.com',
   location: 'Oloitoktok & Laikipia, Kenya',
   ranches: {
     oloitoktok: { name: 'Oloitoktok Ranch', location: 'Oloitoktok County, Kenya', products: 'Cattle, Goats, Sheep, Pigs, Vegetables, Fruits' },

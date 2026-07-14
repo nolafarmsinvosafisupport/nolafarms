@@ -21,7 +21,22 @@ function fromEmail() {
   return `Nola Ranches <${address}>`;
 }
 
-function adminEmail() {
+// Resolution order, most specific first: the admin-editable farm_settings row (self-service,
+// no redeploy needed) → the ADMIN_NOTIFICATION_EMAIL env var (ops-controlled) → SITE.email
+// (the public contact address, as a last-resort default).
+async function adminEmail(): Promise<string> {
+  if (isDbConfigured()) {
+    try {
+      const sql = getDb();
+      const [settings] = await sql<[{ admin_notification_email: string | null }]>`
+        SELECT admin_notification_email FROM farm_settings WHERE id = 1
+      `;
+      if (settings?.admin_notification_email) return settings.admin_notification_email;
+    } catch {
+      // Fall through to the env var / constant below — a farm_settings lookup failure
+      // must never be the reason an admin notification silently goes nowhere.
+    }
+  }
   return process.env.ADMIN_NOTIFICATION_EMAIL || SITE.email;
 }
 
@@ -192,9 +207,10 @@ function buildReminderHtml(booking: Booking) {
 // ---------------------------------------------------------------------------
 
 export async function sendBookingReceivedEmails(booking: Booking) {
+  const admin = await adminEmail();
   await Promise.all([
     sendEmail({ to: booking.email, subject: `We've received your booking request — ${booking.reference}`, html: buildReceivedVisitorHtml(booking) }),
-    sendEmail({ to: adminEmail(), subject: `New booking — ${booking.full_name} on ${booking.visit_date} ${booking.reference}`, html: buildReceivedAdminHtml(booking) }),
+    sendEmail({ to: admin, subject: `New booking — ${booking.full_name} on ${booking.visit_date} ${booking.reference}`, html: buildReceivedAdminHtml(booking) }),
   ]);
 }
 
@@ -227,7 +243,10 @@ export async function sendStatusEmail(booking: Booking, action: 'approved' | 're
 
   const tasks: Promise<void>[] = [];
   if (sendToVisitor && visitorSubject) tasks.push(sendEmail({ to: booking.email, subject: visitorSubject, html: visitorHtml }));
-  if (action !== 'completed') tasks.push(sendEmail({ to: adminEmail(), subject: `[Admin copy] ${visitorSubject}`, html: visitorHtml }));
+  if (action !== 'completed') {
+    const admin = await adminEmail();
+    tasks.push(sendEmail({ to: admin, subject: `[Admin copy] ${visitorSubject}`, html: visitorHtml }));
+  }
   await Promise.all(tasks);
 }
 
@@ -319,10 +338,11 @@ function buildContactAckHtml(m: ContactMessage) {
 }
 
 export async function sendContactEmails(m: ContactMessage) {
+  const admin = await adminEmail();
   await Promise.all([
     // To the farm — reply-to is the customer so admin can reply straight back.
     sendEmail({
-      to: adminEmail(),
+      to: admin,
       subject: `New enquiry: ${m.subject} — ${m.fullName}`,
       html: buildContactAdminHtml(m),
       replyTo: m.email,
@@ -402,6 +422,18 @@ function buildOrderReceivedHtml(order: Order) {
   `);
 }
 
+function buildOrderReceivedAdminHtml(order: Order) {
+  const url = `${SITE.url}/admin/orders/${order.id}`;
+  return baseLayout(`
+    <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">New Order — Action Required</h1>
+    <p style="margin:0;font-size:13px;color:${brand.muted};letter-spacing:0.1em;text-transform:uppercase">${order.reference}</p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">A new order has been placed and is awaiting your review.</p>
+    ${orderMetaTable(order)}
+    ${orderItemsTable(order)}
+    <div style="margin-top:32px"><a href="${url}" style="display:inline-block;background:${brand.green};color:${brand.cream};padding:14px 28px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;text-decoration:none">View in Dashboard →</a></div>
+  `);
+}
+
 function buildOrderStatusHtml(order: Order, status: OrderStatus) {
   const copy: Record<string, { heading: string; body: string }> = {
     contacted: {
@@ -428,13 +460,15 @@ function buildOrderStatusHtml(order: Order, status: OrderStatus) {
   `);
 }
 
-export async function sendOrderReceivedEmail(order: Order) {
-  if (!order.customer_email) return;
-  await sendEmail({
-    to: order.customer_email,
-    subject: `We've received your order — ${order.reference}`,
-    html: buildOrderReceivedHtml(order),
-  });
+export async function sendOrderReceivedEmails(order: Order) {
+  const admin = await adminEmail();
+  const tasks: Promise<void>[] = [
+    sendEmail({ to: admin, subject: `New order — ${order.customer_name} ${order.reference}`, html: buildOrderReceivedAdminHtml(order) }),
+  ];
+  if (order.customer_email) {
+    tasks.push(sendEmail({ to: order.customer_email, subject: `We've received your order — ${order.reference}`, html: buildOrderReceivedHtml(order) }));
+  }
+  await Promise.all(tasks);
 }
 
 export async function sendOrderStatusEmail(order: Order, status: OrderStatus) {

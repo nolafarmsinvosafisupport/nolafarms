@@ -2,7 +2,7 @@ import { requireDb, requireAdminResponse, requireUserResponse, parseJsonBody, db
 import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
 import { ADMIN_LIST_LIMIT } from '@/lib/admin-data';
 import { isRateLimited } from '@/lib/rate-limit';
-import { sendOrderReceivedEmail } from '@/lib/email';
+import { sendOrderReceivedEmails } from '@/lib/email';
 import type { Order } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -97,9 +97,9 @@ export async function POST(request: Request) {
       `.catch(() => undefined);
     }
 
-    // Emailed order confirmation (receipt) to the customer. Fire-and-forget so a
-    // mail hiccup never fails the order itself.
-    sendOrderReceivedEmail(order).catch(() => undefined);
+    // Emails the admin (new-order alert) and the customer (receipt), if they gave one.
+    // Fire-and-forget so a mail hiccup never fails the order itself.
+    sendOrderReceivedEmails(order).catch(() => undefined);
 
     return Response.json({ success: true, order, reference }, { status: 201 });
   } catch (e) {
