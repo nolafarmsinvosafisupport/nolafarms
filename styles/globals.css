@@ -144,24 +144,36 @@ body {
    screen, and on a 1366x768 laptop that is only ~700px of usable height. Sizing off viewport height
    rather than fixed rems is the only way it fits there and still breathes on a 1080p monitor: the
    card photo and the section padding both shrink on a short screen and relax on a tall one. */
-.home-demand {
-  padding-block: clamp(0.75rem, 2.2vh, 4rem);
+/* Title + carousel fill one screen. 4.5rem is the fixed navbar, which OVERLAYS the top of the
+   section — measuring against the raw viewport height would leave the heading hidden behind it. */
+.home-demand-stage {
+  min-height: calc(100vh - 4.5rem);
+  padding-block: clamp(1rem, 3vh, 3.5rem);
 }
 
 .home-demand-title {
-  font-size: clamp(1.5rem, 3.4vh, 2.25rem);
-  line-height: 1.15;
+  font-size: clamp(1.6rem, 4vh, 3rem);
+  line-height: 1.1;
 }
 
-.home-demand-media {
-  height: clamp(7rem, 14vh, 13rem);
+/* The carousel photo. min-height, NOT height: grid items stretch by default, so with only a floor
+   set the photo grows to the full height of the row and fills its column. With a fixed height it
+   left a band of dead dark space beneath itself whenever the text column was taller. It is also
+   the biggest block on screen, so the vh term is what absorbs a short viewport. */
+.home-carousel-media {
+  min-height: clamp(13rem, 46vh, 30rem);
 }
 
-/* The gaps between heading → cards → bulk banner → trust row. Three fixed 24px margins cost 72px,
-   which is most of the overshoot on a 768px laptop; on vh they collapse to ~15px each there and
-   open back up to 24px on a tall screen. */
-.home-demand-gap {
-  margin-top: clamp(0.625rem, 1.7vh, 1.5rem);
+.home-carousel-body {
+  padding-block: clamp(1.25rem, 3vh, 2.5rem);
+}
+
+/* Below md the carousel stacks (photo above the pitch), and a 100vh floor would squash both. Let
+   the stage grow to fit its content on a phone instead. */
+@media (max-width: 767px) {
+  .home-demand-stage {
+    min-height: 0;
+  }
 }
 
 /* Products hero slideshow: a very slow, continuous drift. 24s each way and only an 8% scale, so
