@@ -13,12 +13,12 @@ const stats = [
 export function FarmStatsSection() {
   return (
     // Paired with ProductBannerSection above it: together they fill one more full screen below
-    // the hero (lg:h-[50vh] each, matching min-height). Below lg, both sections just flow at
-    // natural height instead — cramming this 3-card grid into half a phone screen isn't worth
-    // matching the desktop art direction there. lg:!py-6 forcibly overrides section-y's own
+    // the hero (30vh banner + lg:h-[70vh] here). Below lg, both sections just flow at natural
+    // height instead — cramming this 3-card grid into a slice of a phone screen isn't worth
+    // matching the desktop art direction there. lg:!py-10 forcibly overrides section-y's own
     // padding-block, which is declared after @tailwind utilities in globals.css and would
     // otherwise win the cascade tie against a plain lg:py-* utility at equal specificity.
-    <MotionSection className="bg-cream-primary section-y lg:!py-6 lg:flex lg:h-[50vh] lg:min-h-[420px] lg:items-center">
+    <MotionSection className="bg-cream-primary section-y lg:!py-10 lg:flex lg:h-[70vh] lg:min-h-[480px] lg:items-center">
       <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-3 lg:px-8">
         {stats.map((stat) => {
           const Icon = stat.icon;
