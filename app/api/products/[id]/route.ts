@@ -55,6 +55,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         sort_order = COALESCE(${body.sort_order ?? null}, sort_order),
         is_service = COALESCE(${body.is_service ?? null}, is_service),
         in_stock = COALESCE(${body.in_stock ?? null}, in_stock),
+        -- badge uses the explicit-undefined test, not COALESCE: an admin clearing the field sends
+        -- null, and COALESCE would silently keep the old value instead of clearing it.
+        badge = ${body.badge !== undefined ? (body.badge || null) : sql`badge`},
+        tags = COALESCE(${body.tags ?? null}, tags),
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *

@@ -19,6 +19,9 @@ export type Product = {
   sort_order: number;
   is_service: boolean;
   in_stock: boolean;
+  // Homepage "High Demand" card marketing copy, editable at /admin/products.
+  badge: string | null;
+  tags: string[];
   created_at: string;
   updated_at: string;
 };

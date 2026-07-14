@@ -109,6 +109,12 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
     // temporarily out of stock, which disables Add-to-Cart and shows a badge instead of
     // delisting it the way `available = FALSE` does.
     await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS in_stock BOOLEAN NOT NULL DEFAULT TRUE`;
+    // Marketing copy for the "High Demand" cards on the homepage, editable at /admin/products:
+    // `badge` is the corner chip ("Best Seller"), `tags` are the short pills ("Vaccinated").
+    // Deliberately NOT backfilled on boot — see the note on backfillPlaceholderImages(). A value
+    // an admin clears has to stay cleared.
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS badge TEXT`;
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}'`;
 
     // Category-level landing content (hero photo/description/CTA) for grouped product
     // categories. Deliberately separate from `products.category` (which stays a flat enum)
@@ -364,6 +370,8 @@ type SeedProduct = {
   name: string; slug: string; category: string; ranch: string; description: string; details: string[];
   price: number | null; compare_at_price: number | null; price_unit: string; bulk_info: string | null;
   images: string[]; sort_order: number; is_service?: boolean;
+  // Homepage "High Demand" card copy. Only set on the featured cattle; blank everywhere else.
+  badge?: string; tags?: string[];
 };
 
 async function seedProducts(sql: ReturnType<typeof postgres>) {
@@ -395,8 +403,8 @@ async function seedProducts(sql: ReturnType<typeof postgres>) {
 
   for (const p of products) {
     await sql`
-      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order, is_service)
-      VALUES (${p.name}, ${p.slug}, ${p.category}, ${p.ranch}, ${p.description}, ${p.details}, ${p.price}, ${p.compare_at_price}, ${p.price_unit}, ${p.bulk_info}, ${p.images}, ${p.sort_order}, ${p.is_service ?? false})
+      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order, is_service, badge, tags)
+      VALUES (${p.name}, ${p.slug}, ${p.category}, ${p.ranch}, ${p.description}, ${p.details}, ${p.price}, ${p.compare_at_price}, ${p.price_unit}, ${p.bulk_info}, ${p.images}, ${p.sort_order}, ${p.is_service ?? false}, ${p.badge ?? null}, ${p.tags ?? []})
       ON CONFLICT (slug) DO NOTHING
     `;
   }

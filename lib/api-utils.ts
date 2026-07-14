@@ -40,6 +40,8 @@ export const productCreateSchema = z.object({
   sort_order: z.coerce.number().int().optional(),
   is_service: z.boolean().optional(),
   in_stock: z.boolean().optional(),
+  badge: z.string().max(24).optional().nullable(),
+  tags: z.array(z.string().max(24)).max(4).optional(),
 });
 
 export const productUpdateSchema = productCreateSchema.partial();

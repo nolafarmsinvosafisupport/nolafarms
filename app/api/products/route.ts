@@ -62,13 +62,13 @@ export async function POST(request: Request) {
 
   const parsed = productCreateSchema.safeParse(body);
   if (!parsed.success) return Response.json({ success: false, errors: parsed.error.flatten() }, { status: 400 });
-  const { name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service, in_stock } = parsed.data;
+  const { name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service, in_stock, badge, tags } = parsed.data;
 
   const sql = getDb();
   try {
     const [product] = await sql<Product[]>`
-      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service, in_stock)
-      VALUES (${name}, ${slug}, ${category}, ${ranch}, ${description ?? null}, ${details ?? []}, ${price ?? null}, ${compare_at_price ?? null}, ${price_unit ?? 'per kg'}, ${bulk_info ?? null}, ${images ?? []}, ${available ?? true}, ${sort_order ?? 0}, ${is_service ?? false}, ${in_stock ?? true})
+      INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, available, sort_order, is_service, in_stock, badge, tags)
+      VALUES (${name}, ${slug}, ${category}, ${ranch}, ${description ?? null}, ${details ?? []}, ${price ?? null}, ${compare_at_price ?? null}, ${price_unit ?? 'per kg'}, ${bulk_info ?? null}, ${images ?? []}, ${available ?? true}, ${sort_order ?? 0}, ${is_service ?? false}, ${in_stock ?? true}, ${badge || null}, ${tags ?? []})
       RETURNING *
     `;
     revalidatePath('/products');

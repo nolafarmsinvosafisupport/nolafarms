@@ -40,6 +40,8 @@ export function AdminProductForm({ product }: Props) {
   const [isService, setIsService] = useState(product?.is_service ?? false);
   const [available, setAvailable] = useState(product?.available ?? true);
   const [inStock, setInStock] = useState(product?.in_stock ?? true);
+  const [badge, setBadge] = useState(product?.badge ?? '');
+  const [tags, setTags] = useState((product?.tags ?? []).join(', '));
   const [sortOrder, setSortOrder] = useState(String(product?.sort_order ?? '0'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -74,6 +76,8 @@ export function AdminProductForm({ product }: Props) {
         sort_order: parseInt(sortOrder) || 0,
         is_service: isService,
         in_stock: inStock,
+        badge: badge.trim() || null,
+        tags: tags.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 4),
       };
       const url = isEdit ? `/api/products/${product!.id}` : '/api/products';
       const method = isEdit ? 'PATCH' : 'POST';
@@ -257,6 +261,34 @@ export function AdminProductForm({ product }: Props) {
           placeholder="e.g. 10kg+ @ KES 70/kg"
         />
       </Field>
+
+      {/* Homepage card marketing copy. Only shown on the "High Demand" cards on the homepage —
+          harmless to leave blank on every other product. */}
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Homepage Badge (optional)">
+          <input
+            value={badge}
+            onChange={(e) => setBadge(e.target.value)}
+            maxLength={24}
+            className={inputCls}
+            placeholder="e.g. Best Seller"
+          />
+          <span className="mt-1 block text-[10px] text-brand-deep/40">
+            The corner chip on the homepage &ldquo;High Demand&rdquo; card. Leave blank for none.
+          </span>
+        </Field>
+        <Field label="Homepage Tags (optional)">
+          <input
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className={inputCls}
+            placeholder="e.g. Vaccinated, Dewormed, Vet-Checked"
+          />
+          <span className="mt-1 block text-[10px] text-brand-deep/40">
+            Comma-separated. Short pills on the homepage card — first 3 are shown.
+          </span>
+        </Field>
+      </div>
 
       {/* Images */}
       <AdminImageUploader images={images.filter(Boolean)} onChange={setImages} />
