@@ -137,3 +137,28 @@ body {
 .product-body {
   padding-block: clamp(0.75rem, 2.5vh, 2rem);
 }
+
+/* Products hero slideshow: a very slow, continuous drift. 24s each way and only an 8% scale, so
+   it never reads as movement — it just stops the photograph feeling like a dead still. Paired
+   with a 7s dwell and a 2.5s dissolve, the whole thing should feel unhurried. */
+@keyframes heroDrift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.hero-drift {
+  animation: heroDrift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Motion here is decorative. Anyone who has asked their OS for less of it gets a still image —
+   a slow zoom is exactly the kind of thing that triggers vestibular discomfort. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-drift {
+    animation: none;
+  }
+}

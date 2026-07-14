@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
+import { ProductsHero } from '@/components/products/ProductsHero';
 import { TrustBadges } from '@/components/products/TrustBadges';
 import { Truck, ShieldCheck, Sprout, Headset } from 'lucide-react';
 import { SITE } from '@/lib/constants';
@@ -73,22 +74,22 @@ export default async function ProductsPage() {
 
   return (
     <main className="pt-16">
-      {/* Hero strip. The ~10% side gutter matches the product section below so the headline lines
-          up with the category cards; the dark background still bleeds to the full width. */}
-      <div className="bg-farm-dark px-6 py-16 lg:px-[10%]">
-        <div className="mx-auto w-full max-w-[1600px]">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-leaf">
-            Oloitoktok &amp; Laikipia
-          </p>
-          <h1 className="mt-3 font-serif text-4xl text-cream-primary md:text-5xl">
-            Our Livestock.
-          </h1>
-          <p className="mt-4 max-w-xl text-cream-secondary/70">
-            Cattle, goats, sheep and pigs from two working ranches in Kenya — vaccinated,
-            farm-recorded, and selected for performance. Enquire and we&apos;ll arrange the rest.
-          </p>
-        </div>
-      </div>
+      {/* Hero. The ~10% side gutter matches the product section below so the headline lines up
+          with the category cards; the slideshow bleeds to the full width behind it. */}
+      <ProductsHero>
+        {/* gold-warm, not brand-leaf: the leaf green is a dark olive and scores ~1.5:1 against a
+            photograph — illegible. Gold clears AA. */}
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-warm">
+          Oloitoktok &amp; Laikipia
+        </p>
+        <h1 className="mt-3 font-serif text-4xl text-cream-primary drop-shadow-sm md:text-5xl">
+          Our Livestock.
+        </h1>
+        <p className="mt-4 max-w-xl text-cream-secondary/85">
+          Cattle, goats, sheep and pigs from two working ranches in Kenya — vaccinated,
+          farm-recorded, and selected for performance. Enquire and we&apos;ll arrange the rest.
+        </p>
+      </ProductsHero>
 
       {/* ~10% gutter each side, so the grid no longer runs edge to edge now that the sidebar is
           gone. max-w keeps it from getting silly on an ultrawide monitor. */}
