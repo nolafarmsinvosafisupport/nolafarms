@@ -1,31 +1,64 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MessageCircle, ArrowRight } from 'lucide-react';
 import { SITE } from '@/lib/constants';
 
-// Background-removed cutout of the photo cluster, cropped to its own content (no dead
-// transparent margin) — see public/images/products/animals/cattle/giroland/ for the source.
-// Its true aspect ratio (445x298) lets it sit straight on bg-brand-deep with no crop/seam.
-const BANNER_IMAGE = '/images/products/animals/cattle/giroland/giroland-banner-cutout.png';
+// Real product photos, crossfaded as a slow ambient carousel — no dots/arrows by design.
+const CAROUSEL_IMAGES = [
+  '/images/products/animals/cattle/giroland/giroland cow nola 1.jpeg',
+  '/images/products/animals/cattle/giroland/giroland cow nola 2.jpeg',
+  '/images/products/animals/cattle/giroland/giroland cow nola 3.jpeg',
+];
+
+const SLIDE_INTERVAL_MS = 5000;
 
 // The one product this section exists to sell — keep in sync with the girolando-cattle
 // slug seeded in lib/db-migrate.ts if that product is ever renamed.
 const PRODUCT_SLUG = 'girolando-cattle';
 
 export function ProductBannerSection() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive((i) => (i + 1) % CAROUSEL_IMAGES.length);
+    }, SLIDE_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, []);
+
   const whatsappHref = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(
     "Hello, I'm interested in the Girolando cattle at Nola Ranches. Please provide more details.",
   )}`;
 
   return (
-    // Single horizontal row at every breakpoint — text left, cutout right — both painted
-    // directly on bg-brand-deep. Because the cutout has no baked-in background of its own,
-    // object-contain can shrink it freely on narrow screens with no crop and no visible edge/
-    // seam against the section background. The row has no vh/height cap: it grows with the
-    // 3-paragraph copy instead of truncating either the text or the image.
-    <section className="w-full bg-brand-deep">
-      <div className="mx-auto flex max-w-6xl flex-row items-center gap-4 px-4 py-8 sm:gap-8 sm:px-8 sm:py-12 lg:gap-14 lg:px-16 lg:py-16">
-        <div className="min-w-0 flex-1">
+    // Photo panel is absolutely positioned (no padding, inset-y-0) so it fills the section
+    // edge-to-edge top-to-bottom and is pinned to the far right; a gradient over it fades to
+    // solid bg-brand-deep moving left, dissolving the seam so the photo just reads as part of
+    // the background under the text. The text column sits in normal flow and is what actually
+    // gives the section its height — no vh target, it grows with the 3-paragraph copy.
+    <section className="relative w-full overflow-hidden bg-brand-deep">
+      <div className="absolute inset-y-0 right-0 w-[46%] sm:w-[50%] lg:w-[54%]">
+        {CAROUSEL_IMAGES.map((src, i) => (
+          <Image
+            key={src}
+            src={src}
+            alt="Girolando cattle at Nola Ranches"
+            fill
+            sizes="(min-width: 1024px) 54vw, (min-width: 640px) 50vw, 46vw"
+            priority={i === 0}
+            className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${
+              i === active ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-deep via-brand-deep/60 via-30% to-transparent" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-4 py-12 sm:px-8 sm:py-16 lg:px-16 lg:py-20">
+        <div className="max-w-[62%] sm:max-w-[56%] lg:max-w-lg">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-warm sm:text-xs sm:tracking-[0.25em]">
             Featured Breed
           </p>
@@ -65,17 +98,6 @@ export function ProductBannerSection() {
               <ArrowRight size={16} className="hidden flex-shrink-0 sm:block" />
             </Link>
           </div>
-        </div>
-
-        <div className="relative aspect-[445/298] w-[34%] max-w-[300px] flex-shrink-0 sm:w-[38%] sm:max-w-[380px] lg:w-[36%] lg:max-w-[460px]">
-          <Image
-            src={BANNER_IMAGE}
-            alt="Girolando cattle at Nola Ranches"
-            fill
-            sizes="(min-width: 1024px) 460px, (min-width: 640px) 380px, 150px"
-            priority
-            className="object-contain"
-          />
         </div>
       </div>
     </section>
