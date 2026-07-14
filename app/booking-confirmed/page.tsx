@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function BookingConfirmedPage({
   searchParams,
 }: {
-  searchParams: { ref?: string };
+  searchParams: { ref?: string; wa?: string };
 }) {
   const ref = searchParams.ref;
   if (!ref) redirect('/');
@@ -25,5 +25,7 @@ export default async function BookingConfirmedPage({
   `;
   if (!booking) redirect('/account/bookings');
 
-  return <BookingConfirmedView booking={booking} />;
+  // Cosmetic hint only: it decides whether the WhatsApp hand-off is offered. Nothing is trusted
+  // from it, so a hand-edited URL can do no harm.
+  return <BookingConfirmedView booking={booking} sendToWhatsapp={searchParams.wa === '1'} />;
 }

@@ -1,11 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, CalendarDays, Check, Clock, Image as ImageIcon, MapPin, Package, Users } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, Clock, Image as ImageIcon, MapPin, MessageCircle, Package, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { Booking } from '@/lib/booking-types';
 import { VISIT_TIMES } from '@/lib/booking-utils';
+import { bookingWhatsAppMessage, whatsappHref } from '@/lib/whatsapp';
 
 function formatDate(dateStr: string) {
   return new Intl.DateTimeFormat('en-KE', {
@@ -41,7 +42,7 @@ const timelineSteps = [
   { label: 'Confirmation Sent', sub: 'Via email within 24 hours', done: false, active: false },
 ];
 
-export function BookingConfirmedView({ booking }: { booking: Booking }) {
+export function BookingConfirmedView({ booking, sendToWhatsapp = false }: { booking: Booking; sendToWhatsapp?: boolean }) {
   const [copied, setCopied] = useState(false);
 
   // Tell the NotificationBell to refresh immediately — the booking API
@@ -114,6 +115,33 @@ export function BookingConfirmedView({ booking }: { booking: Booking }) {
             {copied ? 'Copied!' : 'Copy'}
           </button>
         </motion.div>
+
+        {/* The visitor ticked "also send to WhatsApp". This opens THEIR WhatsApp with the details
+            pre-filled and addressed to the ranch — they still press send. The booking is already
+            saved and the emails have already gone out, so this is a faster way to reach the team,
+            never a step that completes the booking. The copy has to say so. */}
+        {sendToWhatsapp && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85, duration: 0.4 }}
+            className="mt-8"
+          >
+            <a
+              href={whatsappHref(bookingWhatsAppMessage(booking))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-green-600 px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-green-700"
+            >
+              <MessageCircle size={16} aria-hidden="true" />
+              Send Details on WhatsApp
+            </a>
+            <p className="mx-auto mt-3 max-w-sm text-xs leading-5 text-brand-deep/50">
+              Your booking is already submitted and confirmed by email. This just opens WhatsApp with
+              your details ready to send, so the team can reply to you there.
+            </p>
+          </motion.div>
+        )}
       </section>
 
       {/* Details + Timeline */}

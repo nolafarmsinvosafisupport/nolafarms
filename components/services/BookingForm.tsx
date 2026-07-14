@@ -22,6 +22,9 @@ const schema = z.object({
   group_size: z.coerce.number().int().min(1, 'Group size must be at least 1'),
   purpose: z.string().min(2, 'Choose a purpose'),
   special_requests: z.string().optional(),
+  // UI-only. Never posted to the API and never stored — it just decides whether the confirmation
+  // page offers the WhatsApp hand-off.
+  send_to_whatsapp: z.boolean().default(true),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -37,7 +40,7 @@ export function BookingForm() {
 
   const { register, handleSubmit, setValue, reset, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { visit_time: 'morning', group_size: 1, purpose: VISIT_PURPOSES[0] },
+    defaultValues: { visit_time: 'morning', group_size: 1, purpose: VISIT_PURPOSES[0], send_to_whatsapp: true },
   });
 
   const visitDate = watch('visit_date');
@@ -65,18 +68,25 @@ export function BookingForm() {
       setSubmitError('That date is unavailable. Please choose another date.');
       return;
     }
+    // send_to_whatsapp is a UI choice, not booking data — the API has no business receiving it.
+    const { send_to_whatsapp, ...payload } = data;
+
     const response = await fetch('/api/bookings/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
     const result = await response.json();
     if (!response.ok) {
       setSubmitError(result.message || 'Booking could not be submitted.');
       return;
     }
-    reset({ visit_time: 'morning', group_size: 1, purpose: VISIT_PURPOSES[0] });
-    router.push(`/booking-confirmed?ref=${encodeURIComponent(result.booking.reference)}`);
+    reset({ visit_time: 'morning', group_size: 1, purpose: VISIT_PURPOSES[0], send_to_whatsapp: true });
+
+    // The booking is already saved and emailed at this point. `wa=1` only asks the confirmation
+    // page to offer the WhatsApp hand-off — it never gates anything.
+    const ref = encodeURIComponent(result.booking.reference);
+    router.push(`/booking-confirmed?ref=${ref}${send_to_whatsapp ? '&wa=1' : ''}`);
   }
 
   if (!isLoaded) {
@@ -149,6 +159,24 @@ export function BookingForm() {
           <textarea rows={4} {...register('special_requests')} className={field} />
         </Field>
       </div>
+      {/* Opt-in, ticked by default. This does not send anything by itself — it decides whether the
+          confirmation page offers to open WhatsApp with the details pre-filled, which the visitor
+          then sends themselves. The booking is saved and emailed either way. */}
+      <label className="mt-6 flex cursor-pointer items-start gap-3 border border-farm-border bg-cream-warm p-4">
+        <input
+          type="checkbox"
+          {...register('send_to_whatsapp')}
+          className="mt-0.5 h-5 w-5 flex-shrink-0 accent-brand-leaf"
+        />
+        <span className="text-sm text-brand-deep">
+          Also send my booking details to Nola Ranches on WhatsApp
+          <span className="mt-0.5 block text-xs text-brand-deep/50">
+            Opens WhatsApp with your details ready to send, so the team can reply to you directly.
+            Your booking is submitted either way.
+          </span>
+        </span>
+      </label>
+
       {submitError && <p className="mt-5 text-sm font-medium text-red-800">{submitError}</p>}
       <button
         type="submit"
