@@ -2,6 +2,8 @@ import type { BlockedDate, Booking } from './booking-types';
 import type { Order, Product } from './product-types';
 import { getDb, isDbConfigured, ensureMigrated } from './db';
 import { getCurrentUserId } from './auth';
+import { filterVisibleProducts } from './category-visibility';
+import type { ProductCategoryPage } from './category-types';
 
 // Bounded: previously an unbounded SELECT * that loaded every booking ever made into
 // memory on each admin page render. 500 is far above expected volume at this scale, so
@@ -76,15 +78,27 @@ export async function getOrderStats() {
   }
 }
 
+/**
+ * "Available" here means what a visitor can actually reach on the shop — not just
+ * products.available.
+ *
+ * A product is hidden from the site if its own `available` flag is off OR if its category is
+ * toggled inactive (that is how the crops are currently hidden). Counting only `available = TRUE`
+ * reported 20 products "visible to customers" while the shop was showing 12, which is exactly the
+ * kind of number an admin would trust and act on. This runs the same filterVisibleProducts() the
+ * public /products page runs, so the two can't disagree.
+ */
 export async function getProductStats() {
   if (!isDbConfigured()) return { total: 0, available: 0 };
   try {
     await ensureMigrated();
     const sql = getDb();
-    const [counts] = await sql<[{ total: string; available_count: string }]>`
-      SELECT COUNT(*) as total, COUNT(*) FILTER (WHERE available = TRUE) as available_count FROM products
-    `;
-    return { total: parseInt(counts.total), available: parseInt(counts.available_count) };
+    const [products, categories] = await Promise.all([
+      sql<Product[]>`SELECT * FROM products`,
+      sql<ProductCategoryPage[]>`SELECT * FROM product_categories`,
+    ]);
+    const visible = filterVisibleProducts(products.filter((p) => p.available), categories);
+    return { total: products.length, available: visible.length };
   } catch {
     return { total: 0, available: 0 };
   }
