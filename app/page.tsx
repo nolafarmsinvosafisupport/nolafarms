@@ -3,6 +3,7 @@ import { CTASection } from '@/components/home/CTASection';
 import { FarmStatsSection } from '@/components/home/FarmStatsSection';
 import { FeaturedSection } from '@/components/home/FeaturedSection';
 import { HeroSection } from '@/components/home/HeroSection';
+import { ProductBannerSection } from '@/components/home/ProductBannerSection';
 import { JsonLd } from '@/components/ui/JsonLd';
 import { SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
@@ -25,6 +26,7 @@ export default function HomePage() {
     <main>
       <JsonLd data={[websiteSchema, breadcrumbSchema([{ name: 'Home', url: SITE.url }])]} />
       <HeroSection />
+      <ProductBannerSection />
       <FarmStatsSection />
       <FeaturedSection />
       <CTASection />

@@ -218,6 +218,15 @@ INSERT INTO products (name, slug, category, ranch, description, details, price, 
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
+  ('Girolando Cattle', 'girolando-cattle', 'cattle', 'oloitoktok',
+   'Girolando cattle are renowned for their high milk yields and excellent heat tolerance. They thrive in Oloitoktok and Kajiado conditions, making them an ideal choice for local dairy and breeding operations.',
+   ARRAY['High milk yields','Excellent heat tolerance','Vaccinated, dewormed and vet-checked','Ready for breeding or milk production'],
+   NULL, NULL, 'per head', NULL,
+   ARRAY['https://images.nolaranches.co.ke/products/animals/cattle/giroland/giroland-cow-nola-1.jpeg','https://images.nolaranches.co.ke/products/animals/cattle/giroland/giroland-cow-nola-2.jpeg','https://images.nolaranches.co.ke/products/animals/cattle/giroland/giroland-cow-nola-3.jpeg'],
+   13)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (name, slug, category, ranch, description, details, price, compare_at_price, price_unit, bulk_info, images, sort_order) VALUES
   ('Cross Holstein-Friesian Cattle', 'holstein-dairy-cattle', 'cattle', 'oloitoktok',
    'Dairy cross for improved milk yield. Ideal for farmers wanting both milk and beef production.',
    ARRAY['Dairy cross bloodline','Improved milk yield','Suited to both milk and beef production','Available as heifers and in-calf cows'],
