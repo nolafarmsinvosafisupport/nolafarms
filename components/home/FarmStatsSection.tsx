@@ -12,22 +12,18 @@ const stats = [
 
 export function FarmStatsSection() {
   return (
-    // Paired with ProductBannerSection above it: together they fill one more full screen below
-    // the hero (30vh banner + lg:h-[70vh] here). Below lg, both sections just flow at natural
-    // height instead — cramming this 3-card grid into a slice of a phone screen isn't worth
-    // matching the desktop art direction there. lg:!py-10 forcibly overrides section-y's own
-    // padding-block, which is declared after @tailwind utilities in globals.css and would
-    // otherwise win the cascade tie against a plain lg:py-* utility at equal specificity.
-    <MotionSection className="bg-cream-primary section-y lg:!py-10 lg:flex lg:h-[70vh] lg:min-h-[480px] lg:items-center">
+    // Matches the vertical rhythm of the stat block on the About page directly below "Our
+    // Story" (section-y-sm, no fixed/vh height, natural card sizing at every breakpoint).
+    <MotionSection className="bg-cream-primary section-y-sm">
       <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-3 lg:px-8">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <AnimatedCard key={stat.label} className="border border-farm-border bg-cream-warm p-8 lg:p-6">
-              <Icon className="mb-8 text-brand-leaf lg:mb-3" size={30} aria-hidden="true" />
-              <h2 className="font-serif text-5xl text-brand-deep lg:text-4xl">{stat.value}</h2>
-              <h3 className="mt-3 text-sm font-semibold uppercase tracking-[0.2em] text-brand-leaf lg:mt-2">{stat.label}</h3>
-              <p className="mt-5 leading-7 text-brand-deep/75 lg:mt-3 lg:text-sm lg:leading-6">{stat.text}</p>
+            <AnimatedCard key={stat.label} className="border border-farm-border bg-cream-warm p-8">
+              <Icon className="mb-8 text-brand-leaf" size={30} aria-hidden="true" />
+              <h2 className="font-serif text-5xl text-brand-deep">{stat.value}</h2>
+              <h3 className="mt-3 text-sm font-semibold uppercase tracking-[0.2em] text-brand-leaf">{stat.label}</h3>
+              <p className="mt-5 leading-7 text-brand-deep/75">{stat.text}</p>
             </AnimatedCard>
           );
         })}

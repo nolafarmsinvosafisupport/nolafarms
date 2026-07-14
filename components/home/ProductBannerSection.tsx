@@ -15,50 +15,57 @@ export function ProductBannerSection() {
   )}`;
 
   return (
-    // One fixed image at every breakpoint — no separate mobile layout — so the banner stays a
-    // horizontal strip everywhere instead of restacking into a tall block on narrow screens.
-    // h-[30vh] is the target (paired with FarmStatsSection's h-[70vh] below to fill one more
-    // screen under the hero); min-h is a floor so short viewports don't crush it into a sliver.
-    <section className="relative h-[30vh] min-h-[220px] w-full overflow-hidden bg-brand-deep">
-      <Image
-        src={BANNER_IMAGE}
-        alt="Girolando cattle at Nola Ranches"
-        fill
-        sizes="100vw"
-        priority
-        className="object-cover"
-      />
+    // Stacked layout: the image is its own full-width band sized to its true aspect ratio
+    // (1983x793 ≈ 2.5:1), so object-cover never has to crop it at any breakpoint. Copy and CTAs
+    // live in a separate content band below, free to grow as tall as the text needs — this is
+    // what makes the full 3-paragraph description viewable on a phone without truncating either
+    // the image or the text.
+    <section className="w-full bg-brand-deep">
+      <div className="relative w-full aspect-[1983/793]">
+        <Image
+          src={BANNER_IMAGE}
+          alt="Girolando cattle at Nola Ranches"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
+        />
+      </div>
 
-      {/* Left-aligned over the image's own solid-green zone. w-* keeps it clear of the photo
-          cluster baked into the right side of the image at every breakpoint. */}
-      <div className="absolute inset-y-0 left-0 flex w-3/5 flex-col justify-center px-3 sm:w-[42%] sm:px-8 lg:w-[38%] lg:px-14">
-        <p className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-warm sm:block sm:text-xs sm:tracking-[0.25em]">
-          Featured Breed
-        </p>
-        <h2 className="mt-0 font-serif text-lg leading-tight text-cream-primary sm:mt-2 sm:text-2xl lg:text-3xl">
-          Girolando Cattle
-        </h2>
-        <p className="mt-1.5 hidden text-xs leading-5 text-cream-secondary/85 sm:block sm:mt-3 sm:text-sm lg:leading-6">
-          High milk yields, excellent heat tolerance — vaccinated and vet-checked.
-        </p>
-        <div className="mt-2.5 flex flex-row flex-nowrap gap-1.5 sm:mt-5 sm:gap-3">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1 whitespace-nowrap rounded-md bg-brand-leaf px-1.5 py-1.5 text-[9px] font-semibold uppercase tracking-wide text-white transition-colors hover:bg-cream-primary hover:text-brand-deep sm:gap-2 sm:rounded-lg sm:px-4 sm:py-2.5 sm:text-xs sm:tracking-widest"
-          >
-            <MessageCircle size={12} className="flex-shrink-0" />
-            WhatsApp
-          </a>
-          <Link
-            href={`/products/${PRODUCT_SLUG}`}
-            className="flex items-center justify-center gap-1 whitespace-nowrap rounded-md border border-cream-primary/40 px-1.5 py-1.5 text-[9px] font-semibold uppercase tracking-wide text-cream-primary transition-colors hover:bg-cream-primary/10 sm:gap-2 sm:rounded-lg sm:px-4 sm:py-2.5 sm:text-xs sm:tracking-widest"
-          >
-            <span className="sm:hidden">View</span>
-            <span className="hidden sm:inline">View Product</span>
-            <ArrowRight size={12} className="flex-shrink-0" />
-          </Link>
+      <div className="px-6 py-10 sm:px-10 sm:py-12 lg:px-16 lg:py-14">
+        <div className="mx-auto max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-warm">Featured Breed</p>
+          <h2 className="mt-2 font-serif text-2xl leading-tight text-cream-primary sm:text-3xl">Girolando Cattle</h2>
+          <p className="mt-4 leading-7 text-cream-secondary/85">
+            Girolando cattle are renowned for their high milk yields and excellent heat tolerance. They thrive in
+            Oloitoktok and Kajiado conditions, making them an ideal choice for local dairy and breeding operations.
+          </p>
+          <p className="mt-4 leading-7 text-cream-secondary/85">
+            At Nola Ranches, we offer healthy, vaccinated Girolando bulls and dairy cows. All our stock is
+            dewormed, vet-checked, and ready for breeding or milk production.
+          </p>
+          <p className="mt-4 leading-7 text-cream-secondary/85">
+            Don&apos;t see the bull you want? No problem — if you have a specific bull in mind, we can source it
+            for you.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg bg-brand-leaf px-5 py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-cream-primary hover:text-brand-deep"
+            >
+              <MessageCircle size={16} className="flex-shrink-0" />
+              WhatsApp
+            </a>
+            <Link
+              href={`/products/${PRODUCT_SLUG}`}
+              className="flex items-center gap-2 rounded-lg border border-cream-primary/40 px-5 py-3 text-xs font-semibold uppercase tracking-widest text-cream-primary transition-colors hover:bg-cream-primary/10"
+            >
+              View Product
+              <ArrowRight size={16} className="flex-shrink-0" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

@@ -16,20 +16,30 @@ const cards = [
 
 export function FeaturedSection() {
   return (
-    <MotionSection className="bg-brand-deep section-y">
+    // Capped to one viewport on desktop (lg:h-screen); mobile/tablet keep natural flow, where
+    // cramming this into 100vh isn't worth the art direction. lg:!py-12 forcibly overrides
+    // section-y's own padding-block (declared after @tailwind utilities in globals.css, which
+    // would otherwise win the cascade tie against a plain lg:py-* utility at equal specificity).
+    <MotionSection className="bg-brand-deep section-y lg:flex lg:h-screen lg:min-h-[600px] lg:items-center lg:!py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <SectionHeader title="A Working Estate with Many Doors In." subtitle="Explore" align="center" dark />
+        <SectionHeader
+          title="A Working Estate with Many Doors In."
+          subtitle="Explore"
+          align="center"
+          dark
+          className="mb-14 lg:mb-8"
+        />
         <div className="grid gap-8 md:grid-cols-3">
           {cards.map((card) => (
             <AnimatedCard key={card.href} className="group overflow-hidden border border-white/10 bg-white/5">
               <Link href={card.href} className="block">
-                <div className="image-skeleton relative h-72 overflow-hidden">
+                <div className="image-skeleton relative h-72 overflow-hidden lg:h-48">
                   <Image src={card.image} alt={card.alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
-                <div className="p-7">
-                  <h3 className="font-serif text-3xl text-cream-primary">{card.title}</h3>
-                  <p className="mt-4 leading-7 text-cream-secondary/75">{card.text}</p>
-                  <span className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-brand-leaf">
+                <div className="p-7 lg:p-5">
+                  <h3 className="font-serif text-3xl text-cream-primary lg:text-2xl">{card.title}</h3>
+                  <p className="mt-4 leading-7 text-cream-secondary/75 lg:mt-2 lg:text-sm lg:leading-6">{card.text}</p>
+                  <span className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-brand-leaf lg:mt-3">
                     Open <ArrowRight size={14} aria-hidden="true" />
                   </span>
                 </div>

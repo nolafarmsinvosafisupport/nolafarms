@@ -29,17 +29,20 @@ export function OurStorySection() {
             </Link>
           </motion.div>
         </div>
-        {/* Fluid floor rather than a hard 560px: the image column stacks under the text on
-            narrow screens, where a fixed 560px was two-thirds of a phone viewport on its own.
-            Still caps at the original 560px on tall displays. */}
-        <motion.div variants={fadeUp} className="relative min-h-[clamp(18rem,42vh,35rem)]">
+        {/* Fluid floor rather than a hard cap: the image column stacks under the text on
+            narrow screens, where a fixed height was two-thirds of a phone viewport on its own.
+            Sized up from the original clamp so the image reads larger against the smaller
+            overlay card below. */}
+        <motion.div variants={fadeUp} className="relative min-h-[clamp(22rem,48vh,38rem)]">
           <div className="image-skeleton absolute inset-0 overflow-hidden">
             <Image src={IMAGES.wheat} alt="Wheat fields growing at Nola Ranches in Laikipia Kenya" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           </div>
-          <div className="absolute -bottom-8 left-5 max-w-xs border border-farm-border bg-cream-warm p-7 shadow-2xl md:-left-8">
-            <Leaf className="mb-4 text-brand-leaf" size={30} aria-hidden="true" />
-            <h3 className="font-serif text-2xl text-brand-deep">Rooted in Responsibility</h3>
-            <p className="mt-3 text-sm leading-6 text-brand-deep/70">A farm measured by productive fields, healthy animals, and trust built over time.</p>
+          {/* Shrunk ~40% from the original max-w-xs/p-7 footprint so it no longer swallows most
+              of the image it overlaps. */}
+          <div className="absolute -bottom-4 left-3 max-w-[12rem] border border-farm-border bg-cream-warm p-4 shadow-2xl md:-left-4">
+            <Leaf className="mb-2 text-brand-leaf" size={18} aria-hidden="true" />
+            <h3 className="font-serif text-lg text-brand-deep">Rooted in Responsibility</h3>
+            <p className="mt-3 text-xs leading-5 text-brand-deep/70">A farm measured by productive fields, healthy animals, and trust built over time.</p>
           </div>
         </motion.div>
       </div>

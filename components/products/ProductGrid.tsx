@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
@@ -46,6 +46,14 @@ export function ProductGrid({
   const [sortBy, setSortBy] = useState<SortKey>('featured');
   const [page, setPage] = useState(1);
 
+  // The results row's position on the page never shifts when the filter changes — only its
+  // contents do — so scrolling can fire synchronously in the click handler, no rAF needed.
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const handleSelect = (key: CardKey | null) => {
+    setSelected(key);
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const filtered = useMemo(
     () => (selected === null ? browsableProducts(products) : products.filter((p) => matchesCard(p, selected))),
     [products, selected],
@@ -77,74 +85,78 @@ export function ProductGrid({
 
   return (
     <div className="space-y-6">
-      <CategoryCards products={products} categories={categories} selected={selected} onSelect={setSelected} />
+      <CategoryCards products={products} categories={categories} selected={selected} onSelect={handleSelect} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-brand-deep/50">
-          Showing {paged.length} of {sorted.length} product{sorted.length !== 1 ? 's' : ''}
-        </p>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortKey)}
-          className="rounded-lg border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.key} value={o.key}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Full width now the sidebar is gone — the grid takes the space it used to occupy, so an
-          extra column fits at each breakpoint. */}
-      {paged.length === 0 ? (
-        <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filter.</p>
-      ) : (
-        // 5 columns only from 2xl. At 1366 five columns left each card ~205px, which squeezed the
-        // WhatsApp button down to 94px and crushed its label — the card has three buttons to fit,
-        // so it needs the width.
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {paged.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
-
-      {totalPages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            aria-label="Previous page"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-farm-border text-brand-deep disabled:opacity-30"
+      {/* scroll-mt-24 clears the fixed navbar (Navbar.tsx is ~64-72px tall on this route) when
+          scrollIntoView lands this row at the top of the viewport after a category-card click. */}
+      <div ref={resultsRef} className="scroll-mt-24 space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-brand-deep/50">
+            Showing {paged.length} of {sorted.length} product{sorted.length !== 1 ? 's' : ''}
+          </p>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortKey)}
+            className="rounded-lg border border-farm-border bg-cream-primary px-3 py-1.5 text-xs text-brand-deep outline-none focus:border-brand-leaf"
           >
-            <ChevronLeft size={14} />
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.key} value={o.key}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Full width now the sidebar is gone — the grid takes the space it used to occupy, so an
+            extra column fits at each breakpoint. */}
+        {paged.length === 0 ? (
+          <p className="py-12 text-center text-sm text-brand-deep/50">No products match the selected filter.</p>
+        ) : (
+          // 5 columns only from 2xl. At 1366 five columns left each card ~205px, which squeezed the
+          // WhatsApp button down to 94px and crushed its label — the card has three buttons to fit,
+          // so it needs the width.
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            {paged.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
             <button
-              key={n}
               type="button"
-              onClick={() => setPage(n)}
-              className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold ${
-                n === page ? 'bg-brand-deep text-cream-primary' : 'border border-farm-border text-brand-deep/60'
-              }`}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              aria-label="Previous page"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-farm-border text-brand-deep disabled:opacity-30"
             >
-              {n}
+              <ChevronLeft size={14} />
             </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            aria-label="Next page"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-farm-border text-brand-deep disabled:opacity-30"
-          >
-            <ChevronRight size={14} />
-          </button>
-        </div>
-      )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setPage(n)}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold ${
+                  n === page ? 'bg-brand-deep text-cream-primary' : 'border border-farm-border text-brand-deep/60'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              aria-label="Next page"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-farm-border text-brand-deep disabled:opacity-30"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

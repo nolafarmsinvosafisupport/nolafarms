@@ -8,11 +8,13 @@ export function SectionHeader({
   subtitle,
   align = 'left',
   dark = false,
+  className = 'mb-14',
 }: {
   title: string;
   subtitle: string;
   align?: 'left' | 'center';
   dark?: boolean;
+  className?: string;
 }) {
   return (
     <motion.div
@@ -20,7 +22,7 @@ export function SectionHeader({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-100px' }}
-      className={`mb-14 ${align === 'center' ? 'text-center' : 'text-left'}`}
+      className={`${className} ${align === 'center' ? 'text-center' : 'text-left'}`}
     >
       <p
         className={`mb-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand-leaf ${
