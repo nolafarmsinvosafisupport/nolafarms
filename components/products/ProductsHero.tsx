@@ -48,7 +48,12 @@ export function ProductsHero({ children }: { children: ReactNode }) {
             // Only the first slide blocks render; the rest load quietly behind it.
             priority={i === 0}
             sizes="100vw"
-            className="hero-drift object-cover"
+            // object-right below md. The photos are 2.56:1 but a phone's band is ~1.17:1, so
+            // object-cover crops horizontally and only ~46% of the width survives. Centred, that
+            // lands on rumps and flanks; anchored right, it lands on the animals' heads. Above md
+            // the band is wider than the photo, so nothing is cropped horizontally and the
+            // horizontal anchor stops mattering — centre is kept there for the vertical framing.
+            className="hero-drift object-cover object-right md:object-center"
           />
         </div>
       ))}
