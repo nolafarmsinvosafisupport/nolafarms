@@ -42,8 +42,9 @@ async function adminEmail(): Promise<string> {
 
 async function sendEmail({ to, subject, html, replyTo }: { to: string; subject: string; html: string; replyTo?: string }) {
   const client = getResend();
+  // Silently no-op when Resend isn't configured or the recipient is a placeholder — the caller
+  // treats email as best-effort (bookings/orders still save if this returns without sending).
   if (!client || !to || to.includes('PLACEHOLDER')) {
-    console.log('Email skipped (Resend not configured):', { to, subject });
     return;
   }
   // The sender is a no-reply mailbox, but for contact enquiries we set reply-to to the

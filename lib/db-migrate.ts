@@ -239,18 +239,14 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
     // Seed the catalogue exactly once ever (persistent seed_state marker, not just this
     // process's memory) — a fresh/empty database still bootstraps itself automatically, but
     // once seeded, admin deletions/edits are never fought by a re-seed on the next deploy.
-    // seedProducts() also runs updateExistingBreedContent() (a one-time content correction
-    // for 5 products) and seedProductCategories() also runs a one-time parent_id backfill —
-    // both were previously unconditional on every boot too, silently reverting any admin edit
-    // to those 5 products' name/description/details, or to a livestock subcategory's parent.
-    // Gating the outer calls here fixes all of that without touching either function's body.
+    // seedProductCategories() also runs a one-time parent_id backfill for the livestock
+    // subcategories, which is likewise gated here so it can't revert an admin's change.
     const [{ exists: catalogueSeeded }] = await sql<{ exists: boolean }[]>`SELECT EXISTS (SELECT 1 FROM seed_state WHERE key = 'catalogue') AS exists`;
     if (!catalogueSeeded) {
       await seedProducts(sql);
       await seedProductCategories(sql);
       await sql`INSERT INTO seed_state (key) VALUES ('catalogue') ON CONFLICT (key) DO NOTHING`;
     }
-    await backfillPlaceholderImages(sql);
 
     _migrationDone = true;
   })();
@@ -330,10 +326,10 @@ async function seedProductCategories(sql: ReturnType<typeof postgres>) {
   }
 }
 
-// Temporary stand-ins for breeds/categories the client hasn't sent real photos for yet —
-// reuses existing R2-hosted photos of a related breed so cards don't show a bare fallback.
-// Swap these out via the admin image uploader once real photos are supplied; the backfill
-// below only ever fills empty image fields, so it never clobbers a real upload.
+// Stand-in photos for breeds the client hasn't sent real images for yet — reuses an existing
+// R2-hosted photo of a related breed so cards don't show a bare fallback. Used inline by the
+// seed rows below (once ever, on a fresh database). Replace them by uploading real photos via
+// the admin image uploader — that writes straight to the product row and nothing here overrides it.
 const PLACEHOLDER_IMAGES = {
   cattle: 'https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow3.jpeg',
   cattle2: 'https://images.nolaranches.co.ke/products/animals/cattle/holstein/cow5.jpeg',
@@ -342,53 +338,6 @@ const PLACEHOLDER_IMAGES = {
   pigs2: 'https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs3.jpeg',
   pigs3: 'https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg',
 };
-
-const CATEGORY_PLACEHOLDER_IMAGES: Record<string, string> = {
-  cattle: 'https://images.nolaranches.co.ke/products/animals/cattle/brahman/cow4.jpeg',
-  'goats-sheep': 'https://images.nolaranches.co.ke/products/animals/goat/boer/boer-main-1.jpeg',
-  pigs: 'https://images.nolaranches.co.ke/products/animals/pigs/american-yorkshire-pigs/pigs.jpeg',
-};
-
-// Backfills placeholder images onto rows that were already seeded with an empty images
-// array / null hero_image before PLACEHOLDER_IMAGES existed. Guarded to only touch empty
-// fields, so a real photo added later (via admin or a fresh seed) is never overwritten.
-async function backfillPlaceholderImages(sql: ReturnType<typeof postgres>) {
-  for (const [slug, url] of Object.entries({
-    'boran-cattle': PLACEHOLDER_IMAGES.cattle,
-    'sahiwal-cattle': PLACEHOLDER_IMAGES.cattle2,
-    'galla-goats': PLACEHOLDER_IMAGES.goats,
-    'landrace-pigs': PLACEHOLDER_IMAGES.pigs1,
-    'pietrain-pigs': PLACEHOLDER_IMAGES.pigs2,
-    'duroc-pigs': PLACEHOLDER_IMAGES.pigs3,
-    'service-boars': PLACEHOLDER_IMAGES.pigs1,
-  })) {
-    await sql`UPDATE products SET images = ${[url]}, updated_at = NOW() WHERE slug = ${slug} AND (images IS NULL OR images = '{}')`;
-  }
-
-  // Category hero_image is deliberately NOT backfilled any more. The category cards now have
-  // purpose-shot 4:3 artwork in code (CATEGORY_CARDS in lib/product-taxonomy), and the card falls
-  // back to it precisely when hero_image is NULL. Backfilling a product photo into that column
-  // therefore *overrode* the card art on every boot — set the column to NULL and this loop put a
-  // pig photo straight back. A NULL hero_image is now the correct "use the card artwork" state;
-  // an admin uploading at /admin/categories still overrides it.
-}
-
-// Corrects the 5 breed products above that were already seeded before the client sent
-// refreshed names/descriptions (see seedProducts()). Runs unconditionally on every boot —
-// harmless/idempotent since it just re-sets the same target values each time — so it also
-// self-heals a fresh install if seedProducts() ever inserts before this ran once.
-async function updateExistingBreedContent(sql: ReturnType<typeof postgres>) {
-  const updates = [
-    { slug: 'brahman-cattle', name: 'Brahman Cattle', description: 'Premium breeding bulls. Used to improve calf size, growth rate, and heat tolerance.', details: ['Premium breeding bulls', 'Improves calf size and growth rate', 'Excellent heat tolerance', 'Used to strengthen herd genetics'] },
-    { slug: 'holstein-dairy-cattle', name: 'Cross Holstein-Friesian Cattle', description: 'Dairy cross for improved milk yield. Ideal for farmers wanting both milk and beef production.', details: ['Dairy cross bloodline', 'Improved milk yield', 'Suited to both milk and beef production', 'Available as heifers and in-calf cows'] },
-    { slug: 'boer-goats', name: 'Boer Cross Goats', description: 'Fast-growing meat goats. Crossed for improved size and kid growth. Excellent for commercial meat production.', details: ['Boer cross bloodline', 'Fast growth rate', 'Improved size and kid growth', 'Excellent for commercial meat production'] },
-    { slug: 'american-yorkshire-pigs', name: 'Pure Large White / Yorkshire Pigs', description: "The world's leading mother breed. Known for large litters of 12-14 piglets, excellent mothering ability, and high milk production. Foundation of our breeding program.", details: ['Large litters of 12-14 piglets', 'Excellent mothering ability', 'High milk production', 'Foundation of our breeding program'] },
-    { slug: 'dorper-sheep', name: 'Dorper Sheep', description: 'Premium meat sheep. Quick growth, no wool, excellent carcass quality. Ideal for dry areas.', details: ['Quick growth', 'No wool — low maintenance', 'Excellent carcass quality', 'Ideal for dry areas'] },
-  ];
-  for (const u of updates) {
-    await sql`UPDATE products SET name = ${u.name}, description = ${u.description}, details = ${u.details}, updated_at = NOW() WHERE slug = ${u.slug}`;
-  }
-}
 
 type SeedProduct = {
   name: string; slug: string; category: string; ranch: string; description: string; details: string[];
@@ -399,8 +348,6 @@ type SeedProduct = {
 };
 
 async function seedProducts(sql: ReturnType<typeof postgres>) {
-  await updateExistingBreedContent(sql);
-
   const products: SeedProduct[] = [
     { name: 'Brahman Cattle', slug: 'brahman-cattle', category: 'cattle', ranch: 'oloitoktok', description: 'Premium breeding bulls. Used to improve calf size, growth rate, and heat tolerance.', details: ['Premium breeding bulls', 'Improves calf size and growth rate', 'Excellent heat tolerance', 'Used to strengthen herd genetics'], price: null, compare_at_price: null, price_unit: 'per head', bulk_info: null, images: ['/images/products/animals/cattle/brahman/cow2.jpeg', '/images/products/animals/cattle/brahman/cow3.jpeg', '/images/products/animals/cattle/brahman/cow4.jpeg'], sort_order: 10 },
     { name: 'Boran Cattle', slug: 'boran-cattle', category: 'cattle', ranch: 'oloitoktok', description: "Kenya's leading beef breed. Extremely drought tolerant with excellent fertility and beef quality.", details: ["Kenya's premier beef breed", 'Extremely drought tolerant', 'Excellent fertility', 'Premium beef quality'], price: null, compare_at_price: null, price_unit: 'per head', bulk_info: null, images: [PLACEHOLDER_IMAGES.cattle], sort_order: 11 },
