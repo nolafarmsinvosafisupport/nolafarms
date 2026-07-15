@@ -265,9 +265,9 @@ function buildWelcomeHtml(firstName?: string) {
   return baseLayout(`
     <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:26px;color:${brand.green}">${greeting}</h1>
     <p style="margin:0;font-size:13px;color:${brand.leaf};letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Account created</p>
-    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for creating an account with Nola Ranches — a working agricultural estate in Kenya. Your account lets you:</p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.7">Thank you for creating an account with Nola Ranches — quality livestock and trusted genetics in Kenya. Your account lets you:</p>
     <ul style="margin:16px 0 0;padding-left:20px;font-size:14px;line-height:1.9;color:${brand.green}">
-      <li>Order fresh produce, grain, and livestock from our farm shop</li>
+      <li>Enquire on and order cattle, goats, sheep and pigs from our ranch</li>
       <li>Request and track guided ranch visits</li>
       <li>Get updates on your bookings and orders by email</li>
     </ul>

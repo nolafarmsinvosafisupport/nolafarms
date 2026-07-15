@@ -1,13 +1,13 @@
 'use client';
 
-import { MapPin, Sprout, Wheat } from 'lucide-react';
+import { MapPin, ShieldCheck, PawPrint } from 'lucide-react';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { MotionSection } from '@/components/ui/Motion';
 
 const stats = [
-  { value: '375', label: 'Acres', icon: Wheat, text: 'A working agricultural estate spanning two ranches across Kenya.' },
-  { value: 'Mixed', label: 'Crop & Livestock', icon: Sprout, text: 'Cattle, goats, sheep, pigs, vegetables, fruits, and grains.' },
-  { value: '2', label: 'Ranches · Oloitoktok & Laikipia', icon: MapPin, text: "Oloitoktok for livestock and produce. Laikipia for large-scale grain farming." },
+  { value: '12+', label: 'Breeds Raised', icon: PawPrint, text: 'Cattle, goats, sheep and pigs — selected for genetics, growth and market performance.' },
+  { value: '100%', label: 'Vaccinated & Vet-Checked', icon: ShieldCheck, text: 'Every animal is vaccinated, dewormed and farm-recorded before it leaves the ranch.' },
+  { value: '2', label: 'Ranches · Oloitoktok & Laikipia', icon: MapPin, text: 'Livestock raised at our Oloitoktok ranch, with grain farming at scale in Laikipia.' },
 ];
 
 export function FarmStatsSection() {

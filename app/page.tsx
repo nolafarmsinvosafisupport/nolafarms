@@ -19,13 +19,16 @@ export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Nola Ranches | Large-Scale Agricultural Estate in Laikipia, Kenya',
+    // Absolute: the homepage title already leads with the brand, so it bypasses the
+    // "%s | Nola Ranches" template instead of doubling it.
+    title: 'Nola Ranches | Quality Livestock & Trusted Genetics in Kenya',
+    titleAbsolute: true,
     description:
-      'Nola Ranches is a 375-acre working estate in Laikipia, Kenya - growing wheat, raising exotic cattle and goat breeds, and welcoming visitors for guided ranch experiences. Rooted in the land.',
-    keywords: ['Nola Ranches', 'Nola Ranches Laikipia', 'large scale farm Kenya', 'agricultural estate Laikipia', 'farm Kenya', 'Laikipia farm Kenya'],
-    imageAlt: 'Nola Ranches estate - Laikipia, Kenya',
-    ogTitle: 'Nola Ranches - 375 Acres of Agriculture & Livestock in Laikipia, Kenya',
-    ogDescription: 'A working estate growing wheat, raising exotic cattle and goats, and offering guided ranch visits in Laikipia, Kenya.',
+      'Buy quality livestock from Nola Ranches, Kenya — Boran, Girolando and Holstein cattle, Boer and Galla goats, Dorper sheep, and Large White, Landrace, Duroc and Pietrain pigs. Vaccinated, dewormed and farm-ready, with trusted genetics.',
+    keywords: ['Nola Ranches', 'livestock for sale Kenya', 'buy cattle Kenya', 'buy goats Kenya', 'buy pigs Kenya', 'sheep for sale Kenya', 'breeding stock Kenya', 'boar services Kenya'],
+    imageAlt: 'Nola Ranches livestock — cattle, goats, sheep and pigs in Kenya',
+    ogTitle: 'Nola Ranches — Quality Livestock & Trusted Genetics, Kenya',
+    ogDescription: 'Cattle, goats, sheep and pigs raised in Oloitoktok and Laikipia, Kenya. Vaccinated, dewormed and farm-ready — with the genetics buyers trust.',
   });
 }
 

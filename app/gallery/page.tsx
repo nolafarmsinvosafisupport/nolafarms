@@ -10,15 +10,15 @@ import { breadcrumbSchema, imageGallerySchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Farm Gallery | Photos of Nola Ranches - Laikipia, Kenya',
+    title: 'Livestock Gallery — Cattle, Goats, Sheep & Pigs',
     description:
-      'See Nola Ranches through the lens - 375 acres of highland fields, exotic cattle, goats, wheat crops, and the Laikipia landscape. Photos of our working estate and the animals we raise.',
-    keywords: ['Nola Ranches photos', 'Laikipia farm pictures', 'exotic cattle photos Kenya', 'farm photography Kenya', 'Laikipia landscape photos', 'goat farm pictures Kenya', 'wheat farm Kenya photos', 'agricultural estate photos Laikipia', 'ranch photos Kenya', 'farm animals Kenya photos'],
+      'See the livestock at Nola Ranches — Boran, Girolando and Holstein cattle, Boer and Galla goats, Dorper sheep, and our pigs, across our Oloitoktok and Laikipia ranches in Kenya.',
+    keywords: ['Nola Ranches photos', 'cattle photos Kenya', 'goat photos Kenya', 'pig farm photos Kenya', 'Dorper sheep Kenya', 'livestock photos Kenya', 'breeding stock Kenya', 'Oloitoktok livestock', 'Laikipia ranch photos'],
     path: '/gallery',
     image: '/images/og/gallery-og.jpg',
-    imageAlt: 'Nola Ranches gallery - livestock and fields in Laikipia Kenya',
-    ogTitle: 'Gallery - Inside Nola Ranches, Laikipia Kenya',
-    ogDescription: 'Photos from inside Nola Ranches - fields, exotic livestock, highland views, and 375 acres of working agriculture in Laikipia, Kenya.',
+    imageAlt: 'Nola Ranches livestock gallery — cattle, goats, sheep and pigs in Kenya',
+    ogTitle: 'Gallery — The Livestock of Nola Ranches, Kenya',
+    ogDescription: 'Photos of the cattle, goats, sheep and pigs raised at Nola Ranches across Oloitoktok and Laikipia, Kenya.',
   });
 }
 
@@ -27,11 +27,11 @@ export default function GalleryPage() {
     <main>
       <JsonLd data={[imageGallerySchema(galleryImages.map((image) => ({ name: image.caption, contentUrl: image.src, caption: image.caption }))), breadcrumbSchema([{ name: 'Home', url: SITE.url }, { name: 'Gallery', url: `${SITE.url}/gallery` }])]} />
       <PageHero
-        eyebrow="Farm Gallery"
-        title="375 Acres Through the Lens."
-        subtitle="A visual look at the land, fields, animals, and working rhythms of Nola Ranches."
-        image={IMAGES.wheat}
-        alt="Nola Ranches wheat fields and livestock gallery in Laikipia Kenya"
+        eyebrow="Livestock Gallery"
+        title="Our Livestock Through the Lens."
+        subtitle="A visual look at the cattle, goats, sheep and pigs of Nola Ranches, and the ranches they're raised on."
+        image={IMAGES.cattle}
+        alt="Cattle at Nola Ranches, Kenya"
       />
       <GalleryGrid />
       <section className="bg-cream-primary section-y-md">

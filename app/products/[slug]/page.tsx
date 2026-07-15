@@ -40,9 +40,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = await getProduct(slug);
   if (!product) return {};
   return pageMetadata({
-    title: `${product.name} | Nola Ranches`,
-    description: product.description ?? `Buy ${product.name} from Nola Ranches, Kenya.`,
-    keywords: [product.name, CATEGORY_LABELS[product.category], RANCH_LABELS[product.ranch], 'Nola Ranches', 'farm produce Kenya'],
+    // Topic-only: the root "%s | Nola Ranches" template adds the brand once. Previously this string
+    // ended in "| Nola Ranches" too, rendering "…| Nola Ranches | Nola Ranches".
+    title: `${product.name} for Sale in Kenya`,
+    description: product.description ?? `Buy ${product.name} from Nola Ranches, Kenya — vaccinated, farm-recorded, farm-ready.`,
+    keywords: [`${product.name} Kenya`, `buy ${product.name} Kenya`, CATEGORY_LABELS[product.category], RANCH_LABELS[product.ranch], 'livestock for sale Kenya', 'breeding stock Kenya'],
     path: `/products/${product.slug}`,
     image: product.images[0],
     imageAlt: `${product.name} — Nola Ranches`,
@@ -171,8 +173,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p className="text-xs font-semibold uppercase tracking-widest text-brand-deep/40">Ranch</p>
               <p className="mt-1 text-sm font-medium text-brand-deep">{RANCH_LABELS[product.ranch]}</p>
               <p className="mt-1 text-xs text-brand-deep/60">
-                {product.ranch === 'oloitoktok' && 'Oloitoktok County, Kenya — Cattle, Goats, Sheep, Pigs, Vegetables'}
-                {product.ranch === 'laikipia' && 'Laikipia County, Kenya — Grains & Crops'}
+                {product.ranch === 'oloitoktok' && 'Oloitoktok County, Kenya — Cattle, Goats, Sheep & Pigs'}
+                {product.ranch === 'laikipia' && 'Laikipia County, Kenya — Grain farming at scale'}
                 {product.ranch === 'both' && 'Available from both our Oloitoktok and Laikipia ranches'}
               </p>
             </div>

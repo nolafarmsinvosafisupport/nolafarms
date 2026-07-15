@@ -5,10 +5,12 @@ import { unstable_cache } from 'next/cache';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { ProductsHero } from '@/components/products/ProductsHero';
 import { TrustBadges } from '@/components/products/TrustBadges';
+import { JsonLd } from '@/components/ui/JsonLd';
 import { Truck, ShieldCheck, Sprout, Headset } from 'lucide-react';
 import { SITE } from '@/lib/constants';
 import { getDb, isDbConfigured, ensureMigrated } from '@/lib/db';
 import { pageMetadata } from '@/lib/seo';
+import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
 import { filterVisibleProducts } from '@/lib/category-visibility';
 import type { Product } from '@/lib/product-types';
 import type { ProductCategoryPage } from '@/lib/category-types';
@@ -22,7 +24,7 @@ export const dynamic = 'force-dynamic';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Livestock for Sale | Cattle, Goats, Sheep & Pigs | Nola Ranches',
+    title: 'Livestock for Sale — Cattle, Goats, Sheep & Pigs',
     description:
       'Buy cattle, goats, sheep and pigs from Nola Ranches — vaccinated, farm-recorded breeding and market stock from our Oloitoktok and Laikipia ranches in Kenya.',
     keywords: ['buy cattle Kenya', 'buy goats Kenya', 'buy pigs Kenya', 'sheep for sale Kenya', 'breeding stock Kenya', 'boar services Kenya', 'Nola Ranches livestock'],
@@ -73,8 +75,23 @@ export default async function ProductsPage() {
   // category inactive (or "coming soon") to bulk-hide every product under it in one switch.
   const products = filterVisibleProducts(allProducts, categories);
 
+  // ItemList + breadcrumb structured data — this listing page previously had none. ItemList helps
+  // Google understand the livestock catalogue; the breadcrumb renders the trail in results.
+  const itemList = itemListSchema(
+    products.map((p) => ({
+      name: p.name,
+      description: p.description ?? `${p.name} from Nola Ranches, Kenya.`,
+      url: `${SITE.url}/products/${p.slug}`,
+    })),
+  );
+  const breadcrumb = breadcrumbSchema([
+    { name: 'Home', url: SITE.url },
+    { name: 'Livestock', url: `${SITE.url}/products` },
+  ]);
+
   return (
     <main className="pt-16">
+      <JsonLd data={[breadcrumb, itemList]} />
       {/* Hero. The ~10% side gutter matches the product section below so the headline lines up
           with the category cards; the slideshow bleeds to the full width behind it. */}
       <ProductsHero>

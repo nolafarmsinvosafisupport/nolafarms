@@ -10,15 +10,15 @@ import { aboutPageSchema, breadcrumbSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'About Nola Ranches | Two Ranches — Oloitoktok & Laikipia, Kenya',
+    title: 'About — Livestock & Genetics Across Two Ranches in Kenya',
     description:
-      'Nola Ranches operates two ranches in Kenya — Oloitoktok for livestock, fresh vegetables and fruits; Laikipia for grains. Learn our story of responsible, large-scale farming.',
-    keywords: ['about Nola Ranches', 'Nola Ranches story', 'Oloitoktok farm Kenya', 'Laikipia agricultural estate', 'responsible farming Kenya', 'mixed farming Kenya', 'livestock farm Kenya', 'grain farm Laikipia'],
+      'Nola Ranches raises cattle, goats, sheep and pigs with trusted genetics at our Oloitoktok ranch, and also farms grain at scale in Laikipia. Learn our story of responsible, quality-first livestock farming.',
+    keywords: ['about Nola Ranches', 'Nola Ranches story', 'livestock farm Kenya', 'cattle breeder Kenya', 'Oloitoktok livestock', 'Laikipia ranch', 'responsible livestock farming Kenya', 'breeding stock Kenya'],
     path: '/about',
     image: '/images/og/about-og.jpg',
-    imageAlt: 'Nola Ranches two ranches — Oloitoktok and Laikipia Kenya',
-    ogTitle: 'Our Story | Nola Ranches — Two Ranches Across Kenya',
-    ogDescription: 'Two ranches, one farm. Nola Ranches raises exotic livestock and fresh produce in Oloitoktok, and farms wheat and grains at scale in Laikipia.',
+    imageAlt: 'Nola Ranches livestock across two ranches — Oloitoktok and Laikipia Kenya',
+    ogTitle: 'Our Story — Quality Livestock & Trusted Genetics | Nola Ranches',
+    ogDescription: 'Nola Ranches raises cattle, goats, sheep and pigs with trusted genetics in Oloitoktok, and farms grain at scale in Laikipia, Kenya.',
   });
 }
 
@@ -28,18 +28,18 @@ export default function AboutPage() {
       <JsonLd data={[aboutPageSchema, breadcrumbSchema([{ name: 'Home', url: SITE.url }, { name: 'About', url: `${SITE.url}/about` }])]} />
       <PageHero
         eyebrow="About Nola Ranches"
-        title="Two Ranches. One Vision."
-        subtitle="A working farm across Oloitoktok and Laikipia — built for scale, land care, and direct connection to buyers."
-        image={IMAGES.farmRoad}
-        alt="Road through Nola Ranches estate Kenya"
+        title="Quality Livestock. Trusted Genetics."
+        subtitle="A livestock ranch across Oloitoktok and Laikipia — raising cattle, goats, sheep and pigs, and connecting buyers directly to the source."
+        image={IMAGES.cattle}
+        alt="Cattle at Nola Ranches, Kenya"
       />
       <OurStorySection />
       <section className="bg-brand-dark section-y-sm">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 text-cream-primary md:grid-cols-3 lg:px-8">
           {[
-            { value: '375 Acres', label: 'Across two ranches in Kenya' },
-            { value: 'Mixed Farming', label: 'Livestock, vegetables, grains & fruits' },
-            { value: '2 Ranches', label: 'Oloitoktok & Laikipia County' },
+            { value: '12+ Breeds', label: 'Cattle, goats, sheep & pigs' },
+            { value: 'Farm-Ready', label: 'Vaccinated, dewormed & vet-checked' },
+            { value: '2 Ranches', label: 'Oloitoktok livestock · Laikipia grain' },
           ].map((item) => (
             <article key={item.value} className="border border-white/10 bg-white/5 p-8">
               <h2 className="font-serif text-4xl">{item.value}</h2>
@@ -53,9 +53,9 @@ export default function AboutPage() {
           <SectionHeader title="What Drives Us." subtitle="Our Values" />
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              { title: 'Responsible Land Use', body: 'We farm with the long term in mind — rotating crops, managing grazing, and maintaining the health of both our Oloitoktok and Laikipia land.' },
-              { title: 'Quality Livestock', body: 'Every breed we raise — Brahman, Holstein, Boer, Dorper — is selected for its suitability to Kenyan conditions and the quality of its produce.' },
-              { title: 'Direct Relationships', body: 'We sell and source directly. No middlemen. Buyers know where their food and livestock come from, and we know who we\'re serving.' },
+              { title: 'Trusted Genetics', body: 'Every breed we raise — Boran, Girolando, Holstein, Boer, Galla, Dorper, and our pigs — is selected for its genetics, growth and suitability to Kenyan conditions.' },
+              { title: 'Healthy, Farm-Ready Stock', body: 'Every animal is vaccinated, dewormed, vet-checked and farm-recorded before it leaves the ranch, so buyers get healthy stock they can rely on.' },
+              { title: 'Direct Relationships', body: 'We sell directly. No middlemen. Buyers know exactly where their livestock comes from and how it was raised, and we know who we\'re serving.' },
             ].map((value) => (
               <article key={value.title} className="border border-farm-border bg-cream-warm p-7">
                 <h3 className="font-serif text-2xl text-brand-deep">{value.title}</h3>

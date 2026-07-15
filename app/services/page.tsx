@@ -10,15 +10,15 @@ import { breadcrumbSchema, serviceSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Ranch Visits & Farm Services | Nola Ranches — Oloitoktok & Laikipia',
+    title: 'Ranch Visits & Livestock Services — Oloitoktok & Laikipia',
     description:
-      'Visit Nola Ranches at our Oloitoktok or Laikipia ranch. Walk the fields, meet the exotic livestock, and experience working agriculture. Enquire about wholesale services and farm tours.',
-    keywords: ['ranch visit Kenya', 'farm tour Oloitoktok', 'farm tour Laikipia', 'book farm visit Kenya', 'agri-tourism Kenya', 'guided farm tour Kenya', 'wholesale livestock Kenya', 'agricultural tourism Kenya'],
+      'Visit Nola Ranches to meet the herds and inspect our cattle, goats, sheep and pigs before you buy. Book a guided ranch visit, or enquire about breeding stock, boar services and bulk livestock orders.',
+    keywords: ['ranch visit Kenya', 'livestock viewing Kenya', 'book ranch visit', 'breeding stock enquiry Kenya', 'boar services Kenya', 'bulk livestock Kenya', 'buy cattle Oloitoktok', 'livestock farm tour Kenya'],
     path: '/services',
     image: '/images/og/services-og.jpg',
-    imageAlt: 'Guided ranch visit at Nola Ranches, Kenya',
-    ogTitle: 'Book a Ranch Visit at Nola Ranches — Oloitoktok & Laikipia',
-    ogDescription: 'Guided farm tours at two ranches — Oloitoktok for livestock and produce, Laikipia for grains. Come experience working agriculture at Nola Ranches.',
+    imageAlt: 'Guided ranch visit to meet the livestock at Nola Ranches, Kenya',
+    ogTitle: 'Book a Ranch Visit — Meet the Herd | Nola Ranches',
+    ogDescription: 'Come and inspect the cattle, goats, sheep and pigs before you buy. Guided ranch visits, breeding-stock and bulk-order enquiries at Nola Ranches, Kenya.',
   });
 }
 

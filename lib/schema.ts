@@ -1,10 +1,15 @@
 import { SITE } from './constants';
 
+// Emit geo only when real coordinates exist — the constants ship with PLACEHOLDER_* values, and
+// invalid GeoCoordinates in structured data is worse than none.
+const hasRealCoordinates =
+  !SITE.coordinates.lat.startsWith('PLACEHOLDER') && !SITE.coordinates.lng.startsWith('PLACEHOLDER');
+
 export const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Nola Ranches',
-  description: '375-acre large-scale agricultural farm and exotic livestock estate in Laikipia, Kenya.',
+  description: 'Quality livestock and trusted genetics — cattle, goats, sheep and pigs — raised at Nola Ranches in Oloitoktok and Laikipia, Kenya. Vaccinated, dewormed and farm-ready.',
   url: SITE.url,
   telephone: SITE.phone,
   address: {
@@ -13,11 +18,13 @@ export const localBusinessSchema = {
     addressRegion: 'Laikipia County',
     addressCountry: 'KE',
   },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: SITE.coordinates.lat,
-    longitude: SITE.coordinates.lng,
-  },
+  ...(hasRealCoordinates && {
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: SITE.coordinates.lat,
+      longitude: SITE.coordinates.lng,
+    },
+  }),
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -109,7 +116,10 @@ export const productJsonLd = (product: {
     '@type': 'Product',
     name: product.name,
     description: product.description ?? `${product.name} from Nola Ranches, Kenya.`,
-    image: product.images.map((img) => `${SITE.url}${img}`),
+    // Product images are absolute R2 URLs after the image migration; only legacy /public paths are
+    // relative. Prefixing SITE.url unconditionally produced doubled URLs
+    // (https://nolaranches.co.kehttps://images…), which broke Product rich results on every page.
+    image: product.images.map((img) => (/^https?:\/\//.test(img) ? img : `${SITE.url}${img}`)),
     url: `${SITE.url}/products/${product.slug}`,
   };
   // Only attach Offer/price rich-snippet data when a price actually exists —

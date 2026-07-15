@@ -9,9 +9,9 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { IMAGES } from '@/lib/constants';
 
 const cards = [
-  { title: 'Our Story', href: '/about', image: IMAGES.farmRoad, alt: 'Farm road crossing Nola Ranches in Kenya', text: 'Two ranches built around responsible agriculture — from Oloitoktok highlands to the Laikipia plains.' },
-  { title: 'Shop Products', href: '/products', image: IMAGES.cattle, alt: 'Cattle at Nola Ranches Oloitoktok Kenya', text: 'Order livestock, fresh vegetables, grains, and fruits directly from our two ranches.' },
-  { title: 'Ranch Visits', href: '/services', image: IMAGES.landscape, alt: 'Nola Ranches landscape ranch visit Kenya', text: 'Walk the fields, meet the herds, and experience working agriculture up close.' },
+  { title: 'Our Story', href: '/about', image: IMAGES.farmRoad, alt: 'Nola Ranches in Kenya', text: 'Two ranches built around quality livestock and trusted genetics — from Oloitoktok to Laikipia.' },
+  { title: 'Our Livestock', href: '/products', image: IMAGES.cattle, alt: 'Cattle at Nola Ranches Oloitoktok Kenya', text: 'Browse and enquire on our cattle, goats, sheep and pigs — vaccinated, farm-recorded and farm-ready.' },
+  { title: 'Ranch Visits', href: '/services', image: IMAGES.landscape, alt: 'Ranch visit to meet the herds at Nola Ranches Kenya', text: 'Come and meet the herds, inspect the animals, and see how they are raised before you buy.' },
 ];
 
 export function FeaturedSection() {
@@ -23,7 +23,7 @@ export function FeaturedSection() {
     <MotionSection className="bg-brand-deep section-y lg:flex lg:h-screen lg:min-h-[600px] lg:items-center lg:!py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <SectionHeader
-          title="A Working Estate with Many Doors In."
+          title="A Livestock Ranch with Many Doors In."
           subtitle="Explore"
           align="center"
           dark

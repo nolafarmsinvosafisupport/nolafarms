@@ -19,20 +19,20 @@ const exploreLinks = [
   {
     href: '/products',
     icon: Package,
-    title: 'Our Products',
-    desc: 'Fresh produce, exotic livestock breeds, and farm goods sourced from our 375-acre Laikipia estate.',
+    title: 'Our Livestock',
+    desc: 'Browse our cattle, goats, sheep and pigs — vaccinated, farm-recorded and raised with trusted genetics.',
   },
   {
     href: '/gallery',
     icon: ImageIcon,
-    title: 'Farm Gallery',
-    desc: 'A visual journey through life at Nola Ranches — the land, the animals, and the people behind it.',
+    title: 'Livestock Gallery',
+    desc: 'A visual journey through the herds at Nola Ranches — the animals, the ranches, and the people behind them.',
   },
   {
     href: '/about',
     icon: MapPin,
-    title: 'About the Farm',
-    desc: 'Learn about our agricultural heritage, sustainable practices, and our vision for farming in Laikipia.',
+    title: 'About the Ranch',
+    desc: 'Learn our story — quality-first livestock farming and trusted genetics across Oloitoktok and Laikipia.',
   },
 ];
 

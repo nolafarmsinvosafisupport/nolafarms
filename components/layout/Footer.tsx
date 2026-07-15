@@ -43,12 +43,12 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-6 text-xs font-semibold uppercase tracking-widest text-cream-primary">Farm Info</h3>
+            <h3 className="mb-6 text-xs font-semibold uppercase tracking-widest text-cream-primary">Our Livestock</h3>
             <ul className="space-y-4 text-sm text-cream-secondary/75">
-              <li>375 acres</li>
-              <li>Mixed crop farming</li>
-              <li>Exotic cattle and goats</li>
-              <li>Guided ranch visits</li>
+              <li>Cattle · Goats · Sheep · Pigs</li>
+              <li>Breeding stock & trusted genetics</li>
+              <li>Vaccinated & vet-checked</li>
+              <li>Grain farming in Laikipia</li>
             </ul>
           </div>
 

@@ -1,14 +1,16 @@
 export const SITE = {
   name: 'Nola Ranches',
-  tagline: 'Two Ranches. One Farm.',
-  description: '375-acre agricultural operation across two ranches in Oloitoktok and Laikipia, Kenya.',
+  tagline: 'Quality Livestock, Trusted Genetics',
+  description: 'Quality livestock and trusted genetics from Nola Ranches — cattle, goats, sheep and pigs raised in Oloitoktok and Laikipia, Kenya. Vaccinated, dewormed and farm-ready.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://nolaranches.co.ke',
   phone: '0750 958 780',
   whatsapp: '254750958780',
   email: 'nolaranches4@gmail.com',
   location: 'Oloitoktok & Laikipia, Kenya',
   ranches: {
-    oloitoktok: { name: 'Oloitoktok Ranch', location: 'Oloitoktok County, Kenya', products: 'Cattle, Goats, Sheep, Pigs, Vegetables, Fruits' },
+    // Oloitoktok leads the livestock line; the Laikipia grain line is kept because the ranch really
+    // does farm grain — it just isn't the marketing focus.
+    oloitoktok: { name: 'Oloitoktok Ranch', location: 'Oloitoktok County, Kenya', products: 'Cattle, Goats, Sheep, Pigs' },
     laikipia: { name: 'Laikipia Ranch', location: 'Laikipia County, Kenya', products: 'Wheat, Sorghum, Millet, Soya Beans' },
   },
   coordinates: { lat: 'PLACEHOLDER_LAT', lng: 'PLACEHOLDER_LNG' },

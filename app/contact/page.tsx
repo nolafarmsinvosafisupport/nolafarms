@@ -10,14 +10,14 @@ import { breadcrumbSchema, contactPageSchema } from '@/lib/schema';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
-    title: 'Contact Nola Ranches | Enquiries, Ranch Visits & Directions - Laikipia',
+    title: 'Contact — Livestock Enquiries, Ranch Visits & Directions',
     description:
-      'Contact Nola Ranches in Laikipia, Kenya. Send an enquiry, book a ranch visit, ask about livestock or wholesale, or get directions to the farm. We respond promptly via phone, email, or WhatsApp.',
-    keywords: ['contact Nola Ranches', 'Nola Ranches phone number', 'Nola Ranches WhatsApp', 'Nola Ranches location', 'how to get to Nola Ranches', 'Nola Ranches directions', 'farm enquiry Laikipia', 'book ranch visit Laikipia', 'Nola Ranches email', 'Laikipia farm contact', 'farm contact Kenya', 'livestock enquiry Kenya'],
+      'Contact Nola Ranches in Kenya. Make a livestock enquiry, ask about breeding stock or bulk orders, book a ranch visit, or get directions. We respond promptly by phone, WhatsApp or email.',
+    keywords: ['contact Nola Ranches', 'Nola Ranches phone number', 'Nola Ranches WhatsApp', 'Nola Ranches location', 'buy livestock Kenya contact', 'breeding stock enquiry Kenya', 'Nola Ranches directions', 'book ranch visit Kenya', 'Nola Ranches email', 'livestock enquiry Kenya'],
     path: '/contact',
-    imageAlt: 'Nola Ranches contact - Laikipia Kenya',
-    ogTitle: 'Contact Nola Ranches - Laikipia, Kenya',
-    ogDescription: 'Reach Nola Ranches by phone, WhatsApp, or email. Book ranch visits, make livestock enquiries, or get directions to our estate in Laikipia.',
+    imageAlt: 'Nola Ranches contact - Oloitoktok & Laikipia, Kenya',
+    ogTitle: 'Contact Nola Ranches — Livestock Enquiries, Kenya',
+    ogDescription: 'Reach Nola Ranches by phone, WhatsApp or email. Livestock enquiries, breeding-stock and bulk orders, ranch visits and directions.',
   });
 }
 
@@ -61,7 +61,7 @@ export default function ContactPage() {
                 <div>
                   <p className="font-semibold text-brand-deep">Oloitoktok Ranch</p>
                   <p className="mt-1 text-sm text-brand-deep/65">Oloitoktok County, Kenya</p>
-                  <p className="mt-0.5 text-xs text-brand-deep/50">Cattle · Goats · Sheep · Pigs · Vegetables · Fruits</p>
+                  <p className="mt-0.5 text-xs text-brand-deep/50">Cattle · Goats · Sheep · Pigs</p>
                 </div>
                 <div className="border-t border-farm-border pt-4">
                   <p className="font-semibold text-brand-deep">Laikipia Ranch</p>
