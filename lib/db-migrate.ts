@@ -202,6 +202,19 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
     // Public catalogue: WHERE available = TRUE ORDER BY sort_order, name
     await sql`CREATE INDEX IF NOT EXISTS idx_products_available_sort ON products (available, sort_order)`;
 
+    // Marks one-time catalogue seeding as done, persistently (unlike _migrationDone above,
+    // which only lives in this process's memory and resets on every deploy). Without this,
+    // seedProducts()/seedProductCategories() re-ran on every fresh boot and their
+    // `ON CONFLICT (slug) DO NOTHING` inserts couldn't tell "never created" apart from
+    // "deleted by an admin on purpose" — a deleted product silently came back on the next
+    // deploy. See seed_state usage below.
+    await sql`
+      CREATE TABLE IF NOT EXISTS seed_state (
+        key TEXT PRIMARY KEY,
+        seeded_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+
     // Backfill/self-heal each scope's counter from actual orders/bookings history, so it
     // always covers at least every reference already used under the old COUNT(*)-based
     // numbering (fixes the live bug where a fresh counter started at 0 and collided with
@@ -223,9 +236,20 @@ export async function runMigrations(sql: ReturnType<typeof postgres>) {
       ON CONFLICT (scope) DO UPDATE SET value = GREATEST(reference_counters.value, EXCLUDED.value)
     `;
 
-    // Always seed (ON CONFLICT (slug) DO NOTHING makes it idempotent)
-    await seedProducts(sql);
-    await seedProductCategories(sql);
+    // Seed the catalogue exactly once ever (persistent seed_state marker, not just this
+    // process's memory) — a fresh/empty database still bootstraps itself automatically, but
+    // once seeded, admin deletions/edits are never fought by a re-seed on the next deploy.
+    // seedProducts() also runs updateExistingBreedContent() (a one-time content correction
+    // for 5 products) and seedProductCategories() also runs a one-time parent_id backfill —
+    // both were previously unconditional on every boot too, silently reverting any admin edit
+    // to those 5 products' name/description/details, or to a livestock subcategory's parent.
+    // Gating the outer calls here fixes all of that without touching either function's body.
+    const [{ exists: catalogueSeeded }] = await sql<{ exists: boolean }[]>`SELECT EXISTS (SELECT 1 FROM seed_state WHERE key = 'catalogue') AS exists`;
+    if (!catalogueSeeded) {
+      await seedProducts(sql);
+      await seedProductCategories(sql);
+      await sql`INSERT INTO seed_state (key) VALUES ('catalogue') ON CONFLICT (key) DO NOTHING`;
+    }
     await backfillPlaceholderImages(sql);
 
     _migrationDone = true;

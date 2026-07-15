@@ -171,6 +171,17 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Marks one-time catalogue seeding as done. lib/db-migrate.ts (the actual code path the app
+-- runs on every boot) gates the product/category seed inserts and the corrections below behind
+-- this table so a deploy can never silently resurrect a deleted product/category or revert an
+-- admin's edit — see the "Seed the catalogue exactly once ever" comment there. This file is a
+-- static reference schema, not something the app re-runs automatically, but the statements below
+-- are written to match what a *fresh* database needs, so keep this table in sync with that logic.
+CREATE TABLE IF NOT EXISTS seed_state (
+  key TEXT PRIMARY KEY,
+  seeded_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Corrects the 5 breed rows below if they were already seeded before this content was
 -- refreshed (safe to re-run — re-sets the same target values each time).
 UPDATE products SET name = 'Brahman Cattle', description = 'Premium breeding bulls. Used to improve calf size, growth rate, and heat tolerance.', details = ARRAY['Premium breeding bulls','Improves calf size and growth rate','Excellent heat tolerance','Used to strengthen herd genetics'], updated_at = NOW() WHERE slug = 'brahman-cattle';
