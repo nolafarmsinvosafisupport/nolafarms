@@ -93,7 +93,7 @@ export default async function AdminProductsPage() {
                         alt=""
                         fill
                         sizes="48px"
-                        className="object-cover"
+                        className="object-cover object-top"
                       />
                     ) : (
                       <span className="flex h-full w-full items-center justify-center text-brand-deep/25">

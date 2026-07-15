@@ -192,7 +192,7 @@ export function CheckoutClient() {
                   <div key={item.product_id} className="flex gap-3">
                     {item.image && (
                       <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden bg-cream-secondary">
-                        <Image src={item.image} alt={item.product_name} fill sizes="48px" className="object-cover" />
+                        <Image src={item.image} alt={item.product_name} fill sizes="48px" className="object-cover object-top" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">

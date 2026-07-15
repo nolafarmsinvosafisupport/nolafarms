@@ -83,7 +83,7 @@ export function AdminImageUploader({ images, onChange, label = 'Product Images' 
             // pasted/uploaded (including R2 before its domain is in next.config.js's
             // remotePatterns), so they can't depend on a build-time allow-list.
             <div key={img + i} className="group relative aspect-square overflow-hidden border border-farm-border bg-cream-secondary">
-              <img src={img} alt="" className="h-full w-full object-cover" />
+              <img src={img} alt="" className="h-full w-full object-cover object-top" />
               <button
                 type="button"
                 onClick={() => removeImage(i)}
@@ -96,7 +96,7 @@ export function AdminImageUploader({ images, onChange, label = 'Product Images' 
           ))}
           {uploading.map((f) => (
             <div key={f.id} className="relative aspect-square overflow-hidden border border-farm-border bg-cream-secondary">
-              <img src={f.previewUrl} alt="" className="h-full w-full object-cover opacity-50" />
+              <img src={f.previewUrl} alt="" className="h-full w-full object-cover object-top opacity-50" />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                 {f.status === 'uploading' ? (
                   <Loader2 size={18} className="animate-spin text-white" />

@@ -42,7 +42,7 @@ export function CartPageClient() {
                   {/* Image */}
                   {item.image && (
                     <Link href={`/products/${item.slug}`} className="relative h-24 w-24 flex-shrink-0 overflow-hidden bg-cream-secondary">
-                      <Image src={item.image} alt={item.product_name} fill sizes="96px" className="object-cover" />
+                      <Image src={item.image} alt={item.product_name} fill sizes="96px" className="object-cover object-top" />
                     </Link>
                   )}
                   {/* Details */}

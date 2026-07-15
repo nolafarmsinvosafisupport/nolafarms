@@ -27,7 +27,7 @@ export function ProductImageGallery({ images, name }: { images: string[]; name: 
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
+          className="object-cover object-top"
         />
         {images.length > 1 && (
           <>
@@ -61,7 +61,7 @@ export function ProductImageGallery({ images, name }: { images: string[]; name: 
               onClick={() => setActive(i)}
               className={`relative h-14 w-14 flex-shrink-0 overflow-hidden border-2 transition-colors sm:h-16 sm:w-16 ${i === active ? 'border-brand-leaf' : 'border-transparent hover:border-farm-border'}`}
             >
-              <Image src={src} alt={`${name} thumbnail ${i + 1}`} fill sizes="64px" className="object-cover" />
+              <Image src={src} alt={`${name} thumbnail ${i + 1}`} fill sizes="64px" className="object-cover object-top" />
             </button>
           ))}
         </div>

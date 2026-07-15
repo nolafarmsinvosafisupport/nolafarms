@@ -14,6 +14,42 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
+const labelCls = 'mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50';
+const inputCls = 'w-full border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf placeholder:text-brand-deep/30';
+
+// Hoisted to module scope, not defined inside AdminCategoryForm — a component defined inside
+// another component's body is a new function identity every render, so React remounted the
+// underlying <input>/<textarea> (and lost focus/cursor) after every single keystroke.
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className={labelCls}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function Toggle({ checked, onChange, label, hint }: { checked: boolean; onChange: (v: boolean) => void; label: string; hint?: string }) {
+  return (
+    <label className="flex cursor-pointer items-center gap-3">
+      <div
+        role="checkbox"
+        aria-checked={checked}
+        tabIndex={0}
+        onClick={() => onChange(!checked)}
+        onKeyDown={(e) => e.key === 'Enter' && onChange(!checked)}
+        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${checked ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
+      >
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
+      </div>
+      <span className="text-sm font-medium text-brand-deep">
+        {label}
+        {hint && <span className="block text-xs font-normal text-brand-deep/50">{hint}</span>}
+      </span>
+    </label>
+  );
+}
+
 type Props = { category?: ProductCategoryPage; mainCategories: ProductCategoryPage[] };
 
 export function AdminCategoryForm({ category, mainCategories }: Props) {
@@ -88,35 +124,6 @@ export function AdminCategoryForm({ category, mainCategories }: Props) {
       setLoading(false);
     }
   }
-
-  const labelCls = 'mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50';
-  const inputCls = 'w-full border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf placeholder:text-brand-deep/30';
-
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div>
-      <label className={labelCls}>{label}</label>
-      {children}
-    </div>
-  );
-
-  const Toggle = ({ checked, onChange, label, hint }: { checked: boolean; onChange: (v: boolean) => void; label: string; hint?: string }) => (
-    <label className="flex cursor-pointer items-center gap-3">
-      <div
-        role="checkbox"
-        aria-checked={checked}
-        tabIndex={0}
-        onClick={() => onChange(!checked)}
-        onKeyDown={(e) => e.key === 'Enter' && onChange(!checked)}
-        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${checked ? 'bg-brand-leaf' : 'bg-brand-deep/20'}`}
-      >
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
-      </div>
-      <span className="text-sm font-medium text-brand-deep">
-        {label}
-        {hint && <span className="block text-xs font-normal text-brand-deep/50">{hint}</span>}
-      </span>
-    </label>
-  );
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">

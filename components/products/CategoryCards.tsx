@@ -64,7 +64,7 @@ export function CategoryCards({
               alt={c.label}
               fill
               sizes="(min-width: 1024px) 25vw, 50vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
 
             {/* Dark wash from the bottom so the label stays readable over any photo. */}

@@ -19,6 +19,21 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
+const labelCls = 'mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50';
+const inputCls = 'w-full border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf placeholder:text-brand-deep/30';
+
+// Hoisted to module scope, not defined inside AdminProductForm — a component defined inside
+// another component's body is a new function identity every render, so React remounted the
+// underlying <input>/<textarea> (and lost focus/cursor) after every single keystroke.
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className={labelCls}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
 type Props = { product?: Product };
 
 export function AdminProductForm({ product }: Props) {
@@ -92,16 +107,6 @@ export function AdminProductForm({ product }: Props) {
       setLoading(false);
     }
   }
-
-  const labelCls = 'mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-deep/50';
-  const inputCls = 'w-full border border-farm-border bg-cream-primary px-3 py-2 text-sm text-brand-deep outline-none focus:border-brand-leaf placeholder:text-brand-deep/30';
-
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div>
-      <label className={labelCls}>{label}</label>
-      {children}
-    </div>
-  );
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
