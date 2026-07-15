@@ -57,7 +57,7 @@ export function HeroSection() {
           transition={{ duration: 0.9 }}
           className="mb-4 text-xs font-light uppercase tracking-[0.3em] text-gold-warm md:text-sm"
         >
-          Oloitoktok &nbsp;·&nbsp; Laikipia, Kenya
+          Quality Livestock, Trusted Genetics
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, scale: 0.94 }}
@@ -71,9 +71,11 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="mx-auto mb-8 max-w-lg text-base font-light leading-7 text-cream-secondary md:text-lg"
+          className="mx-auto mb-8 max-w-2xl text-base font-light leading-7 text-cream-secondary md:text-lg"
         >
-          Two ranches. 375 acres. Livestock, crops, and living land.
+          Boran Bulls &nbsp;|&nbsp; Holstein Cattle &nbsp;|&nbsp; Full Blood Boer Goats &nbsp;|&nbsp; Dorper Sheep
+          &nbsp;|&nbsp; Landrace &amp; Large White Pigs.{' '}
+          <span className="font-normal text-gold-warm">Vaccinated, Dewormed, Farm-Ready.</span>
         </motion.p>
         <motion.div
           initial={{ opacity: 0 }}
@@ -83,11 +85,8 @@ export function HeroSection() {
         >
           <Link href="/products" className="group bg-brand-primary px-8 py-4 text-cream-primary transition-all hover:bg-brand-mid">
             <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest">
-              Explore the Farm <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              View Our Livestock <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </span>
-          </Link>
-          <Link href="/services" className="border border-cream-primary/30 px-8 py-4 text-cream-primary transition-all hover:border-cream-primary/60 hover:bg-cream-primary/10">
-            <span className="text-xs font-semibold uppercase tracking-widest">Book a Visit</span>
           </Link>
         </motion.div>
       </motion.div>
