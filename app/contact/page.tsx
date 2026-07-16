@@ -27,10 +27,10 @@ export default function ContactPage() {
       <JsonLd data={[contactPageSchema, breadcrumbSchema([{ name: 'Home', url: SITE.url }, { name: 'Contact', url: `${SITE.url}/contact` }])]} />
       <PageHero
         eyebrow="Contact Nola Ranches"
-        title="Let's Talk. We're Right Here in Laikipia."
+        title="Let's Talk. We're Right Here in Oloitoktok & Laikipia."
         subtitle="Send an enquiry, book a ranch visit, ask about livestock, or get directions to the farm."
         image={IMAGES.farmRoad}
-        alt="Directions road to Nola Ranches in Laikipia County Kenya"
+        alt="Directions road to Nola Ranches in Oloitoktok and Laikipia, Kenya"
       />
       <section className="bg-cream-primary section-y">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
@@ -78,8 +78,8 @@ export default function ContactPage() {
           <h2 className="mb-8 font-serif text-5xl text-cream-primary">Find Our Ranches</h2>
           <div className="aspect-[16/7] min-h-[360px] overflow-hidden border border-white/10 bg-white/5">
             <iframe
-              title="Google Maps placeholder for Nola Ranches location in Laikipia County Kenya"
-              src="https://www.google.com/maps?q=Laikipia%20County%20Kenya&output=embed"
+              title="Google Maps placeholder for Nola Ranches location in Oloitoktok, Kenya"
+              src="https://www.google.com/maps?q=Oloitoktok%20Kenya&output=embed"
               className="h-full w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

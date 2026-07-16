@@ -57,7 +57,7 @@ export function HeroSection() {
           transition={{ duration: 0.9 }}
           className="mb-4 text-xs font-light uppercase tracking-[0.3em] text-gold-warm md:text-sm"
         >
-          Quality Livestock, Trusted Genetics
+          Oloitoktok &amp; Laikipia
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, scale: 0.94 }}
@@ -75,7 +75,7 @@ export function HeroSection() {
         >
           Boran Bulls &nbsp;|&nbsp; Holstein Cattle &nbsp;|&nbsp; Full Blood Boer Goats &nbsp;|&nbsp; Dorper Sheep
           &nbsp;|&nbsp; Landrace &amp; Large White Pigs.{' '}
-          <span className="font-normal text-gold-warm">Vaccinated, Dewormed, Farm-Ready.</span>
+          <span className="font-normal text-gold-warm">Quality Livestock, Trusted Genetics.</span>
         </motion.p>
         <motion.div
           initial={{ opacity: 0 }}

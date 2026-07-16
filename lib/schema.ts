@@ -14,8 +14,8 @@ export const localBusinessSchema = {
   telephone: SITE.phone,
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Laikipia',
-    addressRegion: 'Laikipia County',
+    addressLocality: 'Oloitoktok',
+    addressRegion: 'Oloitoktok County',
     addressCountry: 'KE',
   },
   ...(hasRealCoordinates && {
@@ -59,7 +59,7 @@ export const aboutPageSchema = {
   '@type': 'AboutPage',
   name: 'About Nola Ranches',
   url: `${SITE.url}/about`,
-  description: 'The story, mission, and scale of Nola Ranches in Laikipia, Kenya.',
+  description: 'The story, mission, and scale of Nola Ranches in Oloitoktok and Laikipia, Kenya.',
 };
 
 export const itemListSchema = (items: { name: string; description: string; url: string }[]) => ({
@@ -82,7 +82,7 @@ export const serviceSchema = (service: { name: string; description: string }) =>
   '@type': 'Service',
   name: service.name,
   description: service.description,
-  areaServed: 'Laikipia County, Kenya',
+  areaServed: 'Oloitoktok & Laikipia, Kenya',
   provider: {
     '@type': 'LocalBusiness',
     name: SITE.name,
@@ -141,5 +141,5 @@ export const contactPageSchema = {
   '@type': 'ContactPage',
   name: 'Contact Nola Ranches',
   url: `${SITE.url}/contact`,
-  description: 'Contact details, ranch visit enquiries, and directions for Nola Ranches in Laikipia, Kenya.',
+  description: 'Contact details, ranch visit enquiries, and directions for Nola Ranches in Oloitoktok and Laikipia, Kenya.',
 };
