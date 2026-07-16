@@ -3,7 +3,7 @@ import { BookingForm } from '@/components/services/BookingForm';
 import { ServicesGrid } from '@/components/services/ServicesGrid';
 import { PageHero } from '@/components/ui/PageHero';
 import { JsonLd } from '@/components/ui/JsonLd';
-import { IMAGES, SITE } from '@/lib/constants';
+import { SITE } from '@/lib/constants';
 import { services } from '@/lib/content';
 import { pageMetadata } from '@/lib/seo';
 import { breadcrumbSchema, serviceSchema } from '@/lib/schema';
@@ -30,8 +30,8 @@ export default function ServicesPage() {
         eyebrow="Ranch Visits & Services"
         title="Come See the Farm for Yourself."
         subtitle="Guided visits, wholesale enquiries, and practical farm conversations across our Oloitoktok and Laikipia ranches."
-        image={IMAGES.landscape}
-        alt="Guided ranch visit landscape at Nola Ranches Kenya"
+        image="/images/banner/bottom banner.png"
+        alt="Cattle, sheep, goats and pigs together at Nola Ranches, Kenya"
       />
       <ServicesGrid />
       <section className="bg-cream-secondary section-y">

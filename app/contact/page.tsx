@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ContactForm } from '@/components/contact/ContactForm';
 import { PageHero } from '@/components/ui/PageHero';
 import { JsonLd } from '@/components/ui/JsonLd';
-import { IMAGES, SITE } from '@/lib/constants';
+import { SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
 import { breadcrumbSchema, contactPageSchema } from '@/lib/schema';
 
@@ -29,8 +29,8 @@ export default function ContactPage() {
         eyebrow="Contact Nola Ranches"
         title="Let's Talk. We're Right Here in Oloitoktok & Laikipia."
         subtitle="Send an enquiry, book a ranch visit, ask about livestock, or get directions to the farm."
-        image={IMAGES.farmRoad}
-        alt="Directions road to Nola Ranches in Oloitoktok and Laikipia, Kenya"
+        image="/images/hero/hero-goat.webp"
+        alt="Goats at Nola Ranches in Oloitoktok, Kenya"
       />
       <section className="bg-cream-primary section-y">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">

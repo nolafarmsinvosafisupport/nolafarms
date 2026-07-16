@@ -34,7 +34,7 @@ export function FeaturedSection() {
             <AnimatedCard key={card.href} className="group overflow-hidden border border-white/10 bg-white/5">
               <Link href={card.href} className="block">
                 <div className="image-skeleton relative h-72 overflow-hidden lg:h-48">
-                  <Image src={card.image} alt={card.alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <Image src={card.image} alt={card.alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover object-top transition-transform duration-700 group-hover:scale-105" />
                 </div>
                 <div className="p-7 lg:p-5">
                   <h3 className="font-serif text-3xl text-cream-primary lg:text-2xl">{card.title}</h3>
