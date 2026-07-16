@@ -67,6 +67,8 @@ export function Footer() {
           <div className="flex gap-6">
             <Link href="/services" className="hover:text-cream-primary">Ranch Visits</Link>
             <Link href="/products" className="hover:text-cream-primary">Products & Livestock</Link>
+            <Link href="/privacy" className="hover:text-cream-primary">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-cream-primary">Terms of Service</Link>
           </div>
           <p>Designed by <span className="font-semibold tracking-wider text-cream-secondary/80">MERIDIAN ARC DIGITAL</span></p>
         </div>

@@ -3,6 +3,7 @@ import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
 import { ADMIN_LIST_LIMIT } from '@/lib/admin-data';
 import { isRateLimited } from '@/lib/rate-limit';
 import { sendOrderReceivedEmails } from '@/lib/email';
+import { notifyAdmins } from '@/lib/admin-notify';
 import type { Order } from '@/lib/product-types';
 
 export const dynamic = 'force-dynamic';
@@ -87,15 +88,14 @@ export async function POST(request: Request) {
       RETURNING *
     `;
 
-    // Notify admin — order_id lets the notification deep-link straight to this order
-    const adminUserId = process.env.CLERK_ADMIN_USER_ID;
-    if (adminUserId) {
-      const itemCount = items.length;
-      await sql`
-        INSERT INTO notifications (user_id, order_id, type, title, message)
-        VALUES (${adminUserId}, ${order.id}, 'submitted', ${`New Order ${reference}`}, ${`Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`})
-      `.catch(() => undefined);
-    }
+    // Notify every admin — order_id lets the notification deep-link straight to this order
+    const itemCount = items.length;
+    notifyAdmins(sql, {
+      type: 'submitted',
+      title: `New Order ${reference}`,
+      message: `Order from ${customer_name} — ${itemCount} item${itemCount !== 1 ? 's' : ''}. Phone: ${customer_phone}`,
+      orderId: order.id,
+    }).catch(() => undefined);
 
     // Emails the admin (new-order alert) and the customer (receipt), if they gave one.
     // Fire-and-forget so a mail hiccup never fails the order itself.

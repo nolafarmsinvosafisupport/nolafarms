@@ -3,6 +3,7 @@ import { getCurrentUserId } from '@/lib/auth';
 import { getDb, ensureMigrated, nextReferenceNumber } from '@/lib/db';
 import { minimumVisitDate } from '@/lib/booking-utils';
 import { sendBookingReceivedEmails } from '@/lib/email';
+import { notifyAdmins } from '@/lib/admin-notify';
 import { isRateLimited } from '@/lib/rate-limit';
 import type { Booking } from '@/lib/booking-types';
 
@@ -63,17 +64,14 @@ export async function POST(request: Request) {
       `;
     }
 
-    // Notify admin — this was previously missing, so bookings never showed up as an
+    // Notify every admin — this was previously missing, so bookings never showed up as an
     // admin notification the way orders already did. Mirrors app/api/orders/route.ts.
-    const adminUserId = process.env.CLERK_ADMIN_USER_ID;
-    if (adminUserId) {
-      await sql`
-        INSERT INTO notifications (user_id, booking_id, type, title, message)
-        VALUES (${adminUserId}, ${booking.id}, 'submitted',
-          ${`New Booking ${reference}`},
-          ${`Visit request from ${d.full_name} for ${booking.visit_date}. Phone: ${d.phone_number}`})
-      `.catch(() => undefined);
-    }
+    notifyAdmins(sql, {
+      type: 'submitted',
+      title: `New Booking ${reference}`,
+      message: `Visit request from ${d.full_name} for ${booking.visit_date}. Phone: ${d.phone_number}`,
+      bookingId: booking.id,
+    }).catch(() => undefined);
 
     // Fire-and-forget: the booking is already committed above. If Resend is down or
     // rate-limited, the visitor must NOT be told their booking failed — otherwise they

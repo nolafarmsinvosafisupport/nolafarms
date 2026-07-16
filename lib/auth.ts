@@ -1,4 +1,4 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
 
 export async function getCurrentUserId() {
   const { userId } = await auth();
@@ -20,6 +20,29 @@ export async function isCurrentUserAdmin() {
   if (meta?.role === 'admin') return true;
   // Fallback: env var for deployments where metadata isn't set yet
   return Boolean(process.env.CLERK_ADMIN_USER_ID && user.id === process.env.CLERK_ADMIN_USER_ID);
+}
+
+// All Clerk user ids that should receive admin notifications: the env-var admin (legacy,
+// single-admin deployments) unioned with anyone granted admin via Clerk publicMetadata. Falls
+// back to just the env-var admin if Clerk can't be reached, so a Clerk hiccup never drops
+// notifications entirely. limit: 100 mirrors app/admin/users/page.tsx — would need pagination
+// past that many users.
+export async function getAdminUserIds(): Promise<string[]> {
+  const envAdmin = process.env.CLERK_ADMIN_USER_ID;
+  const ids = new Set<string>();
+  if (envAdmin) ids.add(envAdmin);
+
+  try {
+    const client = await clerkClient();
+    const { data: users } = await client.users.getUserList({ limit: 100 });
+    for (const user of users) {
+      if ((user.publicMetadata as { role?: string })?.role === 'admin') ids.add(user.id);
+    }
+  } catch {
+    // Clerk unreachable — fall back to just the env-var admin above.
+  }
+
+  return Array.from(ids);
 }
 
 export async function currentUserSummary() {
