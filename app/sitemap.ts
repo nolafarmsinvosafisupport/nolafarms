@@ -44,7 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/products`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${base}/services`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${base}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${base}/gallery`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    // Gallery temporarily hidden (route returns 404) — re-add when the page is restored.
     { url: `${base}/contact`, lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
   ];
 

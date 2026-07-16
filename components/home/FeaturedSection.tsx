@@ -10,7 +10,7 @@ import { IMAGES } from '@/lib/constants';
 
 const cards = [
   { title: 'Our Story', href: '/about', image: IMAGES.farmRoad, alt: 'Nola Ranches in Kenya', text: 'Two ranches built around quality livestock and trusted genetics — from Oloitoktok to Laikipia.' },
-  { title: 'Our Livestock', href: '/products', image: IMAGES.cattle, alt: 'Cattle at Nola Ranches Oloitoktok Kenya', text: 'Browse and enquire on our cattle, goats, sheep and pigs — vaccinated, farm-recorded and farm-ready.' },
+  { title: 'Our Livestock', href: '/products', image: '/images/products/animals/cattle/giroland/giroland cow nola 1.jpeg', alt: 'Girolando cattle at Nola Ranches, Oloitoktok Kenya', text: 'Browse and enquire on our cattle, goats, sheep and pigs — vaccinated, farm-recorded and farm-ready.' },
   { title: 'Ranch Visits', href: '/services', image: IMAGES.landscape, alt: 'Ranch visit to meet the herds at Nola Ranches Kenya', text: 'Come and meet the herds, inspect the animals, and see how they are raised before you buy.' },
 ];
 

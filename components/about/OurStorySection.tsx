@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MotionSection, fadeUp } from '@/components/ui/Motion';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { IMAGES } from '@/lib/constants';
 import { motion } from 'framer-motion';
 
 export function OurStorySection() {
@@ -35,7 +34,7 @@ export function OurStorySection() {
             overlay card below. */}
         <motion.div variants={fadeUp} className="relative min-h-[clamp(22rem,48vh,38rem)]">
           <div className="image-skeleton absolute inset-0 overflow-hidden">
-            <Image src={IMAGES.cattle} alt="Cattle raised at Nola Ranches in Kenya" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+            <Image src="/images/livestock/cow6.webp" alt="Cattle raised at Nola Ranches in Kenya" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           </div>
           {/* Shrunk ~40% from the original max-w-xs/p-7 footprint so it no longer swallows most
               of the image it overlaps. */}

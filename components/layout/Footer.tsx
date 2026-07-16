@@ -62,12 +62,13 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between gap-4 py-8 text-xs text-cream-secondary/55 md:flex-row">
+        <div className="flex flex-col justify-between gap-4 py-8 text-xs text-cream-secondary/55 md:flex-row md:items-center">
           <p>&copy; {new Date().getFullYear()} Nola Ranches. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="/services" className="hover:text-cream-primary">Ranch Visits</Link>
             <Link href="/products" className="hover:text-cream-primary">Products & Livestock</Link>
           </div>
+          <p>Designed by <span className="font-semibold tracking-wider text-cream-secondary/80">MERIDIAN ARC DIGITAL</span></p>
         </div>
       </div>
     </footer>

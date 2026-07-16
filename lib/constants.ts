@@ -30,7 +30,9 @@ export const NAV_LINKS = [
   { label: 'About', href: '/about' },
   { label: 'Products', href: '/products' },
   { label: 'Services', href: '/services' },
-  { label: 'Gallery', href: '/gallery' },
+  // Gallery temporarily hidden until refreshed content is ready — re-add this line, restore
+  // app/gallery/page.tsx, and re-add /gallery to app/sitemap.ts to bring it back.
+  // { label: 'Gallery', href: '/gallery' },
   { label: 'Contact', href: '/contact' },
 ];
 

@@ -4,7 +4,7 @@ import { OurStorySection } from '@/components/about/OurStorySection';
 import { PageHero } from '@/components/ui/PageHero';
 import { JsonLd } from '@/components/ui/JsonLd';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { IMAGES, SITE } from '@/lib/constants';
+import { SITE } from '@/lib/constants';
 import { pageMetadata } from '@/lib/seo';
 import { aboutPageSchema, breadcrumbSchema } from '@/lib/schema';
 
@@ -30,7 +30,7 @@ export default function AboutPage() {
         eyebrow="About Nola Ranches"
         title="Quality Livestock. Trusted Genetics."
         subtitle="A livestock ranch across Oloitoktok and Laikipia — raising cattle, goats, sheep and pigs, and connecting buyers directly to the source."
-        image={IMAGES.cattle}
+        image="/images/hero/hero-cattle.webp"
         alt="Cattle at Nola Ranches, Kenya"
       />
       <OurStorySection />

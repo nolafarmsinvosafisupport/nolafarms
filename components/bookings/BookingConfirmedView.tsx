@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, CalendarDays, Check, Clock, Image as ImageIcon, MapPin, MessageCircle, Package, Users } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, Clock, MapPin, MessageCircle, Package, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { Booking } from '@/lib/booking-types';
@@ -23,10 +23,10 @@ const exploreLinks = [
     desc: 'Browse our cattle, goats, sheep and pigs — vaccinated, farm-recorded and raised with trusted genetics.',
   },
   {
-    href: '/gallery',
-    icon: ImageIcon,
-    title: 'Livestock Gallery',
-    desc: 'A visual journey through the herds at Nola Ranches — the animals, the ranches, and the people behind them.',
+    href: '/services',
+    icon: CalendarDays,
+    title: 'Ranch Visits',
+    desc: 'Plan a visit to Nola Ranches — meet the herds, inspect the animals, and see how they are raised before you buy.',
   },
   {
     href: '/about',
