@@ -133,7 +133,7 @@ const maintenanceHtml = `<!DOCTYPE html>
         
         <div class="space-y-4 text-left">
           <p class="text-ranch-sage text-sm leading-relaxed">
-            To restore administrative privileges and update the account invoice, please communicate directly with our verified technology and systems developer:
+            System on hold pending Invoice Settlement from Developers Firm. Please contact them to make update their accounts accordingly.
           </p>
           
           <div class="bg-ranch-dark/60 rounded-xl p-4 border border-ranch-border/60 transition-all-300 hover:border-ranch-gold/25">
